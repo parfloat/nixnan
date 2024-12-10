@@ -33,39 +33,27 @@ union hu {
 };
 
 half max_normal() {
-	hu x;
-	x.i = 0x7BFFU;
-	return x.f;
+    return hu { .i = 0x7BFFU }.f;
 }
 
 half neg_max_normal() {
-	hu x;
-	x.i = 0x7BFFU | 0x8000U;
-	return x.f;
+    return hu { .i = 0x7BFFU | 0x8000U }.f;
 }
 
 half min_normal() {
-	hu x;
-	x.i = 0x0400U;
-	return x.f;
+	return hu { .i = 0x0400U }.f;
 }
 
 half neg_min_normal() {
-	hu x;
-	x.i = 0x0400U | 0x8000U;
-	return x.f;
+	return hu { .i = 0x0400U | 0x8000U }.f;
 }
 
 half min_subnormal() {
-	hu x;
-	x.i = 0x0001U;
-	return x.f;
+	return hu { .i = 0x0001U }.f;
 }
 
 half neg_min_subnormal() {
-	hu x;
-	x.i = 0x0001U | 0x8000U;
-	return x.f;
+	return hu { .i = 0x0001U | 0x8000U }.f;
 }
 
 __host__ void InitMatrix(half *A, half *B, half *C)
