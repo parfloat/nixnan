@@ -1,11 +1,4 @@
-//////////////////////////////////////////////////////////////////////
-// A simple example to show how CUDA WMMA API works with Tensor Cores
-//    Created by Zong-Sheng Wang @ 2018/11/25
-// Performance Tips:
-//    To minimize bank conflicts, you should try to shift row or 
-// column of matrics in shared memory
-// cmd: 
-//    $ nvcc -o main main.cu -arch sm_86
+// nvcc -o main main.cu -arch sm_86
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,8 +25,6 @@
 #define N_TOTAL (N * N_TILES)
 #define K_TOTAL (K * K_TILES)
 
-
-//__global__ void WMMAINT8()
 using namespace nvcuda;
 
 union hu {
@@ -82,8 +73,8 @@ __host__ void InitMatrix(half *A, half *B, half *C)
 	for (size_t i = 0; i < 16; i++) {
 		for (size_t j = 0; j < 16; j++) {
 			size_t idx = i*16 + j;
-			A[idx] = i == j ? 1 : 0;
-			B[idx] = i == j ? 1 : 0;
+			A[idx] = i == j ? 1.0 : 0.0;
+			B[idx] = i == j ? 1.0 : 0.0;
 			C[idx] = 0.0;
 		}
 	}
@@ -189,7 +180,7 @@ void run_test(half A00, half B00, float C00, const char *name)
 	       __half2float(A[0]), hu{.f=A[0]}.i, __half2float(B[0]), hu{.f=B[0]}.i, __half2float(C[0]), hu{.f=C[0]}.i);
 	
 	// computing gemm using tensor cores
-	printf("[*] Computing D = A * B + C with Tensor Cores...\n");
+	printf("Computing D = A * B + C with Tensor Cores...\n");
 
 	// D = A * B + C, D holds the result after ret
 	cuda_status = CalcWMMA(A, B, C, D, AB);
@@ -209,8 +200,6 @@ void run_test(half A00, half B00, float C00, const char *name)
 		printf("cudaDeviceReset failed! ");
 		exit(1);
 	}
-
-	// Todo: Add a function to verify the result by using the result of CPU version implementation.
 
 	cudaFree(A);
 	cudaFree(B);
