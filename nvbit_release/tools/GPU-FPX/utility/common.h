@@ -31,72 +31,67 @@
 /* information collected in the instrumentation function and passed
  * on the channel from the GPU to the CPU */
 typedef struct {
-    int32_t cta_id_x;
-    int32_t cta_id_y;
-    int32_t cta_id_z;
-    int32_t warp_id;
-    int32_t opcode_id;
-    int32_t kernel_id;
-    //int32_t num_regs;
-    /* 32 lanes, each thread can store up to 5 register values */
-    //uint32_t reg_vals[32][8];
-    /* code location (file, line) */
-    //char *location;
-    //int32_t loc_id;
-    /* Instruction type: FP32=1, FP64=2 */
-    //int32_t inst_type;
-    uint32_t mem_index;
-    uint32_t mem_index_ar[32];
-    uint32_t exce_type[32];
-    uint32_t warp_exec_info[32];
-    //uint32_t reg_vals[32][2];
+  int32_t cta_id_x;
+  int32_t cta_id_y;
+  int32_t cta_id_z;
+  int32_t warp_id;
+  int32_t opcode_id;
+  int32_t kernel_id;
+  // int32_t num_regs;
+  /* 32 lanes, each thread can store up to 5 register values */
+  // uint32_t reg_vals[32][8];
+  /* code location (file, line) */
+  // char *location;
+  // int32_t loc_id;
+  /* Instruction type: FP32=1, FP64=2 */
+  // int32_t inst_type;
+  uint32_t mem_index;
+  uint32_t mem_index_ar[32];
+  uint32_t exce_type[32];
+  uint32_t warp_exec_info[32];
+  // uint32_t reg_vals[32][2];
 } reg_info_t;
 
-typedef struct { 
-    uint32_t mem_index_ar[32];
-    uint32_t exce_type[32];
-    //uint32_t reg_vals[32][2];
+typedef struct {
+  uint32_t mem_index_ar[32];
+  uint32_t exce_type[32];
+  // uint32_t reg_vals[32][2];
 } warp_info_t;
 
 typedef struct {
-    int32_t cta_id_x;
-    int32_t opcode_id;
-    int32_t kernel_id;
-    int32_t loc_id;
-    int32_t num_regs;
-    uint32_t with_lit_except;
-    uint32_t after_before;
-    uint32_t reg_types[32][4];
+  int32_t cta_id_x;
+  int32_t opcode_id;
+  int32_t kernel_id;
+  int32_t loc_id;
+  int32_t num_regs;
+  uint32_t with_lit_except;
+  uint32_t after_before;
+  uint32_t reg_types[32][4];
 } except_type_info_t;
 /*
- Here we start the type as 1 to aviod the the issue when using `__shfl_sync` to 
- extract the values from all active threads; inactive threads will return undefined
- value, which is 0 for int. 
+ Here we start the type as 1 to aviod the the issue when using `__shfl_sync` to
+ extract the values from all active threads; inactive threads will return
+ undefined value, which is 0 for int.
 
  We need to notcie that we have to minus 1 when doing the map
 */
 enum ExceptionType {
-    E_NAN=1,
-    E_INF,
-    E_SUB,
-    E_DIV0,
-    NUM_EXCE_TYPES,
+  E_NAN = 1,
+  E_INF,
+  E_SUB,
+  E_DIV0,
+  NUM_EXCE_TYPES,
 };
 enum ExceptionAnaType {
-    Ana_SUB=0, /*Consider SUB as a normal val now. Will support SUB in the future*/
-    Ana_NAN,
-    Ana_INF,
-    NUM_ANA_TYPES,
+  Ana_SUB =
+      0, /*Consider SUB as a normal val now. Will support SUB in the future*/
+  Ana_NAN,
+  Ana_INF,
+  NUM_ANA_TYPES,
 };
 enum FormatType {
-    FP32=1,
-    FP64,
-    NUM_FP_TYPES,
+  FP32 = 1,
+  FP64,
+  NUM_FP_TYPES,
 };
- #endif
-
-
-
-
-
-
+#endif

@@ -1,5 +1,6 @@
 /* From https://developer.nvidia.com/blog/mixed-precision-programming-cuda-8
-and https://github.com/NVIDIA-developer-blog/code-samples/blob/master/posts/mixed-precision/haxpy.cu
+and
+https://github.com/NVIDIA-developer-blog/code-samples/blob/master/posts/mixed-precision/haxpy.cu
 */
 
 // Copyright (c) 1993-2016, NVIDIA CORPORATION. All rights reserved.
@@ -27,10 +28,10 @@ and https://github.com/NVIDIA-developer-blog/code-samples/blob/master/posts/mixe
 // OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#include "fp16_conversion.h"
+#include <assert.h>
 #include <cstdio>
 #include <cuda_fp16.h>
-#include <assert.h>
-#include "fp16_conversion.h"
 
 // This is a simple example of using FP16 types and arithmetic on
 // GPUs that support it. The code computes an AXPY (A * X + Y) operation
@@ -38,9 +39,7 @@ and https://github.com/NVIDIA-developer-blog/code-samples/blob/master/posts/mixe
 
 // Convenience function for checking CUDA runtime API results
 // can be wrapped around any runtime API call. No-op in release builds.
-inline
-cudaError_t checkCuda(cudaError_t result)
-{
+inline cudaError_t checkCuda(cudaError_t result) {
 #if defined(DEBUG) || defined(_DEBUG)
   if (result != cudaSuccess) {
     fprintf(stderr, "CUDA Runtime Error: %s\n", cudaGetErrorString(result));
@@ -50,31 +49,27 @@ cudaError_t checkCuda(cudaError_t result)
   return result;
 }
 
-__global__
-void haxpy(int n, half a, const half *x, half *y)
-{
-	int start = threadIdx.x + blockDim.x * blockIdx.x;
-	int stride = blockDim.x * gridDim.x;
+__global__ void haxpy(int n, half a, const half *x, half *y) {
+  int start = threadIdx.x + blockDim.x * blockIdx.x;
+  int stride = blockDim.x * gridDim.x;
 
 #if __CUDA_ARCH__ >= 530
-  int n2 = n/2;
-  half2 *x2 = (half2*)x, *y2 = (half2*)y;
+  int n2 = n / 2;
+  half2 *x2 = (half2 *)x, *y2 = (half2 *)y;
 
-  for (int i = start; i < n2; i+= stride) 
-    //y2[i] = __hfma2(__halves2half2(a, a), x2[i], y2[i]);
+  for (int i = start; i < n2; i += stride)
+    // y2[i] = __hfma2(__halves2half2(a, a), x2[i], y2[i]);
     y2[i] = __hadd2(__halves2half2(a, a), x2[i]);
 
-
-	// first thread handles singleton for odd arrays
-  if (start == 0 && (n%2))
-  	//y[n-1] = __hfma(a, x[n-1], y[n-1]);  
-  	y[n-1] = __hadd(a, x[n-1]);   
- 
+  // first thread handles singleton for odd arrays
+  if (start == 0 && (n % 2))
+    // y[n-1] = __hfma(a, x[n-1], y[n-1]);
+    y[n - 1] = __hadd(a, x[n - 1]);
 
 #else
-  for (int i = start; i < n; i+= stride) {
-    y[i] = __float2half(__half2float(a) * __half2float(x[i]) 
-      + __half2float(y[i]));
+  for (int i = start; i < n; i += stride) {
+    y[i] =
+        __float2half(__half2float(a) * __half2float(x[i]) + __half2float(y[i]));
   }
 #endif
 }
@@ -87,7 +82,7 @@ int main(void) {
   half *x, *y;
   checkCuda(cudaMallocManaged(&x, n * sizeof(half)));
   checkCuda(cudaMallocManaged(&y, n * sizeof(half)));
-  
+
   for (int i = 0; i < n; i++) {
     x[i] = approx_float_to_half(1.0f);
     y[i] = approx_float_to_half((float)i);
@@ -100,9 +95,9 @@ int main(void) {
 
   // must wait for kernel to finish before CPU accesses
   checkCuda(cudaDeviceSynchronize());
-  
+
   for (int i = 0; i < n; i++)
-  	printf("%f\n", half_to_float(y[i]));
+    printf("%f\n", half_to_float(y[i]));
 
   return 0;
 }

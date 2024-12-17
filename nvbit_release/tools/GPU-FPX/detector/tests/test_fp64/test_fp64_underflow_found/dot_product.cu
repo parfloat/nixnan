@@ -1,20 +1,20 @@
 
 #include <stdio.h>
 
-// __device__ void mul(float a, float b, float *res)
+// __device__ void mul(double a, double b, double *res)
 // {
 //   *res = a * b;
 //   // underflow
-//   *res = (*res) * (1e-38 * 1e-5);
+//   *res = (*res) * (1e-300 * 1e-22);
 // }
 
-__global__ void dot_prod(float *x, float *y, int size) {
-  float d;
+__global__ void dot_prod(double *x, double *y, int size) {
+  double d;
   for (int i = 0; i < size; ++i) {
-    float tmp;
+    double tmp;
     // mul(x[i], y[i], &tmp);
     tmp = x[i] * y[i];
-    tmp = tmp * (1e-38 * 1e-5);
+    tmp = tmp * (1e-300 * 1e-22);
     d += tmp;
   }
 

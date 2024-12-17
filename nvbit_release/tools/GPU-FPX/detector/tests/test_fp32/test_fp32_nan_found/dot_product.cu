@@ -5,21 +5,19 @@
 // {
 //   *res = a * b;
 //   // NaN
-//   *res = (*res)-(*res) / (*res)-(*res); 
+//   *res = (*res)-(*res) / (*res)-(*res);
 // }
 
-__global__ void dot_prod(float *x, float *y, int size)
-{
+__global__ void dot_prod(float *x, float *y, int size) {
   float d;
-  for (int i=0; i < size; ++i)
-  {
+  for (int i = 0; i < size; ++i) {
     float tmp;
-    //mul(x[i], y[i], &tmp);
-    tmp = x[i]*y[i];
-    printf("first tmp is %f\n",tmp);
+    // mul(x[i], y[i], &tmp);
+    tmp = x[i] * y[i];
+    printf("first tmp is %f\n", tmp);
     // NaN
-    tmp = (tmp-tmp) / (tmp - tmp);
-   printf("second tmp is %f\n",tmp);
+    tmp = (tmp - tmp) / (tmp - tmp);
+    printf("second tmp is %f\n", tmp);
     d += tmp;
   }
 
