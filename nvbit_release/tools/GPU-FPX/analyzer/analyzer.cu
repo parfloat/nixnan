@@ -587,7 +587,7 @@ void *recv_thread_fun(void *) {
   return NULL;
 }
 
-void nvbit_at_ctx_init(CUcontext ctx) {
+void nvbit_tool_init(CUcontext ctx) {
   printf("#GPU-FPX: Initializing GPU context...\n");
   read_from_file(enable_kernels_file, enable_kernels);
   read_from_file(disable_kernels_file, disable_kernels);
