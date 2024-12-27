@@ -11,11 +11,11 @@ GPUFPX_home=$(nvbit_tool)/GPU-FPX
 analyzer: $(GPUFPX_home)/analyzer/analyzer.so
 detector: $(GPUFPX_home)/detector/detector.so
 
-$(GPUFPX_home)/analyzer/analyzer.so: $(GPUFPX_home)/analyzer/analyzer.cu
+$(GPUFPX_home)/analyzer/analyzer.so: $(GPUFPX_home)/analyzer/analyzer.cu nvbit_release
 	cd $(GPUFPX_home)/analyzer; \
 	$(MAKE)
 
-$(GPUFPX_home)/detector/detector.so: $(GPUFPX_home)/detector/detector.cu
+$(GPUFPX_home)/detector/detector.so: $(GPUFPX_home)/detector/detector.cu nvbit_release
 	cd $(GPUFPX_home)/detector; \
 	$(MAKE)
 
