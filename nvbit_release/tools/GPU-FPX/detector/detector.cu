@@ -137,6 +137,8 @@ void instrument_function_if_needed(CUcontext ctx, CUfunction func) {
 
       /* Check the type of instruction */
       bool fp32_inst = false;
+      bool mma_inst = false;
+      int mma_type = 16;
       int div_res = is_DIV(instr->getSass());
       bool check_0 = false;
       if (div_res != 0) {
@@ -147,14 +149,15 @@ void instrument_function_if_needed(CUcontext ctx, CUfunction func) {
           fp32_inst = false;
         }
 
-      }
-
-      else if (is_FP32_instruction(instr->getSass())) {
+      } else if (is_FP32_instruction(instr->getSass())) {
         fp32_inst = true;
         // printf("SASS of FP32 is %s\n", instr->getSass());
-      } else if (is_FP64_instruction(instr->getSass()))
+      } else if (is_FP64_instruction(instr->getSass())) {
         fp32_inst = false;
-      else
+      } else if (is_MMA_INSTRUCTION(instr->getSass())) {
+        mma_inst = true;
+        mma_type = 16;
+      } else
         continue;
       inst_count++;
       // if (verbose) {
@@ -209,7 +212,11 @@ void instrument_function_if_needed(CUcontext ctx, CUfunction func) {
 
       if (op->type != InstrType::OperandType::REG)
         continue;
-      if (check_0 && !fp32_inst) {
+
+      if (mma_inst) {
+        reg_num_list.push_back(op->u.reg.num);
+        reg_num_list.push_back(op->u.reg.num + 1);
+      } else if (check_0 && !fp32_inst) {
         reg_num_list.push_back(op->u.reg.num - 1);
         reg_num_list.push_back(op->u.reg.num);
         // printf("fp64 here\n");
@@ -242,7 +249,9 @@ void instrument_function_if_needed(CUcontext ctx, CUfunction func) {
 
       /* insert call to the instrumentation function with its
        * arguments */
-      if (fp32_inst && !check_0) {
+      if (mma_inst) {
+        nvbit_insert_call(instr, "record_reg_val_16_stand", IPOINT_AFTER);
+      } else if (fp32_inst && !check_0) {
         nvbit_insert_call(instr, "record_reg_val_32_stand", IPOINT_AFTER);
       } else if (fp32_inst && check_0) {
         nvbit_insert_call(instr, "record_reg_val_32_div0", IPOINT_AFTER);
@@ -408,10 +417,11 @@ void *recv_thread_fun(void *) {
         for (int i = 0; i < 32; i++) {
           if (ri->exce_type[i] == 0)
             continue;
-
-          print_exc(loc, fp_type, exceptionTypeNames[ri->exce_type[i]],
-                    ri->opcode_id, ri->kernel_id, inst_type + 1, loc_id,
-                    ri->exce_type[i]);
+          for (const char* exce_name : getExceptionTypeNames(ri->exce_type[i])) {
+            print_exc(loc, fp_type, exce_name,
+                      ri->opcode_id, ri->kernel_id, inst_type + 1, loc_id,
+                      ri->exce_type[i]);
+          }
         }
 
         num_processed_bytes += sizeof(reg_info_t);

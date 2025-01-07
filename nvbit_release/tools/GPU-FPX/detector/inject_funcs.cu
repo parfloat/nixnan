@@ -41,6 +41,53 @@
 /* contains definition of the mem_access_t structure */
 #include "../utility/common.h"
 
+__device__ static __forceinline__
+uint16_t _HALF_EXPONENT(uint16_t h) {
+  return (h >> 10) & 0x1f;
+}
+
+__device__ static __forceinline__
+uint16_t _HALF_MANTISSA(uint16_t h) {
+  return h & 0x3ff;
+}
+
+__device__ static __forceinline__
+uint32_t _FPC_FP16_IS_INF(uint16_t h) {
+  if(_HALF_EXPONENT(h) == 0x1f && _HALF_MANTISSA(h) == 0) {
+    return E_INF;
+  }
+  return 0;
+}
+
+__device__ static __forceinline__
+uint32_t _FPC_FP16_IS_NAN(uint16_t h) {
+  if(_HALF_EXPONENT(h) == 0x1f && _HALF_MANTISSA(h) != 0) {
+    return E_NAN;
+  }
+  return 0;
+}
+
+__device__ static __forceinline__
+uint32_t _FPC_FP16_IS_SUBNORMAL(uint16_t h) {
+  if(_HALF_EXPONENT(h) == 0x0 && _HALF_MANTISSA(h) != 0) {
+    return E_SUB;
+  }
+  return 0;
+}
+
+__device__ static __forceinline__
+uint32_t _FPC_FP16_IS_0(uint16_t h) {
+  if(_HALF_EXPONENT(h) == 0x0 && _HALF_MANTISSA(h) == 0) {
+    return E_DIV0;
+  }
+  return 0;
+}
+
+__device__ static __forceinline__
+uint32_t _FPC_FP16_CLASSIFY(uint16_t h) {
+  return _FPC_FP16_IS_INF(h) + _FPC_FP16_IS_NAN(h) + _FPC_FP16_IS_SUBNORMAL(h);
+}
+
 __device__ static __forceinline__ uint32_t _FPC_FP32_IS_INF(uint32_t reg_val) {
   uint32_t exponent, mantissa;
   exponent = reg_val << 1;
@@ -131,7 +178,7 @@ __device__ static __forceinline__ uint32_t _FPC_FP64_IS_0(uint64_t reg_val) {
 
 __device__ static __forceinline__ uint32_t encode_index(uint32_t mem_index,
                                                         uint32_t exec) {
-  exec = exec - 1;
+  // exec = exec - 1;
   uint32_t final_index = mem_index | exec;
   return final_index;
 }
@@ -176,6 +223,78 @@ __device__ static __forceinline__ uint32_t encode_index(uint32_t mem_index,
 //         }
 //     }
 // }
+
+extern "C" __device__ __noinline__ void
+record_reg_val_16_stand(int pred, int opcode_id, int kernel_id,
+                        // uint64_t location,
+                        // int loc_id,
+                        // ushort k_loc_id,
+                        // int32_t inst_type,
+                        uint64_t pdevice_table, uint32_t mem_index,
+                        uint64_t pchannel_dev, uint32_t low_add,
+                        uint32_t high_add) {
+
+  if (!pred) {
+    return;
+  }
+
+  int active_mask = __ballot_sync(__activemask(), 1);
+  const int laneid = get_laneid();
+  const int first_laneid = __ffs(active_mask) - 1;
+
+  reg_info_t ri;
+
+  int4 cta = get_ctaid();
+  ri.cta_id_x = cta.x;
+  ri.cta_id_y = cta.y;
+  ri.cta_id_z = cta.z;
+  ri.warp_id = get_warpid();
+  // ri.location = (char*)location;
+  ri.opcode_id = opcode_id;
+  ri.kernel_id = kernel_id;
+  // ri.loc_id = loc_id;
+  // ri.inst_type = inst_type;
+  ri.mem_index = mem_index;
+  // uint32_t *device_table = (uint32_t *)pdevice_table;
+  uint32_t exce = 0;
+
+  // Which part is the x and y components
+  exce |= _FPC_FP16_CLASSIFY(low_add & 0xFFFF);
+  exce |= _FPC_FP16_CLASSIFY((low_add >> 16) & 0xFFFF);
+  exce |= _FPC_FP16_CLASSIFY(high_add & 0xFFFF);
+  exce |= _FPC_FP16_CLASSIFY((high_add >> 16) & 0xFFFF);
+  // printf("exce is %d\n",exce);
+  for (int tid = 0; tid < 32; tid++) {
+    // TODO: only shfl to tid=0
+    ri.exce_type[tid] = __shfl_sync(active_mask, exce, tid);
+    ri.mem_index_ar[tid] = __shfl_sync(active_mask, mem_index, tid);
+    // printf("exce[i] is %d\n",ri.exce_type[tid]);
+  }
+
+  /* first active lane pushes information on the channel */
+  if (first_laneid == laneid) {
+    for (int i = 0; i < 32; i++) {
+      if (ri.exce_type[i] > 0) {
+        uint32_t table_index =
+            encode_index(ri.mem_index_ar[i], ri.exce_type[i]);
+        // uint32_t index_info = device_table[table_index];
+        // printf("table index is %u\n", table_index);
+        uint32_t *device_table = (uint32_t *)pdevice_table;
+        uint32_t index_info =
+            atomicAdd((unsigned int *)&device_table[table_index], 1);
+        if (index_info == 0) {
+          // atomicAdd((unsigned int*)&device_table[table_index], 1);
+          ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
+          channel_dev->push(&ri, sizeof(reg_info_t));
+          break;
+        }
+        // ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
+        // channel_dev->push(&ri, sizeof(reg_info_t));
+        // break;
+      }
+    }
+  }
+}
 
 extern "C" __device__ __noinline__ void
 record_reg_val_32_stand(int pred, int opcode_id, int kernel_id,

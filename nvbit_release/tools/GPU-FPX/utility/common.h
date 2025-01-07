@@ -77,9 +77,9 @@ typedef struct {
 */
 enum ExceptionType {
   E_NAN = 1,
-  E_INF,
-  E_SUB,
-  E_DIV0,
+  E_INF = 2,
+  E_SUB = 4,
+  E_DIV0 = 8,
   NUM_EXCE_TYPES,
 };
 enum ExceptionAnaType {

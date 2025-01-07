@@ -19,8 +19,23 @@
 #define PATH_NAME_SIZE 5000
 // int verbose = 0;
 
-const char *exceptionTypeNames[NUM_EXCE_TYPES] = {"UNUSED", "NaN", "INF", "SUB",
+
+std::vector<const char*>
+getExceptionTypeNames(uint32_t EXCE_TYPE) {
+  static const char *exceptionTypeNames[NUM_EXCE_TYPES] = {"UNUSED", "NaN", "INF", "SUB",
                                                   "DIV0"};
+  std::vector<const char*> result;
+  size_t idx = 1;
+  while (EXCE_TYPE != 0) {
+    if (EXCE_TYPE & 1) {
+      result.push_back(exceptionTypeNames[idx]);
+    }
+    EXCE_TYPE >>= 1;
+    idx++;
+  }
+  return result;
+}
+
 // const char * exceptionTypeNames[NUM_EXCE_TYPES] = {
 // "NORMAL","NaN","INF","SUB"
 //  };
@@ -111,6 +126,10 @@ std::string locTupleToLoc(LocationTuple &loc) {
   loc_string = loc_string.append(":");
   loc_string = loc_string.append(std::to_string(std::get<2>(loc)));
   return loc_string;
+}
+
+bool is_MMA_INSTRUCTION(std::string inst) {
+  return inst.find("MMA") == 1;
 }
 
 // TODO: strstr time consuming?
