@@ -130,10 +130,8 @@ __device__ static __forceinline__ uint32_t _FPC_FP64_IS_0(uint64_t reg_val) {
 }
 
 __device__ static __forceinline__ uint32_t encode_index(uint32_t mem_index,
-                                                        uint32_t exec) {
-  exec = exec - 1;
-  uint32_t final_index = mem_index | exec;
-  return final_index;
+                                                        uint32_t exce) {
+  return mem_index | exce;
 }
 
 // __device__
