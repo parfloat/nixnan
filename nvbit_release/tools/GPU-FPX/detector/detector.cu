@@ -408,10 +408,11 @@ void *recv_thread_fun(void *) {
         for (int i = 0; i < 32; i++) {
           if (ri->exce_type[i] == 0)
             continue;
-
-          print_exc(loc, fp_type, exceptionTypeNames[ri->exce_type[i]],
-                    ri->opcode_id, ri->kernel_id, inst_type + 1, loc_id,
-                    ri->exce_type[i]);
+          for (auto exceptName : getExceptionNames(ri->exce_type[i])) {
+            print_exc(loc, fp_type, exceptName,
+                      ri->opcode_id, ri->kernel_id, inst_type + 1, loc_id,
+                      ri->exce_type[i]);
+          }
         }
 
         num_processed_bytes += sizeof(reg_info_t);

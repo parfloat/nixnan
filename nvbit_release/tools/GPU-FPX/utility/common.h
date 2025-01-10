@@ -68,19 +68,12 @@ typedef struct {
   uint32_t after_before;
   uint32_t reg_types[32][4];
 } except_type_info_t;
-/*
- Here we start the type as 1 to aviod the the issue when using `__shfl_sync` to
- extract the values from all active threads; inactive threads will return
- undefined value, which is 0 for int.
 
- We need to notcie that we have to minus 1 when doing the map
-*/
 enum ExceptionType {
   E_NAN = 1,
-  E_INF,
-  E_SUB,
-  E_DIV0,
-  NUM_EXCE_TYPES,
+  E_INF = 2,
+  E_SUB = 4,
+  E_DIV0 = 8,
 };
 enum ExceptionAnaType {
   Ana_SUB =
