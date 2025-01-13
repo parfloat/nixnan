@@ -19,14 +19,14 @@
 #define PATH_NAME_SIZE 5000
 
 // Map the exceptions in exce to their names
-std::vector<const char*>
-getExceptionNames(int exce) {
+std::vector<std::pair<const char*, uint8_t>>
+mapExceptions(int exce) {
   static const char *exceNames[] = {"NaN", "INF", "SUB", "DIV0"};
-  std::vector<const char*> res;
+  std::vector<std::pair<const char*, uint8_t>> res;
   size_t idx = 0;
   while(exce != 0) {
     if (exce & 1 != 0) {
-      res.push_back(exceNames[idx]);
+      res.push_back({exceNames[idx], 1 << idx});
     }
     exce >>= 1;
     idx++;
@@ -220,7 +220,6 @@ int computeExcNum(int exc_id, int f_type_id) {
 void print_real_exceptions() {
   uint64_t total = 0;
   for (auto it = locExc_count.cbegin(); it != locExc_count.cend(); ++it) {
-    // std::cout << it->first << ": " << it->second << std::endl;
     total = total + it->second;
   }
   std::cout << "The total number of exceptions are: " << total << std::endl;
