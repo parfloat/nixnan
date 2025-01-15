@@ -263,34 +263,22 @@ record_reg_val_16_stand(int pred, int opcode_id, int kernel_id,
   exce |= _FPC_FP16_CLASSIFY((high_add >> 16) & 0xFFFF);
   // printf("exce is %d\n",exce);
   for (int tid = 0; tid < 32; tid++) {
-    // TODO: only shfl to tid=0
-    ri.exce_type[tid] = __shfl_sync(active_mask, exce, tid);
-    ri.mem_index_ar[tid] = __shfl_sync(active_mask, mem_index, tid);
-    // printf("exce[i] is %d\n",ri.exce_type[tid]);
+    exce |= __shfl_sync(active_mask, exce, tid);
   }
 
   /* first active lane pushes information on the channel */
-  if (first_laneid == laneid) {
-    for (int i = 0; i < 32; i++) {
-      if (ri.exce_type[i] > 0) {
-        uint32_t table_index =
-            encode_index(ri.mem_index_ar[i], ri.exce_type[i]);
-        // uint32_t index_info = device_table[table_index];
-        // printf("table index is %u\n", table_index);
-        uint32_t *device_table = (uint32_t *)pdevice_table;
-        uint32_t index_info =
-            atomicAdd((unsigned int *)&device_table[table_index], 1);
-        if (index_info == 0) {
-          // atomicAdd((unsigned int*)&device_table[table_index], 1);
-          ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
-          channel_dev->push(&ri, sizeof(reg_info_t));
-          break;
-        }
-        // ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
-        // channel_dev->push(&ri, sizeof(reg_info_t));
-        // break;
+  if (first_laneid == laneid && exce != 0) {
+      uint32_t table_index =
+          encode_index(mem_index, exce);
+      uint32_t *device_table = (uint32_t *)pdevice_table;
+      uint32_t index_info =
+          atomicAdd((unsigned int *)&device_table[table_index], 1);
+      if (index_info == 0) {
+        ri.mem_index_ar[0] = mem_index;
+        ri.exce_type[0] = exce;
+        ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
+        channel_dev->push(&ri, sizeof(reg_info_t));
       }
-    }
   }
 }
 
