@@ -36,7 +36,7 @@ mapExceptions(int exce) {
 
 const char *exceptionAnaTypeNames[NUM_ANA_TYPES] = {"VAL", "NaN", "INF"};
 
-const char *FPFormatTypeNames[NUM_FP_TYPES] = {"UNUSED", "FP32", "FP64"};
+const char *FPFormatTypeNames[] = {"FP16", "FP32", "FP64"};
 
 typedef std::tuple<std::string, std::string, uint32_t> LocationTuple;
 std::map<LocationTuple, uint32_t> loc_to_id_map;
@@ -80,14 +80,14 @@ void read_from_file(std::string filename, std::vector<std::string> &my_vect) {
   }
 }
 int encode_index(uint32_t loc_id, uint32_t fp_format) {
+  // 4 bits for exception information, 2 bits for fp_format
   uint32_t index = loc_id << 6 | fp_format << 4;
   return index;
 }
 
 void decode_index(uint32_t index, uint32_t &loc_id, uint32_t &fp_format) {
-  uint32_t mask = 0x3f;
-  loc_id = ((index & ~mask) >> 6);
-  fp_format = ((index & mask) >> 4);
+  loc_id = index >> 6;
+  fp_format = index >> 4 & 0x3;
 }
 
 uint32_t getLocationID(LocationTuple &loc) {
@@ -183,7 +183,7 @@ void print_exc(std::string loc, std::string f_type, std::string exc,
   std::string ind = std::to_string(f_type_id) + "_" + std::to_string(exc_id) +
                     "_" + std::to_string(loc_id) + "_" +
                     std::to_string(kernel_id);
-
+  std::cout << ind << '\n';
   // todo: find, end in O(n)?
   auto it = locExc_count.find(ind);
   if (it == locExc_count.end()) {

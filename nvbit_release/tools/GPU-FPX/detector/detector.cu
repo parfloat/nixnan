@@ -136,6 +136,7 @@ void instrument_function_if_needed(CUcontext ctx, CUfunction func) {
       }
 
       /* Check the type of instruction */
+      uint32_t reg_type; 
       bool fp32_inst = false;
       bool mma_inst = false;
       int mma_type = 16;
@@ -151,12 +152,14 @@ void instrument_function_if_needed(CUcontext ctx, CUfunction func) {
 
       } else if (is_FP32_instruction(instr->getSass())) {
         fp32_inst = true;
+        reg_type = FP32;
         // printf("SASS of FP32 is %s\n", instr->getSass());
       } else if (is_FP64_instruction(instr->getSass())) {
         fp32_inst = false;
+        reg_type = FP64;
       } else if (is_MMA_INSTRUCTION(instr->getSass())) {
         mma_inst = true;
-        mma_type = 16;
+        reg_type = FP16;
       } else
         continue;
       inst_count++;
@@ -245,8 +248,8 @@ void instrument_function_if_needed(CUcontext ctx, CUfunction func) {
       // std::cout << "instruction in line 147 is " << instr->getSass() << ",
       // opcode is "<< opcode_id << std::endl;
       // }
-      uint32_t index = encode_index(loc_id, (uint32_t)!fp32_inst);
-
+      uint32_t index = encode_index(loc_id, reg_type);
+      // std::cout << instr->getSass() << ", " << reg_type << '\n';
       /* insert call to the instrumentation function with its
        * arguments */
       if (mma_inst) {
@@ -419,7 +422,7 @@ void *recv_thread_fun(void *) {
             continue;
           for (auto exception : mapExceptions(ri->exce_type[i])) {
             print_exc(loc, fp_type, exception.first,
-                      ri->opcode_id, ri->kernel_id, inst_type + 1, loc_id,
+                      ri->opcode_id, ri->kernel_id, inst_type, loc_id,
                       exception.second);
           }
         }
@@ -468,17 +471,23 @@ void nvbit_at_ctx_term(CUcontext ctx) {
 
   printf("------------ GPU-FPX Report -----------\n\n");
 
-  printf("--- FP64 Operations ---\n");
-  printf("Total NaN found:              %d\n", computeExcNum(E_NAN, FP64));
-  printf("Total INF found:              %d\n", computeExcNum(E_INF, FP64));
-  printf("Total underflow (subnormal):  %d\n", computeExcNum(E_SUB, FP64));
-  printf("Total Division by 0:          %d\n", computeExcNum(E_DIV0, FP64));
+  printf("--- FP16 Operations ---\n");
+  printf("Total NaN found:              %d\n", computeExcNum(E_NAN, FP16));
+  printf("Total INF found:              %d\n", computeExcNum(E_INF, FP16));
+  printf("Total underflow (subnormal):  %d\n", computeExcNum(E_SUB, FP16));
+  printf("Total Division by 0:          %d\n", computeExcNum(E_DIV0, FP16));
 
   printf("--- FP32 Operations ---\n");
   printf("Total NaN found:              %d\n", computeExcNum(E_NAN, FP32));
   printf("Total INF found:              %d\n", computeExcNum(E_INF, FP32));
   printf("Total underflow (subnormal):  %d\n", computeExcNum(E_SUB, FP32));
   printf("Total Division by 0:          %d\n", computeExcNum(E_DIV0, FP32));
+
+  printf("--- FP64 Operations ---\n");
+  printf("Total NaN found:              %d\n", computeExcNum(E_NAN, FP64));
+  printf("Total INF found:              %d\n", computeExcNum(E_INF, FP64));
+  printf("Total underflow (subnormal):  %d\n", computeExcNum(E_SUB, FP64));
+  printf("Total Division by 0:          %d\n", computeExcNum(E_DIV0, FP64));
 
   printf("--- Other Stats ---\n");
   printf("Kernels:      %lu\n", analyzed_kernels.size());

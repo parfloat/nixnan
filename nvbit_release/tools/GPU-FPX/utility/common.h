@@ -69,12 +69,10 @@ typedef struct {
   uint32_t reg_types[32][4];
 } except_type_info_t;
 
-enum ExceptionType {
-  E_NAN = 1,
+const uint32_t E_NAN = 1,
   E_INF = 2,
   E_SUB = 4,
-  E_DIV0 = 8,
-};
+  E_DIV0 = 8;
 enum ExceptionAnaType {
   Ana_SUB =
       0, /*Consider SUB as a normal val now. Will support SUB in the future*/
@@ -82,9 +80,9 @@ enum ExceptionAnaType {
   Ana_INF,
   NUM_ANA_TYPES,
 };
-enum FormatType {
+
+const uint32_t FP16 = 0,
   FP32 = 1,
-  FP64,
-  NUM_FP_TYPES,
-};
+  FP64 = 2;
+
 #endif
