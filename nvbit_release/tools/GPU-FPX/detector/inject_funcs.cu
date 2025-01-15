@@ -177,10 +177,8 @@ __device__ static __forceinline__ uint32_t _FPC_FP64_IS_0(uint64_t reg_val) {
 }
 
 __device__ static __forceinline__ uint32_t encode_index(uint32_t mem_index,
-                                                        uint32_t exec) {
-  // exec = exec - 1;
-  uint32_t final_index = mem_index | exec;
-  return final_index;
+                                                        uint32_t exce) {
+  return mem_index | exce;
 }
 
 // __device__
@@ -337,9 +335,7 @@ record_reg_val_32_stand(int pred, int opcode_id, int kernel_id,
   //     ri.reg_vals[tid][1] = __shfl_sync(active_mask, val_hi, tid);
   // }
 
-  exce = _FPC_FP32_IS_NAN(val_low);
-  exce = exce + _FPC_FP32_IS_INF(val_low);
-  exce = exce + _FPC_FP32_IS_SUBNORMAL(val_low);
+  exce = _FPC_FP32_IS_NAN(val_low) | _FPC_FP32_IS_INF(val_low) | _FPC_FP32_IS_SUBNORMAL(val_low);
   // printf("exce is %d\n",exce);
   for (int tid = 0; tid < 32; tid++) {
     // TODO: only shfl to tid=0
@@ -490,9 +486,7 @@ record_reg_val_64_stand(int pred, int opcode_id, int kernel_id,
 
   uint64_t fp64_val = (uint64_t)val_hi << 32 | val_low;
 
-  exce = _FPC_FP64_IS_NAN(fp64_val);
-  exce = exce + _FPC_FP64_IS_INF(fp64_val);
-  exce = exce + _FPC_FP64_IS_SUBNORMAL(fp64_val);
+  exce = _FPC_FP64_IS_NAN(fp64_val) | _FPC_FP64_IS_INF(fp64_val) | _FPC_FP64_IS_SUBNORMAL(fp64_val);
   for (int tid = 0; tid < 32; tid++) {
     ri.exce_type[tid] = __shfl_sync(active_mask, exce, tid);
     ri.mem_index_ar[tid] = __shfl_sync(active_mask, mem_index, tid);

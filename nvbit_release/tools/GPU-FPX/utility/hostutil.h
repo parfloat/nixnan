@@ -17,29 +17,23 @@
 #include <vector>
 #define FILE_NAME_SIZE 256
 #define PATH_NAME_SIZE 5000
-// int verbose = 0;
 
-
-std::vector<const char*>
-getExceptionTypeNames(uint32_t EXCE_TYPE) {
-  static const char *exceptionTypeNames[NUM_EXCE_TYPES] = {"UNUSED", "NaN", "INF", "SUB",
-                                                  "DIV0"};
-  std::vector<const char*> result;
-  size_t idx = 1;
-  while (EXCE_TYPE != 0) {
-    if (EXCE_TYPE & 1) {
-      result.push_back(exceptionTypeNames[idx]);
+// Map the exceptions in exce to their names
+std::vector<std::pair<const char*, uint8_t>>
+mapExceptions(int exce) {
+  static const char *exceNames[] = {"NaN", "INF", "SUB", "DIV0"};
+  std::vector<std::pair<const char*, uint8_t>> res;
+  size_t idx = 0;
+  while(exce != 0) {
+    if (exce & 1 != 0) {
+      res.push_back({exceNames[idx], 1 << idx});
     }
-    EXCE_TYPE >>= 1;
+    exce >>= 1;
     idx++;
   }
-  return result;
+  return res;
 }
 
-// const char * exceptionTypeNames[NUM_EXCE_TYPES] = {
-// "NORMAL","NaN","INF","SUB"
-//  };
-//
 const char *exceptionAnaTypeNames[NUM_ANA_TYPES] = {"VAL", "NaN", "INF"};
 
 const char *FPFormatTypeNames[NUM_FP_TYPES] = {"UNUSED", "FP32", "FP64"};
@@ -51,8 +45,6 @@ std::map<uint32_t, LocationTuple> id_to_loc_map;
 std::map<std::string, uint64_t> locExc_count;
 
 /* Set of analyzed kernels */
-// std::set<const char *> analyzed_kernels;
-//  std::set<std::string> analyzed_kernels;
 std::map<std::string, int> analyzed_kernels;
 std::map<std::string, int> kernel_id_map;
 std::map<int, std::string> id_kernel_map;
@@ -88,14 +80,14 @@ void read_from_file(std::string filename, std::vector<std::string> &my_vect) {
   }
 }
 int encode_index(uint32_t loc_id, uint32_t fp_format) {
-  uint32_t index = loc_id << 4 | fp_format << 2;
+  uint32_t index = loc_id << 6 | fp_format << 4;
   return index;
 }
 
 void decode_index(uint32_t index, uint32_t &loc_id, uint32_t &fp_format) {
-  uint32_t mask = 0xf;
-  loc_id = ((index & ~mask) >> 4);
-  fp_format = ((index & mask) >> 2);
+  uint32_t mask = 0x3f;
+  loc_id = ((index & ~mask) >> 6);
+  fp_format = ((index & mask) >> 4);
 }
 
 uint32_t getLocationID(LocationTuple &loc) {
@@ -232,7 +224,6 @@ int computeExcNum(int exc_id, int f_type_id) {
 void print_real_exceptions() {
   uint64_t total = 0;
   for (auto it = locExc_count.cbegin(); it != locExc_count.cend(); ++it) {
-    // std::cout << it->first << ": " << it->second << std::endl;
     total = total + it->second;
   }
   std::cout << "The total number of exceptions are: " << total << std::endl;

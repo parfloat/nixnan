@@ -417,10 +417,10 @@ void *recv_thread_fun(void *) {
         for (int i = 0; i < 32; i++) {
           if (ri->exce_type[i] == 0)
             continue;
-          for (const char* exce_name : getExceptionTypeNames(ri->exce_type[i])) {
-            print_exc(loc, fp_type, exce_name,
+          for (auto exception : mapExceptions(ri->exce_type[i])) {
+            print_exc(loc, fp_type, exception.first,
                       ri->opcode_id, ri->kernel_id, inst_type + 1, loc_id,
-                      ri->exce_type[i]);
+                      exception.second);
           }
         }
 
