@@ -139,7 +139,6 @@ void instrument_function_if_needed(CUcontext ctx, CUfunction func) {
       uint32_t reg_type; 
       bool fp32_inst = false;
       bool mma_inst = false;
-      int mma_type = 16;
       int div_res = is_DIV(instr->getSass());
       bool check_0 = false;
       if (div_res != 0) {
@@ -157,9 +156,8 @@ void instrument_function_if_needed(CUcontext ctx, CUfunction func) {
       } else if (is_FP64_instruction(instr->getSass())) {
         fp32_inst = false;
         reg_type = FP64;
-      } else if (is_MMA_INSTRUCTION(instr->getSass())) {
+      } else if (is_MMA_INSTRUCTION(instr->getSass(), reg_type)) {
         mma_inst = true;
-        reg_type = FP16;
       } else
         continue;
       inst_count++;
@@ -253,7 +251,16 @@ void instrument_function_if_needed(CUcontext ctx, CUfunction func) {
       /* insert call to the instrumentation function with its
        * arguments */
       if (mma_inst) {
-        nvbit_insert_call(instr, "record_reg_val_16_stand", IPOINT_AFTER);
+        if (reg_type == FP16) {
+          nvbit_insert_call(instr, "record_mma_val_16_stand", IPOINT_AFTER);
+        } else if (reg_type == FP32) {
+          nvbit_insert_call(instr, "record_mma_val_32_stand", IPOINT_AFTER);
+        } else if (reg_type == FP64) {
+          nvbit_insert_call(instr, "record_mma_val_64_stand", IPOINT_AFTER);
+        } else {
+          std::cout << "Unknown MMA register type\n";
+          exit(1);
+        }
       } else if (fp32_inst && !check_0) {
         nvbit_insert_call(instr, "record_reg_val_32_stand", IPOINT_AFTER);
       } else if (fp32_inst && check_0) {

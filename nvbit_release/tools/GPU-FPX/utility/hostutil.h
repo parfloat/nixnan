@@ -120,8 +120,20 @@ std::string locTupleToLoc(LocationTuple &loc) {
   return loc_string;
 }
 
-bool is_MMA_INSTRUCTION(std::string inst) {
-  return inst.find("MMA") == 1;
+bool is_MMA_INSTRUCTION(std::string inst, uint32_t &reg_type) {
+  if (inst.find("HMMA.16816.F16") == 0) {
+    reg_type = FP16;
+    return true;
+  } else if (inst.find("HMMA.16816.F32.BF16") == 0 ||
+             inst.find("HMMA.16816.F32") == 0 ||
+             inst.find("HMMA.1684.F32.TF32") == 0) {
+    reg_type = FP32;
+    return true;
+  } else if (inst.find("DMMA.884") == 0) {
+    reg_type = FP64;
+    return true;
+  }
+  return false;
 }
 
 // TODO: strstr time consuming?
