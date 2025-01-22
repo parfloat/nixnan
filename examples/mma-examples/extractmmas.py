@@ -45,7 +45,7 @@ def get_kernel(t):
     wmma::fragment<wmma::accumulator, {M}, {N}, {K}, {ctype}> c_frag;
     wmma::fragment<wmma::accumulator, {M}, {N}, {K}, {dtype}> d_frag;
 
-    wmma::load_matrix_sync(a_frag, A, {M});
+    wmma::load_matrix_sync(a_frag, A, {K});
     wmma::load_matrix_sync(b_frag, B, {K});
     wmma::load_matrix_sync(c_frag, C, {N}, wmma::mem_row_major);
     wmma::mma_sync(d_frag, a_frag, b_frag, c_frag);
@@ -115,6 +115,25 @@ double to_double<double>(double d) {
     return d;
 }
 
+template <typename Ta, typename Tb, typename Tc, typename Td>
+double mma_cpu_error(const Ta* a, const Tb* b, const Tc* c, Td* d, int M, int N, int K) {
+    double error = 0.0;
+    for (int i = 0; i < M; i++) {
+        for (int j = 0; j < N; j++) {
+            double sum = to_double<Tc>(c[i*N + j]);
+            for (int k = 0; k < K; k++) {
+                sum += to_double<Ta>(a[i*K+k])*to_double<Tb>(b[j*K+k]);
+            }
+            // Assuming the computed value from the wmma is already in d
+            double e = (to_double<Td>(d[i*N+j]) - sum);
+            error += e > 0 ? e : -e;
+            d[i*N + j] = from_double<Td>(sum);
+        }
+    }
+    return error;
+}
+
+
 template <typename T>
 void fill_mat(T* array, size_t rows, size_t cols, unsigned int seed) {
     // Initialize the random number generator with the fixed seed
@@ -147,6 +166,7 @@ def run_kernel(t):
     fill_mat(A, {M}, {K}, 0);
     fill_mat(B, {K}, {N}, 1);
     fill_mat(C, {M}, {N}, 2);
+
     {fname}<<<1,32>>>(A, B, C, D);
     std::cout << "------- Running: {fname} -------\\n";
     cudaError_t cuda_status = cudaDeviceSynchronize();
@@ -160,7 +180,9 @@ def run_kernel(t):
         }}
         std::cout << std::endl;
     }}
-    
+    double error = mma_cpu_error<{astore},{bstore},{ctype},{dtype}>(A, B, C, D,{M}, {N}, {K});
+    std::cout << "Total error: " << error << std::endl;
+
     cudaFree(A);
     cudaFree(B);
     cudaFree(C);
