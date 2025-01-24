@@ -195,7 +195,6 @@ void print_exc(std::string loc, std::string f_type, std::string exc,
   std::string ind = std::to_string(f_type_id) + "_" + std::to_string(exc_id) +
                     "_" + std::to_string(loc_id) + "_" +
                     std::to_string(kernel_id);
-  std::cout << ind << '\n';
   // todo: find, end in O(n)?
   auto it = locExc_count.find(ind);
   if (it == locExc_count.end()) {

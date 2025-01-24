@@ -256,7 +256,9 @@ void instrument_function_if_needed(CUcontext ctx, CUfunction func) {
         } else if (reg_type == FP32) {
           nvbit_insert_call(instr, "record_mma_val_32_stand", IPOINT_AFTER);
         } else if (reg_type == FP64) {
-          nvbit_insert_call(instr, "record_mma_val_64_stand", IPOINT_AFTER);
+          nvbit_insert_call(instr, "record_reg_val_64_stand", IPOINT_AFTER);
+          reg_num_list.push_back(reg_num_list[0] + 2);
+          reg_num_list.push_back(reg_num_list[0] + 3);
         } else {
           std::cout << "Unknown MMA register type\n";
           exit(1);
@@ -283,8 +285,10 @@ void instrument_function_if_needed(CUcontext ctx, CUfunction func) {
       nvbit_add_call_arg_const_val32(instr, index);
       /* add pointer to channel_dev*/
       nvbit_add_call_arg_const_val64(instr, (uint64_t)&channel_dev);
-      nvbit_add_call_arg_reg_val(instr, reg_num_list[0], false);
-      nvbit_add_call_arg_reg_val(instr, reg_num_list[1], false);
+
+      for (size_t i = 0; i < reg_num_list.size(); i++) {
+        nvbit_add_call_arg_reg_val(instr, reg_num_list[i], false);
+      }
       // cnt++;
     }
   }
@@ -422,8 +426,7 @@ void *recv_thread_fun(void *) {
         decode_index(index, loc_id, inst_type);
         // int loc_id = ri->loc_id;
         std::string loc = locTupleToLoc(id_to_loc_map[loc_id]);
-        std::string fp_type = FPFormatTypeNames[inst_type + 1];
-
+        std::string fp_type = FPFormatTypeNames[inst_type];
         for (int i = 0; i < 32; i++) {
           if (ri->exce_type[i] == 0)
             continue;

@@ -590,8 +590,9 @@ record_reg_val_64_stand(int pred, int opcode_id, int kernel_id,
                         // ushort k_loc_id,
                         // int32_t inst_type,
                         uint64_t pdevice_table, uint32_t mem_index,
-                        uint64_t pchannel_dev, uint32_t low_add,
-                        uint32_t high_add) {
+                        uint64_t pchannel_dev, uint32_t low_add1,
+                        uint32_t high_add1, uint32_t low_add2,
+                        uint32_t high_add2) {
 
   if (!pred) {
     return;
@@ -615,8 +616,10 @@ record_reg_val_64_stand(int pred, int opcode_id, int kernel_id,
   // ri.loc_id = loc_id;
   // ri.inst_type = inst_type;
   ri.mem_index = mem_index;
-  uint32_t val_low = low_add;
-  uint32_t val_hi = high_add;
+  uint32_t val_low1 = low_add1;
+  uint32_t val_hi1 = high_add1;
+  uint32_t val_low2 = low_add2;
+  uint32_t val_hi2 = high_add2;
   uint32_t exce = 0;
   // uint32_t *device_table = (uint32_t *)pdevice_table;
 
@@ -625,9 +628,13 @@ record_reg_val_64_stand(int pred, int opcode_id, int kernel_id,
   //     ri.reg_vals[tid][1] = __shfl_sync(active_mask, val_hi, tid);
   // }
 
-  uint64_t fp64_val = (uint64_t)val_hi << 32 | val_low;
+  uint64_t fp64_val1 = (uint64_t)val_hi1 << 32 | val_low1;
 
-  exce = _FPC_FP64_IS_NAN(fp64_val) | _FPC_FP64_IS_INF(fp64_val) | _FPC_FP64_IS_SUBNORMAL(fp64_val);
+  exce |= _FPC_FP64_IS_NAN(fp64_val1) | _FPC_FP64_IS_INF(fp64_val1) | _FPC_FP64_IS_SUBNORMAL(fp64_val1);
+
+  uint64_t fp64_val2 = (uint64_t)val_hi2 << 32 | val_low2;
+
+  exce |= _FPC_FP64_IS_NAN(fp64_val2) | _FPC_FP64_IS_INF(fp64_val2) | _FPC_FP64_IS_SUBNORMAL(fp64_val2);
   for (int tid = 0; tid < 32; tid++) {
     ri.exce_type[tid] = __shfl_sync(active_mask, exce, tid);
     ri.mem_index_ar[tid] = __shfl_sync(active_mask, mem_index, tid);
