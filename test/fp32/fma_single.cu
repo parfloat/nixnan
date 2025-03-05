@@ -104,5 +104,6 @@ int main() {
     cudaFree(A);
     cudaFree(B);
     cudaFree(C);
+    cudaFree(D);
     return 0;
 }

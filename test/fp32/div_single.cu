@@ -81,9 +81,6 @@ int main() {
             fill_array_float(B, warpSize, b);
             k<<<1, 32>>>(A, B, C);
             cudaDeviceSynchronize();
-            for (int i = 0; i < warpSize; i++) {
-                printf("%e / %e = %e\n", A[i], B[i], C[i]);
-            }
         }
     }
     cudaFree(A);
