@@ -1,6 +1,6 @@
 #include <cstdio>
 #include <cuda_runtime.h>
-#include "helpers.cuh"
+#include "../helpers.cuh"
 #include <cfloat>
 
 // @min_sm 20
