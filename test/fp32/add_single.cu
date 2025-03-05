@@ -1,6 +1,6 @@
 #include <cstdio>
 #include <cuda_runtime.h>
-#include "helpers.hu"
+#include "helpers.cuh"
 #include <cfloat>
 
 // @min_sm 20
@@ -110,8 +110,8 @@ int main() {
         {FLT_MIN, -FLT_MIN/2}};
     for (kernel_t k : kernels) {
         for (auto [a, b] : error_pairs) {
-            fill_array(A, warpSize, a);
-            fill_array(B, warpSize, b);
+            fill_array_float(A, warpSize, a);
+            fill_array_float(B, warpSize, b);
             k<<<1, 32>>>(A, B, C);
             cudaDeviceSynchronize();
         }
