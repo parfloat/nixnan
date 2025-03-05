@@ -40,8 +40,8 @@ int main() {
     cudaMallocManaged(&C, warpSize * sizeof(double));
     std::pair<float, float> error_pairs[] = {
         {INFINITY, -INFINITY},
-        {FLT_MAX, FLT_MAX},
-        {FLT_MIN, -FLT_MIN/2}};
+        {DBL_MAX, DBL_MAX},
+        {DBL_MIN, -DBL_MIN/2}};
     for (kernel_t k : kernels) {
         for (auto [a, b] : error_pairs) {
             fill_array_double(A, warpSize, a);
