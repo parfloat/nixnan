@@ -38,7 +38,7 @@ int main() {
     cudaMallocManaged(&A, warpSize * sizeof(double));
     cudaMallocManaged(&B, warpSize * sizeof(double));
     cudaMallocManaged(&C, warpSize * sizeof(double));
-    std::pair<float, float> error_pairs[] = {
+    std::pair<double, double> error_pairs[] = {
         {INFINITY, -INFINITY},
         {DBL_MAX, DBL_MAX},
         {DBL_MIN, -DBL_MIN/2}};
