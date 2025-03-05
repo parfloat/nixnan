@@ -1,3 +1,7 @@
+#include <cuda_fp16.h>
+#ifndef __HELPERS_CUH__
+#define __HELPERS_CUH__
+
 void fill_array_float(float *array, size_t len, float val) {
     for (size_t i = 0; i < len; i++) {
         array[i] = val;
@@ -8,6 +12,18 @@ void fill_array_float2(float2 *array, size_t len, float val) {
     for (size_t i = 0; i < len; i++) {
         array[i].x = val;
         array[i].y = val;
+    }
+}
+
+void fill_array_double(double *array, size_t len, double val) {
+    for (size_t i = 0; i < len; i++) {
+        array[i] = val;
+    }
+}
+
+void fill_array_half(half *array, size_t len, half val) {
+    for (size_t i = 0; i < len; i++) {
+        array[i] = val;
     }
 }
 
@@ -60,3 +76,4 @@ template<> struct rnd<rm> {
 template<> struct rnd<rp> {
     static constexpr const char mode[] = ".rp";
 };
+#endif // __HELPERS_CUH__
