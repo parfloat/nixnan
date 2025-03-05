@@ -5,7 +5,9 @@
 
 // @min_sm 20
 
-// add{.rnd}{.ftz}{.sat}.f32  d, a, b;
+// div.approx{.ftz}.f32  d, a, b;  // fast, approximate divide
+// div.full{.ftz}.f32    d, a, b;  // full-range approximate divide
+// div.rnd{.ftz}.f32     d, a, b;  // IEEE 754 compliant rounding
 
 // .rnd = { .rn, .rz, .rm, .rp };
 
