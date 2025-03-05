@@ -10,3 +10,53 @@ void fill_array_float2(float2 *array, size_t len, float val) {
         array[i].y = val;
     }
 }
+
+constexpr int sat = 0;
+constexpr int nosat = 1;
+template <int mode>
+struct saturate;
+
+template<> struct saturate<sat> {
+    static constexpr const char mode[] = ".sat";
+};
+
+template<> struct saturate<nosat> {
+    static constexpr const char mode[] = "";
+};
+
+constexpr int tozero = 0;
+constexpr int noflush = 1;
+template <int mode>
+struct flush;
+
+template<> struct flush<tozero> {
+    static constexpr const char mode[] = ".ftz";
+};
+
+template<> struct flush<noflush> {
+    static constexpr const char mode[] = "";
+};
+
+constexpr int rn = 0;
+constexpr int rz = 1;
+constexpr int rm = 2;
+constexpr int rp = 3;
+
+template <int mode>
+struct rnd;
+
+template<> struct rnd<rn> {
+    static constexpr const char mode[] = ".rn";
+};
+
+template<> struct rnd<rz> {
+    static constexpr const char mode[] = ".rz";
+};
+
+template<> struct rnd<rm> {
+    static constexpr const char mode[] = ".rm";
+};
+
+template<> struct rnd<rp> {
+    static constexpr const char mode[] = ".rp";
+};
