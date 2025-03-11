@@ -460,7 +460,7 @@ record_reg_val_16_stand(int pred, int opcode_id, int kernel_id,
   ri.mem_index = mem_index;
   uint32_t exce = 0;
 
-  exce = _FPC_FP32_IS_NAN(val) | _FPC_FP32_IS_INF(val) | _FPC_FP32_IS_SUBNORMAL(val);
+  exce = _FPC_FP16_IS_NAN(val) | _FPC_FP16_IS_INF(val) | _FPC_FP16_IS_SUBNORMAL(val);
   for (int tid = 0; tid < 32; tid++) {
     ri.exce_type[tid] = __shfl_sync(active_mask, exce, tid);
     ri.mem_index_ar[tid] = __shfl_sync(active_mask, mem_index, tid);
@@ -512,8 +512,8 @@ record_reg_val_16x2_stand(int pred, int opcode_id, int kernel_id,
   uint32_t exce = 0;
   uint16_t lower = val & 0xFFFF;
   uint16_t upper = (val >> 16) & 0xFFFF;
-  exce = _FPC_FP32_IS_NAN(lower) | _FPC_FP32_IS_INF(lower) | _FPC_FP32_IS_SUBNORMAL(lower);
-  exce |= _FPC_FP32_IS_NAN(upper) | _FPC_FP32_IS_INF(upper) | _FPC_FP32_IS_SUBNORMAL(upper);
+  exce = _FPC_FP16_IS_NAN(lower) | _FPC_FP16_IS_INF(lower) | _FPC_FP16_IS_SUBNORMAL(lower);
+  exce |= _FPC_FP16_IS_NAN(upper) | _FPC_FP16_IS_INF(upper) | _FPC_FP16_IS_SUBNORMAL(upper);
   for (int tid = 0; tid < 32; tid++) {
     ri.exce_type[tid] = __shfl_sync(active_mask, exce, tid);
     ri.mem_index_ar[tid] = __shfl_sync(active_mask, mem_index, tid);
