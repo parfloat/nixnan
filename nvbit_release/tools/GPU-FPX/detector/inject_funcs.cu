@@ -436,6 +436,109 @@ record_mma_val_64_stand(int pred, int opcode_id, int kernel_id,
 }
 
 extern "C" __device__ __noinline__ void
+record_reg_val_16_stand(int pred, int opcode_id, int kernel_id,
+                        uint64_t pdevice_table, uint32_t mem_index,
+                        uint64_t pchannel_dev, uint16_t val) {
+
+  if (!pred) {
+    return;
+  }
+
+  int active_mask = __ballot_sync(__activemask(), 1);
+  const int laneid = get_laneid();
+  const int first_laneid = __ffs(active_mask) - 1;
+
+  reg_info_t ri;
+
+  int4 cta = get_ctaid();
+  ri.cta_id_x = cta.x;
+  ri.cta_id_y = cta.y;
+  ri.cta_id_z = cta.z;
+  ri.warp_id = get_warpid();
+  ri.opcode_id = opcode_id;
+  ri.kernel_id = kernel_id;
+  ri.mem_index = mem_index;
+  uint32_t exce = 0;
+
+  exce = _FPC_FP32_IS_NAN(val) | _FPC_FP32_IS_INF(val) | _FPC_FP32_IS_SUBNORMAL(val);
+  for (int tid = 0; tid < 32; tid++) {
+    ri.exce_type[tid] = __shfl_sync(active_mask, exce, tid);
+    ri.mem_index_ar[tid] = __shfl_sync(active_mask, mem_index, tid);
+  }
+
+  /* first active lane pushes information on the channel */
+  if (first_laneid == laneid) {
+    for (int i = 0; i < 32; i++) {
+      if (ri.exce_type[i] > 0) {
+        uint32_t table_index =
+            encode_index(ri.mem_index_ar[i], ri.exce_type[i]);
+        uint32_t *device_table = (uint32_t *)pdevice_table;
+        uint32_t index_info =
+            atomicAdd((unsigned int *)&device_table[table_index], 1);
+        if (index_info == 0) {
+          ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
+          channel_dev->push(&ri, sizeof(reg_info_t));
+          break;
+        }
+      }
+    }
+  }
+}
+
+// Vector half instruction
+extern "C" __device__ __noinline__ void
+record_reg_val_16x2_stand(int pred, int opcode_id, int kernel_id,
+                        uint64_t pdevice_table, uint32_t mem_index,
+                        uint64_t pchannel_dev, uint32_t val) {
+
+  if (!pred) {
+    return;
+  }
+
+  int active_mask = __ballot_sync(__activemask(), 1);
+  const int laneid = get_laneid();
+  const int first_laneid = __ffs(active_mask) - 1;
+
+  reg_info_t ri;
+
+  int4 cta = get_ctaid();
+  ri.cta_id_x = cta.x;
+  ri.cta_id_y = cta.y;
+  ri.cta_id_z = cta.z;
+  ri.warp_id = get_warpid();
+  ri.opcode_id = opcode_id;
+  ri.kernel_id = kernel_id;
+  ri.mem_index = mem_index;
+  uint32_t exce = 0;
+  uint16_t lower = val & 0xFFFF;
+  uint16_t upper = (val >> 16) & 0xFFFF;
+  exce = _FPC_FP32_IS_NAN(lower) | _FPC_FP32_IS_INF(lower) | _FPC_FP32_IS_SUBNORMAL(lower);
+  exce |= _FPC_FP32_IS_NAN(upper) | _FPC_FP32_IS_INF(upper) | _FPC_FP32_IS_SUBNORMAL(upper);
+  for (int tid = 0; tid < 32; tid++) {
+    ri.exce_type[tid] = __shfl_sync(active_mask, exce, tid);
+    ri.mem_index_ar[tid] = __shfl_sync(active_mask, mem_index, tid);
+  }
+
+  /* first active lane pushes information on the channel */
+  if (first_laneid == laneid) {
+    for (int i = 0; i < 32; i++) {
+      if (ri.exce_type[i] > 0) {
+        uint32_t table_index =
+            encode_index(ri.mem_index_ar[i], ri.exce_type[i]);
+        uint32_t *device_table = (uint32_t *)pdevice_table;
+        uint32_t index_info =
+            atomicAdd((unsigned int *)&device_table[table_index], 1);
+        if (index_info == 0) {
+          ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
+          channel_dev->push(&ri, sizeof(reg_info_t));
+          break;
+        }
+      }
+    }
+  }
+}
+
+extern "C" __device__ __noinline__ void
 record_reg_val_32_stand(int pred, int opcode_id, int kernel_id,
                         // uint64_t location,
                         // int loc_id,
