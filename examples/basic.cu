@@ -183,12 +183,6 @@ void run_test(half A00, half B00, float C00, const char *name)
     //     printf("\n");
     // }
     
-    cuda_status = cudaDeviceReset();
-    if (cuda_status != cudaSuccess) {
-        printf("cudaDeviceReset failed! ");
-        exit(1);
-    }
-
     cudaFree(A);
     cudaFree(B);
     cudaFree(C);
