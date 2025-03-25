@@ -1,0 +1,68 @@
+{
+  "HMMA.16816.F16":
+    {"registers":
+      [
+        {
+          "type": "f16",
+          "count": 4
+        },
+        {
+          "type": "f16",
+          "count": 4
+        },
+        {
+          "type": "f16",
+          "count": 4
+        },
+        {
+          "type": "f16",
+          "count": 4
+        }
+      ],
+      "description": "Half-precision matrix multiply accumulate into half-precision accumulator"
+    },
+  "HMMA.16816.F32":
+    {"registers":
+      [
+        {
+          "type": "f32",
+          "count": 4
+        },
+        {
+          "type": "f16",
+          "count": 4
+        },
+        {
+          "type": "f16",
+          "count": 4
+        },
+        {
+          "type": "f16",
+          "count": 8
+        }
+      ],
+      "description": "Half-precision matrix multiply accumulate into single-precision accumulator"
+    },
+"HMMA.16816.F32.BF16":
+  {"registers":
+    [
+      {
+        "type": "f32",
+        "count": 4
+      },
+      {
+        "type": "bf16",
+        "count": 4
+      },
+      {
+        "type": "bf16",
+        "count": 4
+      },
+      {
+        "type": "f16",
+        "count": 4
+      }
+    ],
+    "description": "bf16 matrix multiply accumulate into single-precision accumulator"
+  }
+}
