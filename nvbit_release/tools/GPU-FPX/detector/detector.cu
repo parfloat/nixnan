@@ -215,8 +215,15 @@ void instrument_function_if_needed(CUcontext ctx, CUfunction func) {
         continue;
 
       if (mma_inst) {
-        reg_num_list.push_back(op->u.reg.num);
-        reg_num_list.push_back(op->u.reg.num + 1);
+        if (reg_type == FP16) {
+          reg_num_list.push_back(op->u.reg.num);
+          reg_num_list.push_back(op->u.reg.num + 1);
+        } else if (reg_type == FP32 || reg_type == FP64) {
+          reg_num_list.push_back(op->u.reg.num);
+          reg_num_list.push_back(op->u.reg.num + 1);
+          reg_num_list.push_back(op->u.reg.num + 2);
+          reg_num_list.push_back(op->u.reg.num + 3);
+        }
       } else if (check_0 && !fp32_inst) {
         reg_num_list.push_back(op->u.reg.num - 1);
         reg_num_list.push_back(op->u.reg.num);
@@ -230,8 +237,6 @@ void instrument_function_if_needed(CUcontext ctx, CUfunction func) {
           // We won't use it if it's FP32
           reg_num_list.push_back(op->u.reg.num);
       }
-
-      assert(reg_num_list.size() == 2);
 
       int opcode_id = 0;
       if (print_ill_instr) {
@@ -257,8 +262,6 @@ void instrument_function_if_needed(CUcontext ctx, CUfunction func) {
           nvbit_insert_call(instr, "record_mma_val_32_stand", IPOINT_AFTER);
         } else if (reg_type == FP64) {
           nvbit_insert_call(instr, "record_reg_val_64_stand", IPOINT_AFTER);
-          reg_num_list.push_back(reg_num_list[0] + 2);
-          reg_num_list.push_back(reg_num_list[0] + 3);
         } else {
           std::cout << "Unknown MMA register type\n";
           exit(1);

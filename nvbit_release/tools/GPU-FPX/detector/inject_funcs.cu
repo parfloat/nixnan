@@ -301,8 +301,8 @@ record_mma_val_32_stand(int pred, int opcode_id, int kernel_id,
                         // ushort k_loc_id,
                         // int32_t inst_type,
                         uint64_t pdevice_table, uint32_t mem_index,
-                        uint64_t pchannel_dev, uint32_t low_add,
-                        uint32_t high_add) {
+                        uint64_t pchannel_dev, uint32_t a,
+                        uint32_t b, uint32_t c, uint32_t d) {
 
   if (!pred) {
     return;
@@ -329,8 +329,10 @@ record_mma_val_32_stand(int pred, int opcode_id, int kernel_id,
   uint32_t exce = 0;
 
   // Which part is the x and y components
-  exce |= _FPC_FP32_IS_NAN(low_add) | _FPC_FP32_IS_INF(low_add) | _FPC_FP32_IS_SUBNORMAL(low_add);
-  exce |= _FPC_FP32_IS_NAN(high_add) | _FPC_FP32_IS_INF(high_add) | _FPC_FP32_IS_SUBNORMAL(high_add);
+  exce |= _FPC_FP32_IS_NAN(a) | _FPC_FP32_IS_INF(a) | _FPC_FP32_IS_SUBNORMAL(a);
+  exce |= _FPC_FP32_IS_NAN(b) | _FPC_FP32_IS_INF(b) | _FPC_FP32_IS_SUBNORMAL(b);
+  exce |= _FPC_FP32_IS_NAN(c) | _FPC_FP32_IS_INF(c) | _FPC_FP32_IS_SUBNORMAL(c);
+  exce |= _FPC_FP32_IS_NAN(d) | _FPC_FP32_IS_INF(d) | _FPC_FP32_IS_SUBNORMAL(d);
   // printf("exce is %d\n",exce);
   for (int tid = 0; tid < 32; tid++) {
     // TODO: only shfl to tid=0
