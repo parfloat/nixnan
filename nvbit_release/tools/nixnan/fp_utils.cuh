@@ -1,8 +1,8 @@
-#ifndef FP_UTILS_H
-#define FP_UTILS_H
+#ifndef FP_UTILS_CUH
+#define FP_UTILS_CUH
 
 #include <cstdint>
-#include "common.h"
+#include "common.cuh"
 
 
 // Half utils
@@ -41,6 +41,14 @@ uint32_t half_is_subnorm(uint16_t h) {
     return (half_exp(h) == 0 && half_mant(h) != 0) ? E_SUB : 0;
 }
 
+__device__ __host__ inline
+uint32_t half_classify(uint16_t h) {
+    uint32_t e = half_is_nan(h);
+    e |= half_is_inf(h);
+    e |= half_is_subnorm(h);
+    return e;
+}
+
 // Half2 utils
 __device__ __host__ inline
 uint32_t half2_is_nan(uint32_t h, bool h0, bool h1) {
@@ -68,6 +76,14 @@ uint32_t half2_is_subnorm(uint32_t h, bool h0, bool h1) {
     uint8_t e0 = h0 ? half_is_subnorm(h & 0xFFFF) : 0;
     uint8_t e1 = h1 ? half_is_subnorm(h >> 16) : 0;
     return e0 | e1;
+}
+
+__device__ __host__ inline
+uint32_t half2_classify(uint32_t h, bool h0, bool h1) {
+    uint32_t e0 = half2_is_nan(h, h0, h1);
+    e0 |= half2_is_inf(h, h0, h1);
+    e0 |= half2_is_subnorm(h, h0, h1);
+    return e0;
 }
 
 // Float utils
@@ -101,6 +117,14 @@ uint32_t float_is_subnorm(uint32_t f) {
     return (float_exp(f) == 0 && float_mant(f) != 0) ? E_SUB : 0;
 }
 
+__device__ __host__ inline
+uint32_t float_classify(uint32_t f) {
+    uint32_t e = float_is_nan(f);
+    e |= float_is_inf(f);
+    e |= float_is_subnorm(f);
+    return e;
+}
+
 // Double utils
 __device__ __host__ inline
 uint32_t double_exp(uint32_t low, uint32_t high) {
@@ -126,4 +150,17 @@ __device__ __host__ inline
 uint32_t double_is_zero(uint32_t low, uint32_t high) {
     return (double_exp(low, high) == 0 && double_mant(low, high) == 0) ? E_DIV0 : 0;
 }
-#endif // FP_UTILS_H
+
+__device__ __host__ inline
+uint32_t double_is_subnorm(uint32_t low, uint32_t high) {
+    return (double_exp(low, high) == 0 && double_mant(low, high) != 0) ? E_SUB : 0;
+}
+
+__device__ __host__ inline
+uint32_t double_classify(uint32_t low, uint32_t high) {
+    uint32_t e = double_is_nan(low, high);
+    e |= double_is_inf(low, high);
+    e |= double_is_subnorm(low, high);
+    return e;
+}
+#endif // FP_UTILS_CUH

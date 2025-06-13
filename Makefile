@@ -1,6 +1,6 @@
 # .PHONY: NVBIT GPU-FPX 
 
-all:analyzer detector
+all:analyzer detector nixnan
 
 nvbit_version = 1.7.2
 
@@ -10,21 +10,23 @@ GPUFPX_home=$(nvbit_tool)/GPU-FPX
 
 analyzer: $(GPUFPX_home)/analyzer/analyzer.so
 detector: $(GPUFPX_home)/detector/detector.so
+nixnan: $(nvbit_tool)/nixnan/nixnan.so
 
-$(GPUFPX_home)/analyzer/analyzer.so: $(GPUFPX_home)/analyzer/analyzer.cu nvbit_release
+$(GPUFPX_home)/analyzer/analyzer.so: $(GPUFPX_home)/analyzer/analyzer.cu $(nvbit_tar)
 	cd $(GPUFPX_home)/analyzer; \
 	$(MAKE)
 
-$(GPUFPX_home)/detector/detector.so: $(GPUFPX_home)/detector/detector.cu nvbit_release
+$(GPUFPX_home)/detector/detector.so: $(GPUFPX_home)/detector/detector.cu $(nvbit_tar)
 	cd $(GPUFPX_home)/detector; \
 	$(MAKE)
 
-nvbit_release: $(nvbit_tar)
-	tar -xf $<
+$(nvbit_tool)/nixnan/nixnan.so: $(nvbit_tool)/nixnan/nixnan.cu $(nvbit_tar)
+	cd $(nvbit_tool)/nixnan; \
+	$(MAKE)
 
 $(nvbit_tar):
 	wget https://github.com/NVlabs/NVBit/releases/download/v$(nvbit_version)/$@
+	tar -xf $(nvbit_tar)
 
 clean:
-	rm -rf nvbit_release/
 	rm nvbit-Linux-x86_64-$(nvbit_version).tar.bz2

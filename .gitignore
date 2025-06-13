@@ -46,3 +46,5 @@
 main*
 !main*.cu
 *.patch
+/nvbit_release/tools/gpu-fpx-2/instructions.h
+/nvbit_release/tools/gpu-fpx-2/nlohmann
