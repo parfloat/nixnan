@@ -1,6 +1,6 @@
 # .PHONY: NVBIT GPU-FPX 
 
-all:analyzer detector nixnan
+all:analyzer detector nixnan nixnan.so
 
 nvbit_version = 1.7.2
 
@@ -19,6 +19,8 @@ $(GPUFPX_home)/analyzer/analyzer.so: $(GPUFPX_home)/analyzer/analyzer.cu $(nvbit
 $(GPUFPX_home)/detector/detector.so: $(GPUFPX_home)/detector/detector.cu $(nvbit_tar)
 	cd $(GPUFPX_home)/detector; \
 	$(MAKE)
+nixnan.so: $(nvbit_tool)/nixnan/nixnan.so
+	ln -sf $(nvbit_tool)/nixnan/nixnan.so nixnan.so
 
 $(nvbit_tool)/nixnan/nixnan.so: $(nvbit_tool)/nixnan/nixnan.cu $(nvbit_tar)
 	cd $(nvbit_tool)/nixnan; \

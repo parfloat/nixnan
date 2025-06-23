@@ -6,7 +6,7 @@ JSON_VERSION=3.12.0
 NVBIT_TOOL=$(current_dir).so
 
 NVCC=nvcc -ccbin=$(CXX) -D_FORCE_INLINES -std=c++17 -g -t 0
-ARCH=all
+ARCH=sm_86
 TEST_FLAGS=--generate-line-info
 OPT_FLAGS=-O0
 
