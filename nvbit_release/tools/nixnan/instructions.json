@@ -64,5 +64,27 @@
       }
     ],
     "description": "bf16 matrix multiply accumulate into single-precision accumulator"
+  },
+  "DMMA.884":
+  {"registers":
+    [
+      {
+        "type": "f64",
+        "count": 2
+      },
+      {
+        "type": "f64",
+        "count": 1
+      },
+      {
+        "type": "f64",
+        "count": 1
+      },
+      {
+        "type": "f64",
+        "count": 2
+      }
+    ],
+    "description": ""
   }
 }

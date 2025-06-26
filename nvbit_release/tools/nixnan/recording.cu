@@ -42,6 +42,8 @@ namespace nixnan {
         path += dir_name;
         std::string line_str = std::to_string(line);
         std::string func = cut_kernel_name(nvbit_get_func_name(ctx, f));
+        free(file_name);
+        free(dir_name);
         return mk_entry(instr_str, path, line_str, func, type);
     }
     uint32_t recorder::mk_entry(std::string& instr, std::string& path, std::string& line, std::string& func, uint32_t type) {
