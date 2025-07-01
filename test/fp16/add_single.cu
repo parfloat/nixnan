@@ -85,9 +85,6 @@ int main() {
                 printf("Kernel execution failed: %s\n", cudaGetErrorString(err));
                 return -1;
             }
-            for (int i = 0; i < warpSize; i++) {
-                printf("%f %f %f\n", (float)A[i], (float)B[i], (float)C[i]);
-            }
         }
     }
     cudaFree(A);
