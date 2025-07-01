@@ -11,49 +11,49 @@
 
 // .rnd = { .rn };
 
-__global__ void test_fma___(const half* a, const half* b, half* c) {
+__global__ void test_add___(const half* a, const half* b, half* c) {
     int idx = threadIdx.x;
     short out;
     asm ("add.f16 %0, %1, %2;" : "=h"(out) : "h"(h2s(a[idx])), "h"(h2s(b[idx])));
     c[idx] = s2h(out);
 }
-__global__ void test_fma___sat(const half* a, const half* b, half* c) {
+__global__ void test_add___sat(const half* a, const half* b, half* c) {
     int idx = threadIdx.x;
     short out;
     asm ("add.sat.f16 %0, %1, %2;" : "=h"(out) : "h"(h2s(a[idx])), "h"(h2s(b[idx])));
     c[idx] = s2h(out);
 }
-__global__ void test_fma__ftz_(const half* a, const half* b, half* c) {
+__global__ void test_add__ftz_(const half* a, const half* b, half* c) {
     int idx = threadIdx.x;
     short out;
     asm ("add.ftz.f16 %0, %1, %2;" : "=h"(out) : "h"(h2s(a[idx])), "h"(h2s(b[idx])));
     c[idx] = s2h(out);
 }
-__global__ void test_fma__ftz_sat(const half* a, const half* b, half* c) {
+__global__ void test_add__ftz_sat(const half* a, const half* b, half* c) {
     int idx = threadIdx.x;
     short out;
     asm ("add.ftz.sat.f16 %0, %1, %2;" : "=h"(out) : "h"(h2s(a[idx])), "h"(h2s(b[idx])));
     c[idx] = s2h(out);
 }
-__global__ void test_fma_rn__(const half* a, const half* b, half* c) {
+__global__ void test_add_rn__(const half* a, const half* b, half* c) {
     int idx = threadIdx.x;
     short out;
     asm ("add.rn.f16 %0, %1, %2;" : "=h"(out) : "h"(h2s(a[idx])), "h"(h2s(b[idx])));
     c[idx] = s2h(out);
 }
-__global__ void test_fma_rn__sat(const half* a, const half* b, half* c) {
+__global__ void test_add_rn__sat(const half* a, const half* b, half* c) {
     int idx = threadIdx.x;
     short out;
     asm ("add.rn.sat.f16 %0, %1, %2;" : "=h"(out) : "h"(h2s(a[idx])), "h"(h2s(b[idx])));
     c[idx] = s2h(out);
 }
-__global__ void test_fma_rn_ftz_(const half* a, const half* b, half* c) {
+__global__ void test_add_rn_ftz_(const half* a, const half* b, half* c) {
     int idx = threadIdx.x;
     short out;
     asm ("add.rn.ftz.f16 %0, %1, %2;" : "=h"(out) : "h"(h2s(a[idx])), "h"(h2s(b[idx])));
     c[idx] = s2h(out);
 }
-__global__ void test_fma_rn_ftz_sat(const half* a, const half* b, half* c) {
+__global__ void test_add_rn_ftz_sat(const half* a, const half* b, half* c) {
     int idx = threadIdx.x;
     short out;
     asm ("add.rn.ftz.sat.f16 %0, %1, %2;" : "=h"(out) : "h"(h2s(a[idx])), "h"(h2s(b[idx])));
@@ -64,9 +64,9 @@ typedef void (*kernel_t)(const half*, const half*, half*);
 int main() {
     int warpSize = 32;
     half *A, *B, *C;
-    kernel_t kernels[] = {test_fma___, test_fma___sat, test_fma__ftz_, test_fma__ftz_sat,
-                          test_fma_rn__, test_fma_rn__sat, test_fma_rn_ftz_,
-                          test_fma_rn_ftz_sat};
+    kernel_t kernels[] = {test_add___, test_add___sat, test_add__ftz_, test_add__ftz_sat,
+                          test_add_rn__, test_add_rn__sat, test_add_rn_ftz_,
+                          test_add_rn_ftz_sat};
     cudaMallocManaged(&A, warpSize * sizeof(half));
     cudaMallocManaged(&B, warpSize * sizeof(half));
     cudaMallocManaged(&C, warpSize * sizeof(half));
@@ -80,8 +80,13 @@ int main() {
             fill_array_half(B, warpSize, b);
             k<<<1, 32>>>(A, B, C);
             cudaDeviceSynchronize();
+            cudaError_t err = cudaGetLastError();
+            if (err != cudaSuccess) {
+                printf("Kernel execution failed: %s\n", cudaGetErrorString(err));
+                return -1;
+            }
             for (int i = 0; i < warpSize; i++) {
-                printf("%f\n", (float)C[i]);
+                printf("%f %f %f\n", (float)A[i], (float)B[i], (float)C[i]);
             }
         }
     }
