@@ -5,6 +5,7 @@
 #include "instructions.h"
 #include <string>
 #include <functional>
+#include <regex>
 
 using InstrType::OperandType;
 
@@ -51,10 +52,20 @@ std::vector<std::pair<reginfo, std::vector<reginsertion>>> instruction_info::get
             instructions_json + instructions_json_len)) >> instructions;
     }
     std::vector<std::pair<reginfo, std::vector<reginsertion>>> reg_infos;
-    auto sass_str = std::string(instr->getSass());
-    auto first_space = sass_str.find(' ');
-    auto inst_name = sass_str.substr(0, first_space);
-    // Check if the instruction exists in the JSON
+    auto inst_name = std::string(instr->getOpcode());
+    
+    std::string matched_key;
+    for (auto it = instructions.begin(); it != instructions.end(); ++it) {
+        std::regex re(it.key());
+        if (std::regex_match(inst_name, re)) {
+            matched_key = it.key();
+            break;
+        }
+    }
+    if (!matched_key.empty()) {
+        inst_name = matched_key;
+    }
+
     if (instructions.contains(inst_name)) {
         const auto& instruction_data = instructions[inst_name];
         for (size_t i = 0; i < instruction_data["registers"].size(); i++) {

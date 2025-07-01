@@ -85,7 +85,7 @@
         "count": 4
       }
     ],
-    "description": "bf16 matrix multiply accumulate into single-precision accumulator"
+    "description": ""
   },
   "DMMA.884":
   {"registers":
@@ -130,5 +130,23 @@
       }
     ],
     "description": ""
+  },
+  "(HADD2(?:\\.FTZ)?(?:\\.SAT)?)":
+  {"registers":
+    [
+      {
+        "type": "f16",
+        "count": 2
+      },
+      {
+        "type": "f16",
+        "count": 2
+      },
+      {
+        "type": "f16",
+        "count": 2
+      }
+    ],
+    "description": "Half-precision add with optional FTZ and saturation"
   }
 }
