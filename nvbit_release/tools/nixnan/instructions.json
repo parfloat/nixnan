@@ -131,7 +131,7 @@
     ],
     "description": ""
   },
-  "(HADD2(?:\\.FTZ)?(?:\\.SAT)?)":
+  "(H(ADD|MUL)2(?:\\.FTZ)?(?:\\.SAT)?)":
   {"registers":
     [
       {
