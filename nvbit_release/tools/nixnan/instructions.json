@@ -148,5 +148,27 @@
       }
     ],
     "description": "Half-precision add with optional FTZ and saturation"
+  },
+  "(HFMA2(?:\\.FTZ)?(?:\\.SAT)?)":
+  {"registers":
+    [
+      {
+        "type": "f16",
+        "count": 2
+      },
+      {
+        "type": "f16",
+        "count": 2
+      },
+      {
+        "type": "f16",
+        "count": 2
+      },
+      {
+        "type": "f16",
+        "count": 2
+      }
+    ],
+    "description": "Half-precision multiply-accumulate with optional FTZ and saturation"
   }
 }
