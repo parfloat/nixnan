@@ -188,5 +188,35 @@
       }
     ],
     "description": "Single-precision add or multiply with optional FTZ, rounding mode, and saturation"
+  },
+  "(MUFU.(COS|SIN|EX2|LG2|SQRT|TANH))":
+  {"registers":
+    [
+      {
+        "type": "f32",
+        "count": 1
+      },
+      {
+        "type": "f32",
+        "count": 1
+      }
+    ],
+    "description": "MUFU instructions"
+  },
+  "(MUFU.(RSQ|RCP))":
+  {"registers":
+    [
+      {
+        "type": "f32",
+        "count": 1
+      },
+      {
+        "type": "f32",
+        "count": 1,
+        "div0": true
+      }
+    ],
+    "description": "MUFU reciprocal and reciprocal square root instructions"
+
   }
 }

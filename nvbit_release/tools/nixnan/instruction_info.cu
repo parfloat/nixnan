@@ -28,6 +28,7 @@ std::vector<reginsertion> get_regs(Instr *instr, size_t operand, size_t type, si
     } else {
         throw std::runtime_error("Unknown bit size for register extraction");
     }
+    std::cout << instr->getSass() << "\n";
     switch (op->type) {
         case OperandType::REG: {
             size_t reg_start = op->u.reg.num;
@@ -37,9 +38,21 @@ std::vector<reginsertion> get_regs(Instr *instr, size_t operand, size_t type, si
                 });
             }
             break;
+        } case OperandType::IMM_DOUBLE: {
+            double val = op->u.imm_double.value;
+            uint64_t tmp;
+            memcpy(&tmp, &val, sizeof(double));
+            reg_ops.push_back([instr, tmp]() {
+                nvbit_add_call_arg_const_val32(instr, (tmp >> 32) & 0xFFFFFFFF);
+                nvbit_add_call_arg_const_val32(instr, tmp & 0xFFFFFFFF);
+            });
+            break;
+        } case OperandType::IMM_UINT64: {
+            // This shouldn't be an error???
+            break;
         }
         default:
-            throw std::runtime_error("Invalid operand type for register extraction");
+            throw std::runtime_error("Unsupported operand type for register extraction: " + std::to_string(static_cast<int>(op->type)));
     }
     return reg_ops;
 }
