@@ -28,7 +28,6 @@ std::vector<reginsertion> get_regs(Instr *instr, size_t operand, size_t type, si
     } else {
         throw std::runtime_error("Unknown bit size for register extraction");
     }
-    std::cout << instr->getSass() << "\n";
     switch (op->type) {
         case OperandType::REG: {
             size_t reg_start = op->u.reg.num;
@@ -49,6 +48,14 @@ std::vector<reginsertion> get_regs(Instr *instr, size_t operand, size_t type, si
             break;
         } case OperandType::IMM_UINT64: {
             // This shouldn't be an error???
+            break;
+        } case OperandType::CBANK: {
+            size_t bank_start = op->u.cbank.id;
+            for (size_t i = 0; i < num_regs; i++) {
+                reg_ops.push_back([instr, bank_start, i]() {
+                    nvbit_add_call_arg_reg_val(instr, bank_start+i, true);
+                });
+            }
             break;
         }
         default:
