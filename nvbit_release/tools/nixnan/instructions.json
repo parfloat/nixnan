@@ -170,5 +170,23 @@
       }
     ],
     "description": "Half-precision multiply-accumulate with optional FTZ and saturation"
+  },
+  "(F(ADD|MUL)(?:\\.FTZ)?(?:\\.(RP|RM|RZ))?(?:\\.SAT)?)":
+  {"registers":
+    [
+      {
+        "type": "f32",
+        "count": 1
+      },
+      {
+        "type": "f32",
+        "count": 1
+      },
+      {
+        "type": "f32",
+        "count": 1
+      }
+    ],
+    "description": "Single-precision add or multiply with optional FTZ, rounding mode, and saturation"
   }
 }
