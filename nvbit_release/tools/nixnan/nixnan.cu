@@ -342,9 +342,10 @@ void nvbit_at_ctx_term(CUcontext ctx) {
 
   auto print_type_exceptions = [&](const std::string& type_name, uint32_t type_id) {
     std::cerr << "#nixnan: --- " << type_name << " Operations ---\n";
-    std::cerr << "#nixnan: NaN: " << exception_counts[type_id][0] << "\n";
-    std::cerr << "#nixnan: Infinity: " << exception_counts[type_id][1] << "\n";
-    std::cerr << "#nixnan: Subnormal: " << exception_counts[type_id][2] << "\n";
+    std::cerr << std::dec;
+    std::cerr << "#nixnan: NaN:           " << exception_counts[type_id][0] << "\n";
+    std::cerr << "#nixnan: Infinity:      " << exception_counts[type_id][1] << "\n";
+    std::cerr << "#nixnan: Subnormal:     " << exception_counts[type_id][2] << "\n";
     std::cerr << "#nixnan: Division by 0: " << exception_counts[type_id][3] << "\n\n";
   };
 
