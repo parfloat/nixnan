@@ -42,8 +42,8 @@ std::vector<reginsertion> get_regs(Instr *instr, size_t operand, size_t type, si
             uint64_t tmp;
             memcpy(&tmp, &val, sizeof(double));
             reg_ops.push_back([instr, tmp]() {
-                nvbit_add_call_arg_const_val32(instr, (tmp >> 32) & 0xFFFFFFFF);
-                nvbit_add_call_arg_const_val32(instr, tmp & 0xFFFFFFFF);
+                nvbit_add_call_arg_const_val32(instr, (tmp >> 32) & 0xFFFFFFFF, true);
+                nvbit_add_call_arg_const_val32(instr, tmp & 0xFFFFFFFF, true);
             });
             break;
         } case OperandType::IMM_UINT64: {
