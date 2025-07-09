@@ -236,5 +236,27 @@
       }
     ],
     "description": "Double-precision add or multiply with optional FTZ, rounding mode, and saturation"
+  },
+  "(DFMA(?:\\.(RP|RM|RZ))?)":
+  {"registers":
+    [
+      {
+        "type": "f64",
+        "count": 1
+      },
+      {
+        "type": "f64",
+        "count": 1
+      },
+      {
+        "type": "f64",
+        "count": 1
+      },
+      {
+        "type": "f64",
+        "count": 1
+      }
+    ],
+    "description": "Double-precision fused multiply-add with optional FTZ and saturation"
   }
 }
