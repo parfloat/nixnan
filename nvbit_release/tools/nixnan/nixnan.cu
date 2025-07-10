@@ -318,9 +318,6 @@ void nvbit_at_ctx_term(CUcontext ctx) {
       for (int exce = 0; exce < 16; exce++) {
         size_t errors = recorder->get_exce(i, exce, op);
         if (errors == 0) continue;
-        if (op != 0 && exce != E_DIV0) {
-          std::cerr << "erroneous" << std::endl;
-        }
         uint32_t type = recorder->get_type(i, op);
         if (exce & E_NAN) {
           exception_counts[type][0] += errors;
