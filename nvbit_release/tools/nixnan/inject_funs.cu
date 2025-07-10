@@ -65,11 +65,12 @@ nixnan_check_regs(int pred, device_recorder recorder, uint32_t inst_id,
   /* first active lane pushes information on the channel */
   if (first_laneid == laneid) {
     for (int op = 0; op < OPERANDS; op++) {
-      if (exces[op] != 0) {
-        uint32_t num_exceptions = recorder.record(inst_id, exces[op], op);
+      uint32_t exce = exces[op];
+      if (exce != 0) {
+        uint32_t num_exceptions = recorder.record(inst_id, exce, op);
         if (num_exceptions == 0) {
           ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
-          exception_info ei(get_ctaid(), get_warpid(), inst_id, exces[op], op);
+          exception_info ei(get_ctaid(), get_warpid(), inst_id, exce, op);
           channel_dev->push(&ei, sizeof(exception_info));
         }
       }
