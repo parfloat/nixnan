@@ -117,12 +117,12 @@ void instrument_function(CUcontext ctx, CUfunction func) {
       nvbit_insert_call(instr, "nixnan_check_regs", IPOINT_AFTER);
       nvbit_add_call_arg_guard_pred_val(instr);
       nvbit_add_call_arg_const_val64(instr, tobits64(recorder->get_device_recorder()), false);
-      uint32_t inst_id = recorder->mk_entry(instr, reginfo[0].first.type, ctx, f);
+      uint32_t inst_id = recorder->mk_entry(instr, reginfo, ctx, f);
       // std::cerr << "#nixnan: Instrumenting instruction with ID " << inst_id << std::endl;
       nvbit_add_call_arg_const_val32(instr, inst_id, false);
       nvbit_add_call_arg_const_val64(instr, tobits64(&channel_dev), false);
       for (auto [ri, rfuns] : reginfo) {
-        if (reg_num > 0 && !ri.div0) continue;
+        if (ri.operand != 0 && !ri.div0) continue;
         nvbit_add_call_arg_const_val32(instr, 1 + rfuns.size());
         nvbit_add_call_arg_const_val32(instr, tobits32(ri), true);
         for (auto& rfun : rfuns) {
@@ -137,7 +137,7 @@ void instrument_function(CUcontext ctx, CUfunction func) {
 // Kernel to run to flush the rest of the channel
 __global__ void flush_channel() {
   // Push negative cta information to the channel to indicate the end of execution
-  exception_info ei(int4{-1, -1, -1, -1}, 0, 0, 0);
+  exception_info ei(int4{-1, -1, -1, -1}, 0, 0, 0, 0);
   // Generates the following warning:
   // /.../device_atomic_functions.hpp(196): Warning: Cannot do atomic on local memory
   // This is inside the nvbit library.
@@ -168,7 +168,7 @@ void recv_thread_fun(std::shared_ptr<nixnan::recorder> recorder, ChannelHost cha
         std::string func = recorder->get_func(id);
         std::string path = recorder->get_path(id);
         std::string line = recorder->get_line(id);
-        std::string type = type_to_string.at(recorder->get_type(id));
+        std::string type = type_to_string.at(recorder->get_type(id, ei->operand()));
 
         uint32_t exce = ei->exception();
         std::vector<std::string> exceptions;
@@ -189,7 +189,7 @@ void recv_thread_fun(std::shared_ptr<nixnan::recorder> recorder, ChannelHost cha
           errors += exceptions[i];
           if (i != exceptions.size() - 1) errors += ",";
         }
-        std::cerr << "#nixnan: error [" << errors << "] detected in instruction " << instr << " in function "
+        std::cerr << "#nixnan: error [" << errors << "] detected in operand " << ei->operand() << " of instruction " << instr << " in function "
                   << func << " at line " << line << " of type " << type << std::endl;
         num_processed_bytes += sizeof(exception_info);
       }
@@ -308,31 +308,33 @@ void nvbit_at_ctx_term(CUcontext ctx) {
   recorder->free_device();
   size_t num_inst = recorder->get_size();
 
-  uint32_t *host_errors = recorder->get_host_errors();
-
   std::map<uint32_t,std::array<uint32_t, 4>> exception_counts;
   exception_counts[FP16] = {};
   exception_counts[FP32] = {};
   exception_counts[FP64] = {};
 
   for (size_t i = 0; i < num_inst; ++i) {
-    for (int exce = 0; exce < 16; exce++) {
-      size_t idx = i << 4 | exce;
-      if (host_errors[idx] == 0) continue;
-      uint32_t type = recorder->get_type(i);
-      if (exce & E_NAN) {
-        exception_counts[type][0] += 1;
+    for (int op = 0; op < OPERANDS; ++op) {
+      for (int exce = 0; exce < 16; exce++) {
+        size_t errors = recorder->get_exce(i, exce, op);
+        if (errors == 0) continue;
+        if (op != 0 && exce != E_DIV0) {
+          std::cerr << "erroneous" << std::endl;
+        }
+        uint32_t type = recorder->get_type(i, op);
+        if (exce & E_NAN) {
+          exception_counts[type][0] += errors;
+        }
+        if (exce & E_INF) {
+          exception_counts[type][1] += errors;
+        }
+        if (exce & E_SUB) {
+          exception_counts[type][2] += errors;
+        }
+        if (exce & E_DIV0) {
+          exception_counts[type][3] += errors;
+        }
       }
-      if (exce & E_INF) {
-        exception_counts[type][1] += 1;
-      }
-      if (exce & E_SUB) {
-        exception_counts[type][2] += 1;
-      }
-      if (exce & E_DIV0) {
-        exception_counts[type][3] += 1;
-      }
-
     }
   }
 

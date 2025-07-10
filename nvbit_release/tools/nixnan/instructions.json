@@ -258,5 +258,27 @@
       }
     ],
     "description": "Double-precision fused multiply-add with optional FTZ and saturation"
+  },
+    "(FFMA(?:\\.FTZ)?(?:\\.(RP|RM|RZ))?(?:\\.SAT)?)":
+  {"registers":
+    [
+      {
+        "type": "f32",
+        "count": 1
+      },
+      {
+        "type": "f32",
+        "count": 1
+      },
+      {
+        "type": "f32",
+        "count": 1
+      },
+      {
+        "type": "f32",
+        "count": 1
+      }
+    ],
+    "description": ""
   }
 }
