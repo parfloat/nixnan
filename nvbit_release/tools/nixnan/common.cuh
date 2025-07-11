@@ -60,4 +60,8 @@ uint32_t tobits32(T value) {
   return bits;
 }
 
+const int OPERANDS = 4;
+const int OPBITS = 2;
+const int EXCEBITS = 4;
+
 #endif // COMMON_CUH

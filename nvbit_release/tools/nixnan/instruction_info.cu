@@ -96,6 +96,7 @@ std::vector<std::pair<reginfo, std::vector<reginsertion>>> instruction_info::get
             ri.count = reg["count"].get<int>();
             ri.type = string_to_type.at(reg["type"].get<std::string>());
             ri.div0 = reg.find("div0") != reg.end();
+            ri.operand = i;
             reg_infos.push_back({ri, get_regs(instr, i, ri.type, ri.count)});
         }
     }

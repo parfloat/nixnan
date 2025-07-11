@@ -5,18 +5,19 @@
 #include "common.cuh"
 
 namespace nixnan {
-    const uint32_t NUM_EXCE_BITS = 4;
+    const char NOTYPE = 127;
     recorder::recorder(size_t sz) : size(sz), current_entry(0) {
-        if (sz > (1 << (32-NUM_EXCE_BITS))) {
+        size_t sh_amt = SH_AMT;
+        if (sz > (1ULL << (32 - sh_amt))) {
             throw std::runtime_error("Requested log size is too large");
         }
         inst_info = new host_entry[sz];
-        CUDA_SAFECALL(cudaMalloc((void**)&device_errors, sz * sizeof(uint32_t) << NUM_EXCE_BITS));
-        host_errors = new uint32_t[sz << NUM_EXCE_BITS];
-        for(size_t i = 0; i < sz << NUM_EXCE_BITS; i++) {
+        CUDA_SAFECALL(cudaMalloc((void**)&device_errors, sz * sizeof(uint32_t) << sh_amt));
+        host_errors = new uint32_t[sz << sh_amt];
+        for(size_t i = 0; i < sz << sh_amt; i++) {
             host_errors[i] = 0;
         }
-        CUDA_SAFECALL(cudaMemcpy(device_errors, host_errors, sz * sizeof(uint32_t) << NUM_EXCE_BITS, cudaMemcpyHostToDevice));
+        CUDA_SAFECALL(cudaMemcpy(device_errors, host_errors, sz * sizeof(uint32_t) << sh_amt, cudaMemcpyHostToDevice));
         cudaDeviceSynchronize();
     }
     recorder::~recorder() {
@@ -29,7 +30,7 @@ namespace nixnan {
             cudaDeviceSynchronize();
         }
     }
-    uint32_t recorder::mk_entry(Instr *instr, uint32_t type, CUcontext ctx, CUfunction f) {
+    uint32_t recorder::mk_entry(Instr *instr, const std::vector<std::pair<reginfo, std::vector<reginsertion>>> &regs, CUcontext ctx, CUfunction f) {
         std::string instr_str = instr->getSass();
         uint32_t offset = instr->getOffset();
         char *file_name = (char *)malloc(sizeof(char) * 1024);
@@ -44,14 +45,18 @@ namespace nixnan {
         std::string func = cut_kernel_name(nvbit_get_func_name(ctx, f));
         free(file_name);
         free(dir_name);
-        return mk_entry(instr_str, path, line_str, func, type);
+        char optypes[OPERANDS] = {NOTYPE};
+        for (size_t i = 0; i < regs.size(); i++) {
+            optypes[i] = regs[i].first.type;
+        }
+        return mk_entry(instr_str, path, line_str, func, optypes);
     }
-    uint32_t recorder::mk_entry(std::string& instr, std::string& path, std::string& line, std::string& func, uint32_t type) {
+    uint32_t recorder::mk_entry(std::string& instr, std::string& path, std::string& line, std::string& func, char* optypes) {
         inst_info[current_entry].instr = instr;
         inst_info[current_entry].path = path;
         inst_info[current_entry].line = line;
         inst_info[current_entry].func = func;
-        inst_info[current_entry].type = type;
+        std::memcpy(inst_info[current_entry].opertypes, optypes, OPERANDS);
         return current_entry++;
     }
     void recorder::free_device() {
@@ -59,7 +64,7 @@ namespace nixnan {
         device_errors = nullptr;
     }
     void recorder::end() {
-        CUDA_SAFECALL(cudaMemcpy(host_errors, device_errors, size * sizeof(uint32_t) << NUM_EXCE_BITS, cudaMemcpyDeviceToHost));
+        CUDA_SAFECALL(cudaMemcpy(host_errors, device_errors, size * sizeof(uint32_t) << SH_AMT, cudaMemcpyDeviceToHost));
         cudaDeviceSynchronize();
     }
     device_recorder recorder::get_device_recorder() {
@@ -77,10 +82,11 @@ namespace nixnan {
     std::string& recorder::get_func(uint32_t id) {
         return inst_info[id].func;
     }
-    uint32_t recorder::get_type(uint32_t id) {
-        return inst_info[id].type;
+    uint32_t recorder::get_type(uint32_t id, uint32_t op) {
+        return inst_info[id].opertypes[op];
     }
-    uint32_t recorder::get_exce(uint32_t id) {
-        return 0;
+    uint32_t recorder::get_exce(uint32_t id, uint32_t exce, uint32_t op) {
+        size_t index = id << (SH_AMT) | op << EXCEBITS | exce;
+        return host_errors[index];
     }
 }
