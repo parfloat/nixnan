@@ -88,7 +88,6 @@ void nvbit_at_init() {
   std::cerr << pad << '\n';
 }
 
-
 void instrument_function(CUcontext ctx, CUfunction func) {
   /* Get related functions of the kernel (device function that can be
    * called by the kernel) */
@@ -108,27 +107,41 @@ void instrument_function(CUcontext ctx, CUfunction func) {
     }
 
     for (auto instr : nvbit_get_instrs(ctx, func)){
-      auto reginfo = instruction_info::get_reginfo(instr);
-      if (reginfo.empty()) { continue; }
+      auto reg_infos = instruction_info::get_reginfo(instr);
+      if (reg_infos.empty()) { continue; }
       if (verbose) {
         std::cerr << "#nixnan: Instrumenting instruction " << instr->getSass() << std::endl;
       }
-      uint32_t reg_num = 0;
+
+      uint32_t inst_id = recorder->mk_entry(instr, reg_infos, ctx, f);
       nvbit_insert_call(instr, "nixnan_check_regs", IPOINT_AFTER);
       nvbit_add_call_arg_guard_pred_val(instr);
       nvbit_add_call_arg_const_val64(instr, tobits64(recorder->get_device_recorder()), false);
-      uint32_t inst_id = recorder->mk_entry(instr, reginfo, ctx, f);
       // std::cerr << "#nixnan: Instrumenting instruction with ID " << inst_id << std::endl;
       nvbit_add_call_arg_const_val32(instr, inst_id, false);
       nvbit_add_call_arg_const_val64(instr, tobits64(&channel_dev), false);
-      for (auto [ri, rfuns] : reginfo) {
-        if (ri.operand != 0 && !ri.div0) continue;
+      {
+        auto [ri, rfuns] = reg_infos[0];
         nvbit_add_call_arg_const_val32(instr, 1 + rfuns.size());
         nvbit_add_call_arg_const_val32(instr, tobits32(ri), true);
         for (auto& rfun : rfuns) {
           rfun();
         }
-        reg_num++;
+      }
+
+      nvbit_insert_call(instr, "nixnan_check_regs", IPOINT_BEFORE);
+      nvbit_add_call_arg_guard_pred_val(instr);
+      nvbit_add_call_arg_const_val64(instr, tobits64(recorder->get_device_recorder()), false);
+      // std::cerr << "#nixnan: Instrumenting instruction with ID " << inst_id << std::endl;
+      nvbit_add_call_arg_const_val32(instr, inst_id, false);
+      nvbit_add_call_arg_const_val64(instr, tobits64(&channel_dev), false);
+      for (size_t i = 1; i < reg_infos.size(); ++i) {
+        auto [ri, rfuns] = reg_infos[i];
+        nvbit_add_call_arg_const_val32(instr, 1 + rfuns.size());
+        nvbit_add_call_arg_const_val32(instr, tobits32(ri), true);
+        for (auto& rfun : rfuns) {
+          rfun();
+        }
       }
     }
   }
