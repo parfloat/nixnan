@@ -29,24 +29,26 @@ nixnan_check_regs(int pred, device_recorder recorder, uint32_t inst_id,
       switch (reg_info.type) {
         case FP16: {
           uint32_t val = va_arg(ap, uint32_t);
-          exces[operand] |= half2_classify(val, reg_info.half_h0, reg_info.half_h1);
+          exces[operand] |= half2_classify(val, reg_info.half_h0, reg_info.half_h1, 
+                                           reg_info.div0);
           break;
         }
         case BF16: {
           uint32_t val = va_arg(ap, uint32_t);
-          exces[operand] |= half2_classify(val, reg_info.half_h0, reg_info.half_h1);
+          exces[operand] |= half2_classify(val, reg_info.half_h0, reg_info.half_h1, 
+                                           reg_info.div0);
           break;
         }
         case FP32: {
           uint32_t val = va_arg(ap, uint32_t);
-          exces[operand] |= float_classify(val);
+          exces[operand] |= float_classify(val, reg_info.div0);
           break;
         }
         case FP64: {
           uint32_t low = va_arg(ap, uint32_t);
           uint32_t high = va_arg(ap, uint32_t);
           j++;
-          exces[operand] |= double_classify(low, high);
+          exces[operand] |= double_classify(low, high, reg_info.div0);
           break;
         }
         default:
