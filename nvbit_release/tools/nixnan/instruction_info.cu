@@ -9,25 +9,31 @@
 
 using InstrType::OperandType;
 
+size_t get_num_regs(size_t type, size_t count) {
+    switch (type) {
+        case FP16:
+        case BF16:
+            return (count + 1) / 2;
+        case FP32:
+            return count;
+        case FP64:
+            return 2 * count;
+        default:
+            throw std::runtime_error("Unknown bit size for register extraction");
+    }
+}
+
 std::vector<reginsertion> get_regs(Instr *instr, size_t operand, size_t type, size_t count) {
     std::vector<reginsertion> reg_ops;
     auto num_operands = instr->getNumOperands();
     assert(num_operands > 0);
+    assert(operand < num_operands);
 
     if (operand >= (size_t) num_operands) {
         throw std::runtime_error("Invalid operand index");
     }
     const auto& op = instr->getOperand(operand);
-    size_t num_regs = 0;
-    if (type == FP16 || type == BF16) {
-        num_regs = (count + 1) / 2;
-    } else if (type == FP32) {
-        num_regs = count;
-    } else if (type == FP64) {
-        num_regs = 2*count;
-    } else {
-        throw std::runtime_error("Unknown bit size for register extraction");
-    }
+    size_t num_regs = get_num_regs(type, count);
     switch (op->type) {
         case OperandType::REG: {
             size_t reg_start = op->u.reg.num;
@@ -58,8 +64,10 @@ std::vector<reginsertion> get_regs(Instr *instr, size_t operand, size_t type, si
             }
             break;
         }
-        default:
-            throw std::runtime_error("Unsupported operand type for register extraction: " + std::to_string(static_cast<int>(op->type)));
+        default: {
+            std::cerr << "#nixnan: Unsupported operand type for register extraction: " << (int)op->type << std::endl;
+            break;
+        }
     }
     return reg_ops;
 }
@@ -97,6 +105,8 @@ std::vector<std::pair<reginfo, std::vector<reginsertion>>> instruction_info::get
             ri.type = string_to_type.at(reg["type"].get<std::string>());
             ri.div0 = reg.find("div0") != reg.end();
             ri.operand = i;
+            ri.num_regs = get_num_regs(ri.type, ri.count);
+            assert(get_num_regs(ri.type, ri.count) < 16);
             reg_infos.push_back({ri, get_regs(instr, i, ri.type, ri.count)});
         }
     }
