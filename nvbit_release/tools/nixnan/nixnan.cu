@@ -135,9 +135,16 @@ void instrument_function(CUcontext ctx, CUfunction func) {
       // std::cerr << "#nixnan: Instrumenting instruction with ID " << inst_id << std::endl;
       nvbit_add_call_arg_const_val32(instr, inst_id, false);
       nvbit_add_call_arg_const_val64(instr, tobits64(&channel_dev), false);
+      size_t num_regs = 0;
       for (size_t i = 1; i < reg_infos.size(); ++i) {
         auto [ri, rfuns] = reg_infos[i];
-        nvbit_add_call_arg_const_val32(instr, 1 + rfuns.size());
+        num_regs += ri.num_regs;
+      }
+      // This is the number of registers that were sent as arguments, plus the
+      // number of reg_info functions, minus the first one.
+      nvbit_add_call_arg_const_val32(instr, num_regs + reg_infos.size() - 1);
+      for (size_t i = 1; i < reg_infos.size(); ++i) {
+        auto [ri, rfuns] = reg_infos[i];
         nvbit_add_call_arg_const_val32(instr, tobits32(ri), true);
         for (auto& rfun : rfuns) {
           rfun();
