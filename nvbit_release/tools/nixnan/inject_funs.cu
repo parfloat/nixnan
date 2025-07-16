@@ -10,7 +10,7 @@
 using namespace nixnan;
 extern "C" __device__ __noinline__ void
 nixnan_check_regs(int pred, device_recorder recorder, uint32_t inst_id,
-                  ChannelDev* pchannel_dev, uint32_t n_args...) {
+                  ChannelDev* pchannel_dev, uint32_t arg_count, ...) {
 
   if (!pred) {
     return;
@@ -20,10 +20,11 @@ nixnan_check_regs(int pred, device_recorder recorder, uint32_t inst_id,
   const int laneid = get_laneid();
   const int first_laneid = __ffs(active_mask) - 1;
   va_list ap;
-  va_start(ap, n_args);
+  va_start(ap, arg_count);
   uint32_t exces[OPERANDS] = {0};
-  for (int i = 0; i < n_args; i++) {
+  while (arg_count > 0) {
     reginfo reg_info = va_arg(ap, reginfo);
+    arg_count--;
     size_t operand = reg_info.operand;
     for (int j = 0; j < reg_info.count; j++) {
       switch (reg_info.type) {
@@ -31,23 +32,29 @@ nixnan_check_regs(int pred, device_recorder recorder, uint32_t inst_id,
           uint32_t val = va_arg(ap, uint32_t);
           exces[operand] |= half2_classify(val, reg_info.half_h0, reg_info.half_h1, 
                                            reg_info.div0);
+          arg_count--;
+          j++;
           break;
         }
         case BF16: {
           uint32_t val = va_arg(ap, uint32_t);
           exces[operand] |= half2_classify(val, reg_info.half_h0, reg_info.half_h1, 
                                            reg_info.div0);
+          arg_count--;
+          j++;
           break;
         }
         case FP32: {
           uint32_t val = va_arg(ap, uint32_t);
           exces[operand] |= float_classify(val, reg_info.div0);
+          arg_count--;
           break;
         }
         case FP64: {
           uint32_t low = va_arg(ap, uint32_t);
+          arg_count--;
           uint32_t high = va_arg(ap, uint32_t);
-          j++;
+          arg_count--;
           exces[operand] |= double_classify(low, high, reg_info.div0);
           break;
         }

@@ -8,7 +8,7 @@ struct reginfo {
     bool half_h0: 1;
     bool half_h1: 1;
     bool div0: 1;
-    int operand: 2;
+    unsigned int operand: 2;
     int num_regs: 4;
 private:
     int32_t reserved: 13;
