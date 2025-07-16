@@ -102,8 +102,10 @@ void instrument_function(CUcontext ctx, CUfunction func) {
 
     std::string kname = cut_kernel_name(nvbit_get_func_name(ctx, func));
     if (verbose) {
+      auto old_flags = std::cerr.flags();
       std::cerr << "#nixnan: Inspecting function " << nvbit_get_func_name(ctx, f) <<
                    " at address 0x" << std::hex << nvbit_get_func_addr(f) << std::endl;
+      std::cerr.flags(old_flags);
     }
 
     for (auto instr : nvbit_get_instrs(ctx, func)){
@@ -120,10 +122,16 @@ void instrument_function(CUcontext ctx, CUfunction func) {
       // std::cerr << "#nixnan: Instrumenting instruction with ID " << inst_id << std::endl;
       nvbit_add_call_arg_const_val32(instr, inst_id, false);
       nvbit_add_call_arg_const_val64(instr, tobits64(&channel_dev), false);
+        if (verbose) {
+          std::cerr << "#nixnan: Instrumenting instruction with " << 1 + std::get<0>(reg_infos[0]).num_regs << " registers" << std::endl;
+        }
       {
         auto [ri, rfuns] = reg_infos[0];
         nvbit_add_call_arg_const_val32(instr, 1 + rfuns.size());
         nvbit_add_call_arg_const_val32(instr, tobits32(ri), true);
+        if (verbose) {
+          std::cerr << "#nixnan: Instrumenting operand " << ri.operand << ". div0: " << ri.div0 << ", regs: " << ri.num_regs << ", count: " << ri.count << std::endl;
+        }
         for (auto& rfun : rfuns) {
           rfun();
         }
@@ -142,10 +150,16 @@ void instrument_function(CUcontext ctx, CUfunction func) {
       }
       // This is the number of registers that were sent as arguments, plus the
       // number of reg_info functions, minus the first one.
+      if (verbose) {
+        std::cerr << "#nixnan: Instrumenting instruction with " << num_regs + reg_infos.size() - 1 << " registers" << std::endl;
+      }
       nvbit_add_call_arg_const_val32(instr, num_regs + reg_infos.size() - 1);
       for (size_t i = 1; i < reg_infos.size(); ++i) {
         auto [ri, rfuns] = reg_infos[i];
         nvbit_add_call_arg_const_val32(instr, tobits32(ri), true);
+        if (verbose) {
+          std::cerr << "#nixnan: Instrumenting operand " << ri.operand << ". div0: " << ri.div0 << ", regs: " << ri.num_regs << std::endl;
+        }
         for (auto& rfun : rfuns) {
           rfun();
         }
