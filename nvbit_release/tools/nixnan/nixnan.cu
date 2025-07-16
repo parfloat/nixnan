@@ -270,22 +270,22 @@ void nvbit_at_cuda_event(CUcontext ctx, int is_exit, nvbit_api_cuda_t cbid,
 
       /* make sure we prevent re-entry on the nvbit_callback when issuing
       * the flush_channel kernel */
-      skip_flag = true;
+      // skip_flag = true;
 
-      /* issue flush of channel so we are sure all the memory accesses
-      * have been pushed */
-      flush_channel<<<1, 1>>>();
-      cudaDeviceSynchronize();
-      assert(cudaGetLastError() == cudaSuccess);
+      // /* issue flush of channel so we are sure all the memory accesses
+      // * have been pushed */
+      // flush_channel<<<1, 1>>>();
+      // cudaDeviceSynchronize();
+      // assert(cudaGetLastError() == cudaSuccess);
 
-      /* unset the skip flag */
-      skip_flag = false;
+      // /* unset the skip flag */
+      // skip_flag = false;
 
       /* wait here until the receiving thread has not finished with the
       * current kernel */
-      while (recv_thread_receiving) {
-        sched_yield();
-      }
+      // while (recv_thread_receiving) {
+      //   sched_yield();
+      // }
     }
   }
 }
