@@ -6,6 +6,7 @@
 #include <string>
 #include <functional>
 #include <regex>
+#include <cmath>
 
 using InstrType::OperandType;
 
@@ -23,7 +24,7 @@ size_t get_num_regs(size_t type, size_t count) {
     }
 }
 
-std::vector<reginsertion> get_regs(Instr *instr, size_t operand, size_t type, size_t count) {
+std::vector<reginsertion> get_regs(Instr *instr, size_t operand, size_t type, size_t count, reginfo &reg_info) {
     std::vector<reginsertion> reg_ops;
     auto num_operands = instr->getNumOperands();
     assert(num_operands > 0);
@@ -51,6 +52,8 @@ std::vector<reginsertion> get_regs(Instr *instr, size_t operand, size_t type, si
                 nvbit_add_call_arg_const_val32(instr, (tmp >> 32) & 0xFFFFFFFF, true);
                 nvbit_add_call_arg_const_val32(instr, tmp & 0xFFFFFFFF, true);
             });
+            reg_info.type = FP64;
+            num_regs++;
             break;
         } case OperandType::IMM_UINT64: {
             // This shouldn't be an error???
@@ -69,6 +72,7 @@ std::vector<reginsertion> get_regs(Instr *instr, size_t operand, size_t type, si
             break;
         }
     }
+    reg_info.num_regs = num_regs;
     return reg_ops;
 }
 
@@ -105,9 +109,9 @@ std::vector<std::pair<reginfo, std::vector<reginsertion>>> instruction_info::get
             ri.type = string_to_type.at(reg["type"].get<std::string>());
             ri.div0 = reg.find("div0") != reg.end();
             ri.operand = i;
-            ri.num_regs = get_num_regs(ri.type, ri.count);
+            // ri.num_regs = get_num_regs(ri.type, ri.count);
             assert(get_num_regs(ri.type, ri.count) < 16);
-            reg_infos.push_back({ri, get_regs(instr, i, ri.type, ri.count)});
+            reg_infos.push_back({ri, get_regs(instr, i, ri.type, ri.count, ri)});
         }
     }
     return reg_infos;
