@@ -38,7 +38,7 @@ namespace nixnan {
         uint32_t line = 0;
         bool ret_line_info = nvbit_get_line_info(ctx, f, offset, &file_name, &dir_name, &line);
         std::string path = file_name ? file_name : "";
-        path += dir_name = dir_name ? dir_name : "";
+        path += dir_name ? dir_name : "";
         std::string line_str = std::to_string(line);
         std::string func = cut_kernel_name(nvbit_get_func_name(ctx, f));
         char optypes[OPERANDS] = {NOTYPE};
