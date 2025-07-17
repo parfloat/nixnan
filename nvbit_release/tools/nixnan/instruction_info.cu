@@ -52,11 +52,14 @@ std::vector<reginsertion> get_regs(Instr *instr, size_t operand, size_t type, si
                 nvbit_add_call_arg_const_val32(instr, (tmp >> 32) & 0xFFFFFFFF, true);
                 nvbit_add_call_arg_const_val32(instr, tmp & 0xFFFFFFFF, true);
             });
+            if (reg_info.type == FP32) {
+                num_regs++;
+            }
             reg_info.type = FP64;
-            num_regs++;
             break;
         } case OperandType::IMM_UINT64: {
             // This shouldn't be an error???
+            num_regs = 0;
             break;
         } case OperandType::CBANK: {
             size_t bank_start = op->u.cbank.id;
@@ -111,7 +114,9 @@ std::vector<std::pair<reginfo, std::vector<reginsertion>>> instruction_info::get
             ri.operand = i;
             // ri.num_regs = get_num_regs(ri.type, ri.count);
             assert(get_num_regs(ri.type, ri.count) < 16);
-            reg_infos.push_back({ri, get_regs(instr, i, ri.type, ri.count, ri)});
+            if(ri.num_regs > 0) {
+                reg_infos.push_back({ri, get_regs(instr, i, ri.type, ri.count, ri)});
+            }
         }
     }
     return reg_infos;
