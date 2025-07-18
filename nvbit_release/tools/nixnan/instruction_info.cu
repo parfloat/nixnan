@@ -100,7 +100,6 @@ std::vector<std::pair<reginfo, std::vector<reginsertion>>> instruction_info::get
     if (!matched_key.empty()) {
         inst_name = matched_key;
     }
-
     if (instructions.contains(inst_name)) {
         const auto& instruction_data = instructions[inst_name];
         for (size_t i = 0; i < instruction_data["registers"].size(); i++) {
@@ -114,8 +113,10 @@ std::vector<std::pair<reginfo, std::vector<reginsertion>>> instruction_info::get
             ri.operand = i;
             // ri.num_regs = get_num_regs(ri.type, ri.count);
             assert(get_num_regs(ri.type, ri.count) < 16);
-            if(ri.num_regs > 0) {
-                reg_infos.push_back({ri, get_regs(instr, i, ri.type, ri.count, ri)});
+
+            auto reg_info = get_regs(instr, i, ri.type, ri.count, ri);
+            if (ri.num_regs > 0) {
+                reg_infos.push_back({ri, reg_info});
             }
         }
     }
