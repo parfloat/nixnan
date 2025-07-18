@@ -356,31 +356,35 @@ void nvbit_at_ctx_term(CUcontext ctx) {
         if (exce & E_NAN) {
           std::get<0>(exception_counts[type][0]) += errors;
           if (errors > 0) {
-            std::get<1>(exception_counts[type][0]) = errors;
+            std::get<1>(exception_counts[type][0])++;
           }
         }
         if (exce & E_INF) {
           std::get<0>(exception_counts[type][1]) += errors;
           if (errors > 0) {
-            std::get<1>(exception_counts[type][1]) = errors;
+            std::get<1>(exception_counts[type][1])++;
           }
         }
         if (exce & E_SUB) {
           std::get<0>(exception_counts[type][2]) += errors;
           if (errors > 0) {
-            std::get<1>(exception_counts[type][2]) = errors;
+            std::get<1>(exception_counts[type][2])++;
           }
         }
         if (exce & E_DIV0) {
           std::get<0>(exception_counts[type][3]) += errors;
           if (errors > 0) {
-            std::get<1>(exception_counts[type][3]) = errors;
+            std::get<1>(exception_counts[type][3])++;
           }
         }
       }
     }
   }
-
+  for (auto ftype : {FP16, FP32, FP64}) {
+      for (size_t i = 0; i < 4; ++i) {
+          std::get<0>(exception_counts[ftype][i]) -= std::get<1>(exception_counts[ftype][i]);
+      }
+  }
   std::cerr << "#nixnan: Finalizing GPU context...\n\n";
 
   std::cerr << "#nixnan: ------------ nixnan Report -----------\n\n";
