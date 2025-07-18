@@ -342,7 +342,7 @@ void nvbit_at_ctx_term(CUcontext ctx) {
   recorder->free_device();
   size_t num_inst = recorder->get_size();
 
-  std::map<uint32_t,std::array<uint32_t, 4>> exception_counts;
+  std::map<uint32_t, std::array<std::pair<uint32_t, uint32_t>, 4>> exception_counts;
   exception_counts[FP16] = {};
   exception_counts[FP32] = {};
   exception_counts[FP64] = {};
@@ -354,16 +354,28 @@ void nvbit_at_ctx_term(CUcontext ctx) {
         if (errors == 0) continue;
         uint32_t type = recorder->get_type(i, op);
         if (exce & E_NAN) {
-          exception_counts[type][0] += errors;
+          std::get<0>(exception_counts[type][0]) += errors;
+          if (errors > 0) {
+            std::get<1>(exception_counts[type][0]) = errors;
+          }
         }
         if (exce & E_INF) {
-          exception_counts[type][1] += errors;
+          std::get<0>(exception_counts[type][1]) += errors;
+          if (errors > 0) {
+            std::get<1>(exception_counts[type][1]) = errors;
+          }
         }
         if (exce & E_SUB) {
-          exception_counts[type][2] += errors;
+          std::get<0>(exception_counts[type][2]) += errors;
+          if (errors > 0) {
+            std::get<1>(exception_counts[type][2]) = errors;
+          }
         }
         if (exce & E_DIV0) {
-          exception_counts[type][3] += errors;
+          std::get<0>(exception_counts[type][3]) += errors;
+          if (errors > 0) {
+            std::get<1>(exception_counts[type][3]) = errors;
+          }
         }
       }
     }
@@ -376,10 +388,14 @@ void nvbit_at_ctx_term(CUcontext ctx) {
   auto print_type_exceptions = [&](const std::string& type_name, uint32_t type_id) {
     std::cerr << "#nixnan: --- " << type_name << " Operations ---\n";
     std::cerr << std::dec;
-    std::cerr << "#nixnan: NaN:           " << exception_counts[type_id][0] << "\n";
-    std::cerr << "#nixnan: Infinity:      " << exception_counts[type_id][1] << "\n";
-    std::cerr << "#nixnan: Subnormal:     " << exception_counts[type_id][2] << "\n";
-    std::cerr << "#nixnan: Division by 0: " << exception_counts[type_id][3] << "\n\n";
+    auto ecp = exception_counts[type_id];
+    auto old_flags = std::cerr.flags();
+    std::cerr << std::dec;
+    std::cerr << "#nixnan: NaN:           " << std::setw(10) << std::get<1>(ecp[0]) << " (" << std::get<0>(ecp[0]) << " repeats)\n";
+    std::cerr << "#nixnan: Infinity:      " << std::setw(10) << std::get<1>(ecp[1]) << " (" << std::get<0>(ecp[1]) << " repeats)\n";
+    std::cerr << "#nixnan: Subnormal:     " << std::setw(10) << std::get<1>(ecp[2]) << " (" << std::get<0>(ecp[2]) << " repeats)\n";
+    std::cerr << "#nixnan: Division by 0: " << std::setw(10) << std::get<1>(ecp[3]) << " (" << std::get<0>(ecp[3]) << " repeats)\n\n";
+    std::cerr.flags(old_flags);
   };
 
   print_type_exceptions("FP16", FP16);
