@@ -92,6 +92,93 @@ uint32_t half2_classify(uint32_t h, bool h0, bool h1, bool is_zero = false) {
     return e0;
 }
 
+// BF16 utils
+__device__ __host__ inline
+uint16_t bf16_exp(uint16_t h) {
+    return (h & 0x7F80) >> 7;
+}
+
+__device__ __host__ inline
+uint16_t bf16_mant(uint16_t h) {
+    return h & 0x007F;
+}
+
+__device__ __host__ inline
+uint16_t bf16_sign(uint16_t h) {
+    return h >> 15;
+}
+
+__device__ __host__ inline
+uint32_t bf16_is_nan(uint16_t h) {
+    return (bf16_exp(h) == 0xFF && bf16_mant(h) != 0) ? E_NAN : 0;
+}
+
+__device__ __host__ inline
+uint32_t bf16_is_inf(uint16_t h) {
+    return (bf16_exp(h) == 0xFF && bf16_mant(h) == 0) ? E_INF : 0;
+}
+
+__device__ __host__ inline
+uint32_t bf16_is_zero(uint16_t h) {
+    return (bf16_exp(h) == 0 && bf16_mant(h) == 0) ? E_DIV0 : 0;
+}
+
+__device__ __host__ inline
+uint32_t bf16_is_subnorm(uint16_t h) {
+    return (bf16_exp(h) == 0 && bf16_mant(h) != 0) ? E_SUB : 0;
+}
+
+__device__ __host__ inline
+uint32_t bf16_classify(uint16_t h, bool is_zero = false) {
+    uint32_t e = bf16_is_nan(h);
+    e |= bf16_is_inf(h);
+    e |= bf16_is_subnorm(h);
+    if (is_zero) {
+        e |= bf16_is_zero(h);
+    }
+    return e;
+}
+
+// bf162 utils
+__device__ __host__ inline
+uint32_t bf162_is_nan(uint32_t h, bool h0, bool h1) {
+    uint8_t e0 = h0 ? bf16_is_nan(h & 0xFFFF) : 0;
+    uint8_t e1 = h1 ? bf16_is_nan(h >> 16) : 0;
+    return e0 | e1;
+}
+
+__device__ __host__ inline
+uint32_t bf162_is_inf(uint32_t h, bool h0, bool h1) {
+    uint8_t e0 = h0 ? bf16_is_inf(h & 0xFFFF) : 0;
+    uint8_t e1 = h1 ? bf16_is_inf(h >> 16) : 0;
+    return e0 | e1;
+}
+
+__device__ __host__ inline
+uint32_t bf162_is_zero(uint32_t h, bool h0, bool h1) {
+    uint8_t e0 = h0 ? bf16_is_zero(h & 0xFFFF) : 0;
+    uint8_t e1 = h1 ? bf16_is_zero(h >> 16) : 0;
+    return e0 | e1;
+}
+
+__device__ __host__ inline
+uint32_t bf162_is_subnorm(uint32_t h, bool h0, bool h1) {
+    uint8_t e0 = h0 ? bf16_is_subnorm(h & 0xFFFF) : 0;
+    uint8_t e1 = h1 ? bf16_is_subnorm(h >> 16) : 0;
+    return e0 | e1;
+}
+
+__device__ __host__ inline
+uint32_t bf162_classify(uint32_t h, bool h0, bool h1, bool is_zero = false) {
+    uint32_t e0 = bf162_is_nan(h, h0, h1);
+    e0 |= bf162_is_inf(h, h0, h1);
+    e0 |= bf162_is_subnorm(h, h0, h1);
+    if (is_zero) {
+        e0 |= bf162_is_zero(h, h0, h1);
+    }
+    return e0;
+}
+
 // Float utils
 __device__ __host__ inline
 uint32_t float_exp(uint32_t f) {
