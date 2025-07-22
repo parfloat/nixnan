@@ -5,7 +5,6 @@
 #define WARPSIZE 32
 namespace nixnan {
     struct exception_info {
-        uint32_t exceptions[WARPSIZE];
         __host__ __device__
         exception_info(int4 cta, uint32_t warp_id, uint32_t inst_id, uint32_t exce, uint32_t operand) :
                        inst_id(inst_id), exce(exce), oper(operand) {
@@ -40,7 +39,6 @@ namespace nixnan {
         uint32_t inst_id;
         uint32_t exce;
         uint32_t oper;
-        float regs[WARPSIZE];
     };
 }
 #undef WARPSIZE
