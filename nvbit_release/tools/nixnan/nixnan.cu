@@ -51,7 +51,7 @@ int sampling = 0;
 volatile bool recv_thread_started = false;
 volatile bool recv_thread_receiving = false;
 
-#define CHANNEL_SIZE (1l << 10)
+#define CHANNEL_SIZE sizeof(exception_info)
 #define TABLE_SIZE (1l << 17)
 static __managed__ ChannelDev channel_dev;
 static ChannelHost channel_host;

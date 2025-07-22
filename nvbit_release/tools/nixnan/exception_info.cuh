@@ -40,6 +40,7 @@ namespace nixnan {
         uint32_t inst_id;
         uint32_t exce;
         uint32_t oper;
+        float regs[WARPSIZE];
     };
 }
 #undef WARPSIZE
