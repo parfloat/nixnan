@@ -24,6 +24,10 @@ size_t get_num_regs(size_t type, size_t count) {
     }
 }
 
+size_t clamp(size_t val) {
+    return (val > 255) ? 255 : val;
+}
+
 std::vector<reginsertion> get_regs(Instr *instr, size_t operand, size_t type, size_t count, reginfo &reg_info) {
     std::vector<reginsertion> reg_ops;
     auto num_operands = instr->getNumOperands();
@@ -36,11 +40,14 @@ std::vector<reginsertion> get_regs(Instr *instr, size_t operand, size_t type, si
     const auto& op = instr->getOperand(operand);
     size_t num_regs = get_num_regs(type, count);
     switch (op->type) {
-        case OperandType::REG: {
+        case OperandType::REG:
+        case OperandType::UREG: {
             size_t reg_start = op->u.reg.num;
+            OperandType type = op->type;
             for (size_t i = 0; i < num_regs; i++) {
-                reg_ops.push_back([instr, reg_start, i]() {
-                    nvbit_add_call_arg_reg_val(instr, reg_start+i, true);
+                reg_ops.push_back([instr, reg_start, i, type]() {
+                    auto fn = type == OperandType::REG ? nvbit_add_call_arg_reg_val : nvbit_add_call_arg_ureg_val;
+                    fn(instr, clamp(reg_start+i), true);
                 });
             }
             break;
@@ -49,8 +56,8 @@ std::vector<reginsertion> get_regs(Instr *instr, size_t operand, size_t type, si
             uint64_t tmp;
             memcpy(&tmp, &val, sizeof(double));
             reg_ops.push_back([instr, tmp]() {
-                nvbit_add_call_arg_const_val32(instr, (tmp >> 32) & 0xFFFFFFFF, true);
                 nvbit_add_call_arg_const_val32(instr, tmp & 0xFFFFFFFF, true);
+                nvbit_add_call_arg_const_val32(instr, (tmp >> 32) & 0xFFFFFFFF, true);
             });
             if (reg_info.type == FP32) {
                 num_regs++;
@@ -67,6 +74,19 @@ std::vector<reginsertion> get_regs(Instr *instr, size_t operand, size_t type, si
                 reg_ops.push_back([instr, bank_start, i]() {
                     nvbit_add_call_arg_reg_val(instr, bank_start+i, true);
                 });
+            }
+            break;
+        } case OperandType::GENERIC: {
+            auto x = op->u.generic.array;
+            std::string x_str(x);
+            if (x_str.find("NAN") != std::string::npos) {
+                // This is a NAN register, we don't need to do anything
+                num_regs = 0;
+                std::cerr << "#nixnan: NaN immediate found in operand " << op->str << std::endl;
+            } else if (x_str.find("INF") != std::string::npos) {
+                // This is an INF register, we don't need to do anything
+                num_regs = 0;
+                std::cerr << "#nixnan: Infinite immediate found in operand " << op->str << std::endl;
             }
             break;
         }
