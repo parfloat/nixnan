@@ -104,7 +104,7 @@ void instrument_function(CUcontext ctx, CUfunction func) {
     if (verbose) {
       auto old_flags = std::cerr.flags();
       std::cerr << "#nixnan: Inspecting function " << nvbit_get_func_name(ctx, f) <<
-                   " at address 0x" << std::hex << nvbit_get_func_addr(f) << std::endl;
+                   " at address 0x" << std::hex << nvbit_get_func_addr(ctx, f) << std::endl;
       std::cerr.flags(old_flags);
     }
 
