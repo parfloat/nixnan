@@ -1,34 +1,24 @@
-// Implementation for nnout() and set_out_file()
+// Implementation for nnout() and set_out_file() using simple file-scope statics
 #include "nnout.hh"
 #include <fstream>
 #include <memory>
 
-namespace {
-struct logger_singleton {
-    std::ostream* stream = &std::cerr;
-    std::unique_ptr<std::ofstream> file_stream;
-};
-
-logger_singleton& get_logger() {
-    static logger_singleton inst;
-    return inst;
-}
-}
+static std::ostream* g_nnout_stream = &std::cerr;
+static std::unique_ptr<std::ofstream> g_nnout_file;
 
 std::ostream& nnout() {
-    return *(get_logger().stream) << "#nixnan: ";
+    return *g_nnout_stream << "#nixnan: ";
 }
 
 std::ostream& nnout_stream() {
-    return *(get_logger().stream);
+    return *g_nnout_stream;
 }
 
 void set_out_file(std::string& filename) {
-    auto& lg = get_logger();
     auto fs = std::make_unique<std::ofstream>(filename);
     if (fs->is_open()) {
-        lg.file_stream = std::move(fs);
-        lg.stream = lg.file_stream.get();
+        g_nnout_file = std::move(fs);
+        g_nnout_stream = g_nnout_file.get();
     } else {
         nnout() << "failed to open log file '" << filename << "'" << std::endl;
     }
