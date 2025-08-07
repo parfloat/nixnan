@@ -85,6 +85,17 @@ void nvbit_at_init() {
   GET_VAR_INT(
       sampling, "SAMPLING", 0,
       "Instrument a repeat kernel every SAMPLING times");
+  std::string filename;
+  GET_VAR_STR(
+    filename,
+    "LOGFILE",
+    "Path to the optional log file. Default is to print to stderr. "
+    "This is useful for the case when an instrumented program is "
+    "capturing stderr."
+  );
+  if (!filename.empty()) {
+    set_out_file(filename);
+  }
   std::string pad(82, '-');
   nnout() << pad << '\n';
 }
@@ -103,17 +114,17 @@ void instrument_function(CUcontext ctx, CUfunction func) {
 
     std::string kname = cut_kernel_name(nvbit_get_func_name(ctx, func));
     if (verbose) {
-  auto old_flags = nnout().flags();
-  nnout() << "Inspecting function " << nvbit_get_func_name(ctx, f) <<
+  auto old_flags = nnout_stream().flags();
+      nnout() << "Inspecting function " << nvbit_get_func_name(ctx, f) <<
                    " at address 0x" << std::hex << nvbit_get_func_addr(f) << std::endl;
-  nnout().flags(old_flags);
+  nnout_stream().flags(old_flags);
     }
 
     for (auto instr : nvbit_get_instrs(ctx, func)){
       auto reg_infos = instruction_info::get_reginfo(instr);
       if (reg_infos.empty()) { continue; }
       if (verbose) {
-  nnout() << "Instrumenting instruction " << instr->getSass() << std::endl;
+        nnout() << "Instrumenting instruction " << instr->getSass() << std::endl;
       }
 
       uint32_t inst_id = recorder->mk_entry(instr, reg_infos, ctx, f);
@@ -152,7 +163,7 @@ void instrument_function(CUcontext ctx, CUfunction func) {
       // This is the number of registers that were sent as arguments, plus the
       // number of reg_info functions, minus the first one.
       if (verbose) {
-  nnout() << "Instrumenting instruction with " << num_regs + reg_infos.size() - 1 << " registers" << std::endl;
+        nnout() << "Instrumenting instruction with " << num_regs + reg_infos.size() - 1 << " registers" << std::endl;
       }
       nvbit_add_call_arg_const_val32(instr, num_regs + reg_infos.size() - 1);
       for (size_t i = 1; i < reg_infos.size(); ++i) {
@@ -394,13 +405,13 @@ void nvbit_at_ctx_term(CUcontext ctx) {
   nnout() << "--- " << type_name << " Operations ---\n";
   nnout() << std::dec;
   auto ecp = exception_counts[type_id];
-  auto old_flags = nnout().flags();
+  auto old_flags = nnout_stream().flags();
   nnout() << std::dec;
   nnout() << "NaN:           " << std::setw(10) << std::get<1>(ecp[0]) << " (" << std::get<0>(ecp[0]) << " repeats)\n";
   nnout() << "Infinity:      " << std::setw(10) << std::get<1>(ecp[1]) << " (" << std::get<0>(ecp[1]) << " repeats)\n";
   nnout() << "Subnormal:     " << std::setw(10) << std::get<1>(ecp[2]) << " (" << std::get<0>(ecp[2]) << " repeats)\n";
   nnout() << "Division by 0: " << std::setw(10) << std::get<1>(ecp[3]) << " (" << std::get<0>(ecp[3]) << " repeats)\n\n";
-  nnout().flags(old_flags);
+  nnout_stream().flags(old_flags);
   };
 
   print_type_exceptions("FP16", FP16);

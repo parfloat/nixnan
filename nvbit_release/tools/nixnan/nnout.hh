@@ -13,6 +13,10 @@
 // Prototype required by user: std::ostream& nnout();
 std::ostream& nnout();
 
+// Return the underlying stream WITHOUT inserting the prefix.
+// Use this for querying/modifying stream flags without accidental output.
+std::ostream& nnout_stream();
+
 // Redirect output to a file. If opening fails, stays on current stream.
 // Prototype required by user: void set_out_file(std::string& filename);
 void set_out_file(std::string& filename);
