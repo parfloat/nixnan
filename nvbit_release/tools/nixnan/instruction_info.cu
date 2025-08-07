@@ -7,6 +7,7 @@
 #include <functional>
 #include <regex>
 #include <cmath>
+#include "nnout.hh"
 
 using InstrType::OperandType;
 
@@ -71,7 +72,7 @@ std::vector<reginsertion> get_regs(Instr *instr, size_t operand, size_t type, si
             break;
         }
         default: {
-            std::cerr << "#nixnan: Unsupported operand type for register extraction: " << (int)op->type << std::endl;
+            nnout() << "Unsupported operand type for register extraction: " << (int)op->type << std::endl;
             break;
         }
     }
