@@ -31,9 +31,9 @@ INCLUDES=-I$(NVBIT_PATH) -I$(UTILITY)
 LIBS=-L$(NVBIT_PATH) -lnvbit
 NVCC_PATH=-L $(subst bin/nvcc,lib64,$(shell which nvcc | tr -s /))
 
-SOURCES=$(wildcard *.cu)
-
+SOURCES=$(wildcard *.cu) $(wildcard *.cc)
 OBJECTS=$(SOURCES:.cu=.o)
+OBJECTS:=$(OBJECTS:.cc=.o)
 #ARCH?=35
 #ARCH?=70
 
@@ -49,6 +49,9 @@ $(NVBIT_TOOL): $(OBJECTS) $(NVBIT_PATH)/libnvbit.a
 
 %.o: %.cu nlohmann/json.hpp instructions.h
 	$(NVCC) -dc -c $(INCLUDES) -Xptxas -cloning=no -Xcompiler -Wall -arch=$(ARCH) -O3 -Xcompiler -fPIC $< -o $@
+
+%.o: %.cc
+	$(CXX) -std=c++17 -c $(INCLUDES) -Wall -O3 -fPIC $< -o $@
 
 instructions.h: instructions.json
 	xxd -i instructions.json > instructions.h

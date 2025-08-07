@@ -41,6 +41,7 @@
 using nixnan::exception_info;
 #include "common.cuh"
 #include "instruction_info.cuh"
+#include "nnout.hh"
 
 uint32_t instr_begin_interval = 0;
 uint32_t instr_end_interval = UINT32_MAX;
@@ -84,8 +85,19 @@ void nvbit_at_init() {
   GET_VAR_INT(
       sampling, "SAMPLING", 0,
       "Instrument a repeat kernel every SAMPLING times");
+  std::string filename;
+  GET_VAR_STR(
+    filename,
+    "LOGFILE",
+    "Path to the optional log file. Default is to print to stderr. "
+    "This is useful for the case when an instrumented program is "
+    "capturing stderr."
+  );
+  if (!filename.empty()) {
+    set_out_file(filename);
+  }
   std::string pad(82, '-');
-  std::cerr << pad << '\n';
+  nnout() << pad << '\n';
 }
 
 void instrument_function(CUcontext ctx, CUfunction func) {
@@ -102,17 +114,17 @@ void instrument_function(CUcontext ctx, CUfunction func) {
 
     std::string kname = cut_kernel_name(nvbit_get_func_name(ctx, func));
     if (verbose) {
-      auto old_flags = std::cerr.flags();
-      std::cerr << "#nixnan: Inspecting function " << nvbit_get_func_name(ctx, f) <<
+      auto old_flags = nnout_stream().flags();
+      nnout() << "Inspecting function " << nvbit_get_func_name(ctx, f) <<
                    " at address 0x" << std::hex << nvbit_get_func_addr(f) << std::endl;
-      std::cerr.flags(old_flags);
+      nnout_stream().flags(old_flags);
     }
 
     for (auto instr : nvbit_get_instrs(ctx, func)){
       auto reg_infos = instruction_info::get_reginfo(instr);
       if (reg_infos.empty()) { continue; }
       if (verbose) {
-        std::cerr << "#nixnan: Instrumenting instruction " << instr->getSass() << std::endl;
+        nnout() << "Instrumenting instruction " << instr->getSass() << std::endl;
       }
 
       uint32_t inst_id = recorder->mk_entry(instr, reg_infos, ctx, f);
@@ -123,14 +135,14 @@ void instrument_function(CUcontext ctx, CUfunction func) {
       nvbit_add_call_arg_const_val32(instr, inst_id, false);
       nvbit_add_call_arg_const_val64(instr, tobits64(&channel_dev), false);
         if (verbose) {
-          std::cerr << "#nixnan: Instrumenting instruction with " << 1 + std::get<0>(reg_infos[0]).num_regs << " registers" << std::endl;
+          nnout() << "Instrumenting instruction with " << 1 + std::get<0>(reg_infos[0]).num_regs << " registers" << std::endl;
         }
       {
         auto [ri, rfuns] = reg_infos[0];
         nvbit_add_call_arg_const_val32(instr, 1 + rfuns.size());
         nvbit_add_call_arg_const_val32(instr, tobits32(ri), true);
         if (verbose) {
-          std::cerr << "#nixnan: Instrumenting operand " << ri.operand << ". div0: " << ri.div0 << ", regs: " << ri.num_regs << ", count: " << ri.count << std::endl;
+          nnout() << "Instrumenting operand " << ri.operand << ". div0: " << ri.div0 << ", regs: " << ri.num_regs << ", count: " << ri.count << std::endl;
         }
         for (auto& rfun : rfuns) {
           rfun();
@@ -151,14 +163,14 @@ void instrument_function(CUcontext ctx, CUfunction func) {
       // This is the number of registers that were sent as arguments, plus the
       // number of reg_info functions, minus the first one.
       if (verbose) {
-        std::cerr << "#nixnan: Instrumenting instruction with " << num_regs + reg_infos.size() - 1 << " registers" << std::endl;
+        nnout() << "Instrumenting instruction with " << num_regs + reg_infos.size() - 1 << " registers" << std::endl;
       }
       nvbit_add_call_arg_const_val32(instr, num_regs + reg_infos.size() - 1);
       for (size_t i = 1; i < reg_infos.size(); ++i) {
         auto [ri, rfuns] = reg_infos[i];
         nvbit_add_call_arg_const_val32(instr, tobits32(ri), true);
         if (verbose) {
-          std::cerr << "#nixnan: Instrumenting operand " << ri.operand << ". div0: " << ri.div0 << ", regs: " << ri.num_regs << std::endl;
+          nnout() << "Instrumenting operand " << ri.operand << ". div0: " << ri.div0 << ", regs: " << ri.num_regs << std::endl;
         }
         for (auto& rfun : rfuns) {
           rfun();
@@ -223,7 +235,7 @@ void recv_thread_fun(std::shared_ptr<nixnan::recorder> recorder, ChannelHost cha
           errors += exceptions[i];
           if (i != exceptions.size() - 1) errors += ",";
         }
-        std::cerr << "#nixnan: error [" << errors << "] detected in operand " << ei->operand() << " of instruction " << instr << " in function "
+          nnout() << "error [" << errors << "] detected in operand " << ei->operand() << " of instruction " << instr << " in function "
                   << func << " at line " << line << " of type " << type << std::endl;
         num_processed_bytes += sizeof(exception_info);
       }
@@ -271,9 +283,9 @@ void nvbit_at_cuda_event(CUcontext ctx, int is_exit, nvbit_api_cuda_t cbid,
         // Initialize kernel count if not present, then increment
         int count = analyzed_kernels[short_name]++;
         if (count == 0) {
-          std::cerr << "#nixnan: running kernel [" << short_name << "] ..." << std::endl;
+          nnout() << "running kernel [" << short_name << "] ..." << std::endl;
         } else if (func_details) {
-          std::cout << "#nixnan: running kernel [" << kernel_name << "] ..."
+          nnout() << "running kernel [" << kernel_name << "] ..."
                     << std::endl;
         }
         ++analyzed_kernels[short_name];
@@ -315,17 +327,17 @@ void nvbit_tool_init(CUcontext ctx) {
   std::string k_whitelist_name = "kernel_whitelist.txt";
   std::string k_blacklist_name = "kernel_blacklist.txt";
 
-  std::cerr << "#nixnan: Initializing GPU context...\n";
+  nnout() << "Initializing GPU context...\n";
   kernel_whitelist = read_from_file(k_whitelist_name);
   kernel_blacklist = read_from_file(k_blacklist_name);
   if (!kernel_whitelist.empty()) {
-    std::cerr << "#nixnan: only instrumenting kernels specified in "
+  nnout() << "Only instrumenting kernels specified in "
               << k_whitelist_name << std::endl;
   } else if (!kernel_blacklist.empty()) {
-    std::cerr << "#nixnan: not instrumenting kernels specified in "
+  nnout() << "Not instrumenting kernels specified in "
               << k_blacklist_name << std::endl;
   } else {
-    std::cerr << "#nixnan: instrumenting all kernels" << std::endl;
+  nnout() << "Instrumenting all kernels" << std::endl;
   }
   recorder = std::make_shared<nixnan::recorder>(TABLE_SIZE);
   recv_thread_started = true;
@@ -385,21 +397,21 @@ void nvbit_at_ctx_term(CUcontext ctx) {
           std::get<0>(exception_counts[ftype][i]) -= std::get<1>(exception_counts[ftype][i]);
       }
   }
-  std::cerr << "#nixnan: Finalizing GPU context...\n\n";
+  nnout() << "Finalizing GPU context...\n\n";
 
-  std::cerr << "#nixnan: ------------ nixnan Report -----------\n\n";
+  nnout() << "------------ nixnan Report -----------\n\n";
 
   auto print_type_exceptions = [&](const std::string& type_name, uint32_t type_id) {
-    std::cerr << "#nixnan: --- " << type_name << " Operations ---\n";
-    std::cerr << std::dec;
-    auto ecp = exception_counts[type_id];
-    auto old_flags = std::cerr.flags();
-    std::cerr << std::dec;
-    std::cerr << "#nixnan: NaN:           " << std::setw(10) << std::get<1>(ecp[0]) << " (" << std::get<0>(ecp[0]) << " repeats)\n";
-    std::cerr << "#nixnan: Infinity:      " << std::setw(10) << std::get<1>(ecp[1]) << " (" << std::get<0>(ecp[1]) << " repeats)\n";
-    std::cerr << "#nixnan: Subnormal:     " << std::setw(10) << std::get<1>(ecp[2]) << " (" << std::get<0>(ecp[2]) << " repeats)\n";
-    std::cerr << "#nixnan: Division by 0: " << std::setw(10) << std::get<1>(ecp[3]) << " (" << std::get<0>(ecp[3]) << " repeats)\n\n";
-    std::cerr.flags(old_flags);
+  nnout() << "--- " << type_name << " Operations ---\n";
+  nnout() << std::dec;
+  auto ecp = exception_counts[type_id];
+  auto old_flags = nnout_stream().flags();
+  nnout() << std::dec;
+  nnout() << "NaN:           " << std::setw(10) << std::get<1>(ecp[0]) << " (" << std::get<0>(ecp[0]) << " repeats)\n";
+  nnout() << "Infinity:      " << std::setw(10) << std::get<1>(ecp[1]) << " (" << std::get<0>(ecp[1]) << " repeats)\n";
+  nnout() << "Subnormal:     " << std::setw(10) << std::get<1>(ecp[2]) << " (" << std::get<0>(ecp[2]) << " repeats)\n";
+  nnout() << "Division by 0: " << std::setw(10) << std::get<1>(ecp[3]) << " (" << std::get<0>(ecp[3]) << " repeats)\n\n";
+  nnout_stream().flags(old_flags);
   };
 
   print_type_exceptions("FP16", FP16);

@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <functional>
 #include "reginfo.cuh"
 #include "nlohmann/json.hpp"
 #include "nvbit.h"
