@@ -33,15 +33,15 @@ namespace nixnan {
     uint32_t recorder::mk_entry(Instr *instr, const std::vector<std::pair<reginfo, std::vector<reginsertion>>> &regs, CUcontext ctx, CUfunction f) {
         std::string instr_str = instr->getSass();
         uint32_t offset = instr->getOffset();
-        char *file_name;
-        char *dir_name;
+        // char *file_name;
+        // char *dir_name;
         uint32_t line = 0;
-        bool ret_line_info = nvbit_get_line_info(ctx, f, offset, &file_name, &dir_name, &line);
+        // bool ret_line_info = nvbit_get_line_info(ctx, f, offset, &file_name, &dir_name, &line);
         std::string path = "[unknown]";
-        if (ret_line_info) {
-            path = file_name;
-            path += dir_name;
-        }
+        // if (ret_line_info) {
+        //     path = file_name;
+        //     path += dir_name;
+        // }
         std::string line_str = std::to_string(line);
 
         std::string func = cut_kernel_name(nvbit_get_func_name(ctx, f));

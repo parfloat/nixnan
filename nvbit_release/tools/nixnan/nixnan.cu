@@ -116,7 +116,7 @@ void instrument_function(CUcontext ctx, CUfunction func) {
     if (verbose) {
       auto old_flags = nnout_stream().flags();
       nnout() << "Inspecting function " << nvbit_get_func_name(ctx, f) <<
-                   " at address 0x" << std::hex << nvbit_get_func_addr(f) << std::endl;
+                   " at address 0x" << std::hex << nvbit_get_func_addr(ctx, f) << std::endl;
       nnout_stream().flags(old_flags);
     }
 
@@ -356,6 +356,7 @@ void nvbit_at_ctx_term(CUcontext ctx) {
 
   std::map<uint32_t, std::array<std::pair<uint32_t, uint32_t>, 4>> exception_counts;
   exception_counts[FP16] = {};
+  exception_counts[BF16] = {};
   exception_counts[FP32] = {};
   exception_counts[FP64] = {};
 
@@ -403,10 +404,10 @@ void nvbit_at_ctx_term(CUcontext ctx) {
 
   auto print_type_exceptions = [&](const std::string& type_name, uint32_t type_id) {
   nnout() << "--- " << type_name << " Operations ---\n";
-  nnout() << std::dec;
+
   auto ecp = exception_counts[type_id];
   auto old_flags = nnout_stream().flags();
-  nnout() << std::dec;
+  nnout_stream() << std::dec;
   nnout() << "NaN:           " << std::setw(10) << std::get<1>(ecp[0]) << " (" << std::get<0>(ecp[0]) << " repeats)\n";
   nnout() << "Infinity:      " << std::setw(10) << std::get<1>(ecp[1]) << " (" << std::get<0>(ecp[1]) << " repeats)\n";
   nnout() << "Subnormal:     " << std::setw(10) << std::get<1>(ecp[2]) << " (" << std::get<0>(ecp[2]) << " repeats)\n";
@@ -415,6 +416,7 @@ void nvbit_at_ctx_term(CUcontext ctx) {
   };
 
   print_type_exceptions("FP16", FP16);
+  print_type_exceptions("BF16", BF16);
   print_type_exceptions("FP32", FP32);
   print_type_exceptions("FP64", FP64);
 }
