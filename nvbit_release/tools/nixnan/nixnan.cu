@@ -393,7 +393,7 @@ void nvbit_at_ctx_term(CUcontext ctx) {
       }
     }
   }
-  for (auto ftype : {FP16, FP32, FP64}) {
+  for (auto ftype : {FP16, BF16, FP32, FP64}) {
       for (size_t i = 0; i < 4; ++i) {
           std::get<0>(exception_counts[ftype][i]) -= std::get<1>(exception_counts[ftype][i]);
       }
