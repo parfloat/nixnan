@@ -116,7 +116,7 @@ void instrument_function(CUcontext ctx, CUfunction func) {
     if (verbose) {
       auto old_flags = nnout_stream().flags();
       nnout() << "Inspecting function " << nvbit_get_func_name(ctx, f) <<
-                   " at address 0x" << std::hex << nvbit_get_func_addr(f) << std::endl;
+                   " at address 0x" << std::hex << nvbit_get_func_addr(ctx, f) << std::endl;
       nnout_stream().flags(old_flags);
     }
 
