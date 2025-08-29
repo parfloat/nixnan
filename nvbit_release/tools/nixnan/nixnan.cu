@@ -214,7 +214,13 @@ void recv_thread_fun(std::shared_ptr<nixnan::recorder> recorder, ChannelHost cha
         std::string func = recorder->get_func(id);
         std::string path = recorder->get_path(id);
         std::string line = recorder->get_line(id);
-        std::string type = type_to_string.at(recorder->get_type(id, ei->operand()));
+        std::string type;
+        if (ei->type() == UNKNOWN) {
+          type = type_to_string.at(recorder->get_type(id, ei->operand()));
+        }
+        else {
+          type = type_to_string.at(ei->type());
+        }
 
         uint32_t exce = ei->exception();
         std::vector<std::string> exceptions;

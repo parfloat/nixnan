@@ -25,14 +25,16 @@ const std::unordered_map<char, std::string> type_to_string = {
   {FP16, "f16"},
   {BF16, "bf16"},
   {FP32, "f32"},
-  {FP64, "f64"}
+  {FP64, "f64"},
+  {UNKNOWN, "unknown"}
 };
 
 const std::unordered_map<std::string, char> string_to_type = {
   {"f16", FP16},
   {"bf16", BF16},
   {"f32", FP32},
-  {"f64", FP64}
+  {"f64", FP64},
+  {"unknown", UNKNOWN}
 };
 
 std::unordered_set<std::string> read_from_file(std::string filename);

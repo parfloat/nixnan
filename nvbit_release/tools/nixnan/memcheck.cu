@@ -22,7 +22,7 @@ void report_error(device_recorder recorder, uint32_t inst_id,
         uint32_t num_exceptions = recorder.record(inst_id, E_NAN, 1);
         if (num_exceptions == 0) {
             ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
-            exception_info ei(get_ctaid(), get_warpid(), inst_id, E_NAN, 1);
+            exception_info ei(get_ctaid(), get_warpid(), inst_id, E_NAN, 1, type);
             channel_dev->push(&ei, sizeof(exception_info));
         }
     }
@@ -35,13 +35,19 @@ void nixnan_check_nans(int pred, device_recorder recorder, uint32_t inst_id,
 
     va_list args;
     va_start(args, arg_count);
-    uint32_t data[2];
-    data[0] = va_arg(args, uint32_t);
+    uint32_t data[4];
+    for (size_t i = 0; i < arg_count; i++) {
+        data[i] = va_arg(args, uint32_t);
+    }
+    va_end(args);
 
-    if (arg_count == 2) {
-        data[1] = va_arg(args, uint32_t);
-        if (type == FP64 || type == UNKNOWN) {
-            report_error(recorder, inst_id, pchannel_dev, FP64, double_is_nan(data[0], data[1]));
+    if (arg_count >= 2) {
+        for (size_t i = 0; i < arg_count; i += 2) {
+            uint32_t x = data[i];
+            uint32_t y = data[i + 1];
+            if (type == FP64 || type == UNKNOWN) {
+                report_error(recorder, inst_id, pchannel_dev, FP64, double_is_nan(x, y));
+            }
         }
     }
 
@@ -57,5 +63,4 @@ void nixnan_check_nans(int pred, device_recorder recorder, uint32_t inst_id,
             report_error(recorder, inst_id, pchannel_dev, BF16, bf162_is_nan(x, true, true));
         }
     }
-    va_end(args);
 }
