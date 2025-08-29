@@ -42,6 +42,7 @@ using nixnan::exception_info;
 #include "common.cuh"
 #include "instruction_info.cuh"
 #include "nnout.hh"
+#include "meminstrumentation.cuh"
 
 uint32_t instr_begin_interval = 0;
 uint32_t instr_end_interval = UINT32_MAX;
@@ -122,58 +123,62 @@ void instrument_function(CUcontext ctx, CUfunction func) {
 
     for (auto instr : nvbit_get_instrs(ctx, func)){
       auto reg_infos = instruction_info::get_reginfo(instr);
-      if (reg_infos.empty()) { continue; }
+      bool meminstr = is_memory_instruction(instr);
+      if (reg_infos.empty() || !meminstr) { continue; }
       if (verbose) {
         nnout() << "Instrumenting instruction " << instr->getSass() << std::endl;
       }
-
-      uint32_t inst_id = recorder->mk_entry(instr, reg_infos, ctx, f);
-      nvbit_insert_call(instr, "nixnan_check_regs", IPOINT_AFTER);
-      nvbit_add_call_arg_guard_pred_val(instr);
-      nvbit_add_call_arg_const_val64(instr, tobits64(recorder->get_device_recorder()), false);
-      // std::cerr << "#nixnan: Instrumenting instruction with ID " << inst_id << std::endl;
-      nvbit_add_call_arg_const_val32(instr, inst_id, false);
-      nvbit_add_call_arg_const_val64(instr, tobits64(&channel_dev), false);
+      if (meminstr) {
+        instrument_memory_instruction(instr, ctx, f, recorder, channel_dev);
+      } else {
+        uint32_t inst_id = recorder->mk_entry(instr, reg_infos, ctx, f);
+        nvbit_insert_call(instr, "nixnan_check_regs", IPOINT_AFTER);
+        nvbit_add_call_arg_guard_pred_val(instr);
+        nvbit_add_call_arg_const_val64(instr, tobits64(recorder->get_device_recorder()), false);
+        // std::cerr << "#nixnan: Instrumenting instruction with ID " << inst_id << std::endl;
+        nvbit_add_call_arg_const_val32(instr, inst_id, false);
+        nvbit_add_call_arg_const_val64(instr, tobits64(&channel_dev), false);
         if (verbose) {
           nnout() << "Instrumenting instruction with " << 1 + std::get<0>(reg_infos[0]).num_regs << " registers" << std::endl;
         }
-      {
-        auto [ri, rfuns] = reg_infos[0];
-        nvbit_add_call_arg_const_val32(instr, 1 + rfuns.size());
-        nvbit_add_call_arg_const_val32(instr, tobits32(ri), true);
-        if (verbose) {
-          nnout() << "Instrumenting operand " << ri.operand << ". div0: " << ri.div0 << ", regs: " << ri.num_regs << ", count: " << ri.count << std::endl;
+        {
+          auto [ri, rfuns] = reg_infos[0];
+          nvbit_add_call_arg_const_val32(instr, 1 + rfuns.size());
+          nvbit_add_call_arg_const_val32(instr, tobits32(ri), true);
+          if (verbose) {
+            nnout() << "Instrumenting operand " << ri.operand << ". div0: " << ri.div0 << ", regs: " << ri.num_regs << ", count: " << ri.count << std::endl;
+          }
+          for (auto& rfun : rfuns) {
+            rfun();
+          }
         }
-        for (auto& rfun : rfuns) {
-          rfun();
-        }
-      }
 
-      nvbit_insert_call(instr, "nixnan_check_regs", IPOINT_BEFORE);
-      nvbit_add_call_arg_guard_pred_val(instr);
-      nvbit_add_call_arg_const_val64(instr, tobits64(recorder->get_device_recorder()), false);
-      // std::cerr << "#nixnan: Instrumenting instruction with ID " << inst_id << std::endl;
-      nvbit_add_call_arg_const_val32(instr, inst_id, false);
-      nvbit_add_call_arg_const_val64(instr, tobits64(&channel_dev), false);
-      size_t num_regs = 0;
-      for (size_t i = 1; i < reg_infos.size(); ++i) {
-        auto [ri, rfuns] = reg_infos[i];
-        num_regs += ri.num_regs;
-      }
-      // This is the number of registers that were sent as arguments, plus the
-      // number of reg_info functions, minus the first one.
-      if (verbose) {
-        nnout() << "Instrumenting instruction with " << num_regs + reg_infos.size() - 1 << " registers" << std::endl;
-      }
-      nvbit_add_call_arg_const_val32(instr, num_regs + reg_infos.size() - 1);
-      for (size_t i = 1; i < reg_infos.size(); ++i) {
-        auto [ri, rfuns] = reg_infos[i];
-        nvbit_add_call_arg_const_val32(instr, tobits32(ri), true);
-        if (verbose) {
-          nnout() << "Instrumenting operand " << ri.operand << ". div0: " << ri.div0 << ", regs: " << ri.num_regs << std::endl;
+        nvbit_insert_call(instr, "nixnan_check_regs", IPOINT_BEFORE);
+        nvbit_add_call_arg_guard_pred_val(instr);
+        nvbit_add_call_arg_const_val64(instr, tobits64(recorder->get_device_recorder()), false);
+        // std::cerr << "#nixnan: Instrumenting instruction with ID " << inst_id << std::endl;
+        nvbit_add_call_arg_const_val32(instr, inst_id, false);
+        nvbit_add_call_arg_const_val64(instr, tobits64(&channel_dev), false);
+        size_t num_regs = 0;
+        for (size_t i = 1; i < reg_infos.size(); ++i) {
+          auto [ri, rfuns] = reg_infos[i];
+          num_regs += ri.num_regs;
         }
-        for (auto& rfun : rfuns) {
-          rfun();
+        // This is the number of registers that were sent as arguments, plus the
+        // number of reg_info functions, minus the first one.
+        if (verbose) {
+          nnout() << "Instrumenting instruction with " << num_regs + reg_infos.size() - 1 << " registers" << std::endl;
+        }
+        nvbit_add_call_arg_const_val32(instr, num_regs + reg_infos.size() - 1);
+        for (size_t i = 1; i < reg_infos.size(); ++i) {
+          auto [ri, rfuns] = reg_infos[i];
+          nvbit_add_call_arg_const_val32(instr, tobits32(ri), true);
+          if (verbose) {
+            nnout() << "Instrumenting operand " << ri.operand << ". div0: " << ri.div0 << ", regs: " << ri.num_regs << std::endl;
+          }
+          for (auto& rfun : rfuns) {
+            rfun();
+          }
         }
       }
     }

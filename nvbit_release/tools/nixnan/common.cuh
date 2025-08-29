@@ -1,6 +1,11 @@
 #ifndef COMMON_CUH
 #define COMMON_CUH
 
+extern int verbose;
+extern int func_details;
+extern int print_ill_instr;
+extern int sampling;
+
 #include <cstdint>
 #include <string>
 #include <fstream>
