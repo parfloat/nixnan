@@ -16,9 +16,10 @@ const uint32_t E_NAN = 1,
 const char FP16 = 0,
   BF16 = 1,
   FP32 = 2,
-  FP64 = 3;
+  FP64 = 3,
+  UNKNOWN = 127;
 
-  #include <unordered_map>
+#include <unordered_map>
 
 const std::unordered_map<char, std::string> type_to_string = {
   {FP16, "f16"},
