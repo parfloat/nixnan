@@ -27,14 +27,16 @@ void instrument_memory_instruction(Instr* instr, CUcontext ctx, CUfunction func,
         nnout() << "Unsupported store instruction: " << opcode << std::endl;
         return;
     }
-
+    if (verbose) {
+        nnout() << "Instrumenting memory instruction: " << opcode  << " of width " << width << std::endl;
+    }
     // Determine possible type information
     uint32_t type = find_type(instr, ctx, func);
 
     // Register with the recorder
     std::vector<std::pair<reginfo, std::vector<reginsertion>>> v;
-    recorder->mk_entry(instr, v, ctx, func);
-    uint32_t inst_id = 0;
+    uint32_t inst_id = recorder->mk_entry(instr, v, ctx, func);
+
 
     nvbit_insert_call(instr, "nixnan_check_nans", IPOINT_BEFORE);
     // void nixnan_check_nans(int pred, device_recorder recorder, uint32_t inst_id,
@@ -45,8 +47,11 @@ void instrument_memory_instruction(Instr* instr, CUcontext ctx, CUfunction func,
     nvbit_add_call_arg_const_val64(instr, tobits64(&channel_dev), false);
     nvbit_add_call_arg_const_val32(instr, type, false);
     nvbit_add_call_arg_const_val32(instr, width/32, false);
+
+    int reg = instr->getOperand(1)->u.reg.num;
     // Add all the registers
     for (size_t i = 0; i < width/32; i++) {
-        nvbit_add_call_arg_reg_val(instr, i, true);
+        nnout() << "Register: " << reg + i << std::endl;
+        nvbit_add_call_arg_reg_val(instr, reg + i , true);
     }
 }

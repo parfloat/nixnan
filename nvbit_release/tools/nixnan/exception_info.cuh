@@ -7,7 +7,7 @@ namespace nixnan {
     struct exception_info {
         __host__ __device__
         exception_info(int4 cta, uint32_t warp_id, uint32_t inst_id, uint32_t exce, uint32_t operand,
-                       uint32_t tp_override = 0) :
+                       uint32_t tp_override = UNKNOWN) :
                        inst_id(inst_id), exce(exce), oper(operand), tp_override(tp_override) {
             this->cta = cta;
             cta.w = warp_id;
