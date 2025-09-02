@@ -124,7 +124,7 @@ void instrument_function(CUcontext ctx, CUfunction func) {
     for (auto instr : nvbit_get_instrs(ctx, func)){
       auto reg_infos = instruction_info::get_reginfo(instr);
       bool meminstr = is_memory_instruction(instr);
-      if (reg_infos.empty() || !meminstr) { continue; }
+      if (reg_infos.empty() && !meminstr) { continue; }
       if (verbose) {
         nnout() << "Instrumenting instruction " << instr->getSass() << std::endl;
       }

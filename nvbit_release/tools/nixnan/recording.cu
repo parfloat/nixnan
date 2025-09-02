@@ -30,6 +30,7 @@ namespace nixnan {
             cudaDeviceSynchronize();
         }
     }
+
     uint32_t recorder::mk_entry(Instr *instr, const std::vector<std::pair<reginfo, std::vector<reginsertion>>> &regs, CUcontext ctx, CUfunction f) {
         std::string instr_str = instr->getSass();
         uint32_t offset = instr->getOffset();

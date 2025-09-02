@@ -3,6 +3,7 @@
 
 #include "nvbit.h"
 #include "recording.h"
+#include "utils/channel.hpp"
 
 bool is_memory_instruction(Instr* instr);
 void instrument_memory_instruction(Instr* instr, CUcontext ctx, CUfunction func,

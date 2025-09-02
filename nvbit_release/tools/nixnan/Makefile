@@ -63,6 +63,9 @@ nlohmann/json.hpp:
 inject_funs.o: inject_funs.cu
 	$(NVCC) $(INCLUDES) -maxrregcount=24 -Xptxas -astoolspatch --keep-device-functions -arch=$(ARCH) -Xcompiler -Wall -Xcompiler -fPIC -c $< -o $@
 
+memcheck.o: memcheck.cu
+	$(NVCC) $(INCLUDES) -maxrregcount=24 -Xptxas -astoolspatch --keep-device-functions -arch=$(ARCH) -Xcompiler -Wall -Xcompiler -fPIC -c $< -o $@
+
 test: SUBDIRS_TEST
 
 SUBDIRS_TEST: $(SUBDIRS)
