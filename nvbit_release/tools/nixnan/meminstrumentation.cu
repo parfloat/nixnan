@@ -3,13 +3,41 @@
 #include "common.cuh"
 #include "nnout.hh"
 #include "utils/channel.hpp"
+#include "instruction_info.cuh"
+
+using namespace InstrType;
 
 bool is_memory_instruction(Instr* instr) {
   return std::string(instr->getOpcode()).find("STG") != std::string::npos;
 }
 
 uint32_t find_type(Instr* instr, CUcontext ctx, CUfunction func) {
-    nvbit_get_CFG(ctx, func);
+    auto cfg = nvbit_get_CFG(ctx, func);
+    for (auto bb : cfg.bbs) {
+        int reg = -1;
+        for (auto it = bb->instrs.rbegin(); it != bb->instrs.rend(); ++it) {
+            auto inst = *it;
+            nnout() << inst->getSass() << std::endl;
+            nnout() << reg << std::endl;
+            if (inst == instr) {
+                reg = instr->getOperand(1)->u.reg.num;
+                nnout() << "Found register: " << reg << std::endl;
+            } else if (reg != -1) {
+                for (auto i = 0; i < inst->getNumOperands(); i++) {
+                    auto op = inst->getOperand(i);
+                    if (op->type == OperandType::REG && op->u.reg.num == reg) {
+                        // We found the prior instruction that used this register.
+                        // Speculate that this is the type
+                        auto ris = instruction_info::get_reginfo(inst);
+                        if (ris.size() == 0) {
+                            return UNKNOWN;
+                        }
+                        return ris[i].first.type;
+                    }
+                }
+            }
+        }
+    }
     return UNKNOWN;
 }
 
@@ -32,11 +60,20 @@ void instrument_memory_instruction(Instr* instr, CUcontext ctx, CUfunction func,
     }
     // Determine possible type information
     uint32_t type = find_type(instr, ctx, func);
-
+    if (type == UNKNOWN) {
+        if (verbose) {
+            nnout() << "Skipping memory instruction of unknown type: " << opcode << std::endl;
+        }
+        return;
+    } else if (verbose) {
+        nnout() << "Found memory instruction of type: " << type_to_string.at(type) << std::endl;
+    }
+    reginfo ri;
+    ri.type = type;
     // Register with the recorder
-    std::vector<std::pair<reginfo, std::vector<reginsertion>>> v;
+    std::vector<std::pair<reginfo, std::vector<reginsertion>>> v =
+        {std::pair<reginfo, std::vector<reginsertion>>(ri, std::vector<reginsertion>{})};
     uint32_t inst_id = recorder->mk_entry(instr, v, ctx, func);
-
 
     nvbit_insert_call(instr, "nixnan_check_nans", IPOINT_BEFORE);
     // void nixnan_check_nans(int pred, device_recorder recorder, uint32_t inst_id,
@@ -51,7 +88,6 @@ void instrument_memory_instruction(Instr* instr, CUcontext ctx, CUfunction func,
     int reg = instr->getOperand(1)->u.reg.num;
     // Add all the registers
     for (size_t i = 0; i < width/32; i++) {
-        nnout() << "Register: " << reg + i << std::endl;
         nvbit_add_call_arg_reg_val(instr, reg + i , true);
     }
 }
