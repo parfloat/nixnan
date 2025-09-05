@@ -17,11 +17,8 @@ uint32_t find_type(Instr* instr, CUcontext ctx, CUfunction func) {
         int reg = -1;
         for (auto it = bb->instrs.rbegin(); it != bb->instrs.rend(); ++it) {
             auto inst = *it;
-            nnout() << inst->getSass() << std::endl;
-            nnout() << reg << std::endl;
             if (inst == instr) {
                 reg = instr->getOperand(1)->u.reg.num;
-                nnout() << "Found register: " << reg << std::endl;
             } else if (reg != -1) {
                 for (auto i = 0; i < inst->getNumOperands(); i++) {
                     auto op = inst->getOperand(i);
@@ -30,6 +27,7 @@ uint32_t find_type(Instr* instr, CUcontext ctx, CUfunction func) {
                         // Speculate that this is the type
                         auto ris = instruction_info::get_reginfo(inst);
                         if (ris.size() == 0) {
+                            // Not a floating point instruction.
                             return UNKNOWN;
                         }
                         return ris[i].first.type;

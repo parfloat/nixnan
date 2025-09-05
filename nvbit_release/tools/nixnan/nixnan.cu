@@ -228,7 +228,6 @@ void recv_thread_fun(std::shared_ptr<nixnan::recorder> recorder, ChannelHost cha
           type = type_to_string.at(recorder->get_type(id, ei->operand()));
         }
         else {
-          nnout() << "Overridden type: " << type_to_string.at(ei->type()) << std::endl;
           type = type_to_string.at(ei->type());
         }
 
