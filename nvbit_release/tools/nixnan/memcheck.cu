@@ -26,8 +26,10 @@ void report_error(device_recorder recorder, uint32_t inst_id,
         uint32_t num_exceptions = recorder.record(inst_id, E_NAN, 1);
         if (num_exceptions == 0) {
             ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
-            exception_info ei(get_ctaid(), get_warpid(), inst_id, E_NAN, 1, type);
-            channel_dev->push(&ei, sizeof(exception_info));
+            for (int skip = 0; skip < 2; skip++) {
+                exception_info ei(get_ctaid(), get_warpid(), inst_id, E_NAN, 1, type, skip);
+                channel_dev->push(&ei, sizeof(exception_info));
+            }
         }
     }
 }

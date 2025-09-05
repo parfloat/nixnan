@@ -210,6 +210,10 @@ void recv_thread_fun(std::shared_ptr<nixnan::recorder> recorder, ChannelHost cha
         exception_info *ei = reinterpret_cast<exception_info*>(&recv_buffer[num_processed_bytes]);
         /* when we get this cta_id_x it means the kernel has completed
           */
+        if (ei->to_skip()) {
+          num_processed_bytes += sizeof(exception_info);
+          continue;
+        }
         if (ei->warp() == -1) {
           recv_thread_receiving = false;
           break;
