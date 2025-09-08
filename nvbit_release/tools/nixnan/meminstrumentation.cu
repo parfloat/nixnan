@@ -50,7 +50,9 @@ void instrument_memory_instruction(Instr* instr, CUcontext ctx, CUfunction func,
         width = 64;
     } else if (opcode.find("U8") != std::string::npos ||
                opcode.find("U16") != std::string::npos) {
-        nnout() << "Unsupported store instruction: " << opcode << std::endl;
+        if (verbose) {
+            nnout() << "Unsupported store instruction: " << opcode << std::endl;
+        }
         return;
     }
     if (verbose) {
@@ -71,7 +73,7 @@ void instrument_memory_instruction(Instr* instr, CUcontext ctx, CUfunction func,
     // Register with the recorder
     std::vector<std::pair<reginfo, std::vector<reginsertion>>> v =
         {std::pair<reginfo, std::vector<reginsertion>>(ri, std::vector<reginsertion>{})};
-    uint32_t inst_id = recorder->mk_entry(instr, v, ctx, func);
+    uint32_t inst_id = recorder->mk_entry(instr, v, ctx, func, true);
 
     nvbit_insert_call(instr, "nixnan_check_nans", IPOINT_BEFORE);
     // void nixnan_check_nans(int pred, device_recorder recorder, uint32_t inst_id,

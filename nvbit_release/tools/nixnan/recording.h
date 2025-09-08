@@ -41,8 +41,10 @@ namespace nixnan {
         recorder& operator=(recorder&&) = delete;
         recorder(size_t sz);
         ~recorder();
-        uint32_t mk_entry(Instr *instr, const std::vector<std::pair<reginfo, std::vector<reginsertion>>> &regs, CUcontext ctx, CUfunction f);
-        uint32_t mk_entry(std::string& instr, std::string& path, std::string& line, std::string& func, char* optypes);
+        uint32_t mk_entry(Instr *instr, const std::vector<std::pair<reginfo, std::vector<reginsertion>>> &regs,
+                          CUcontext ctx, CUfunction f, bool is_mem = false);
+        uint32_t mk_entry(std::string& instr, std::string& path, std::string& line, std::string& func,
+                          char* optypes, bool is_mem = false);
         void free_device();
         void end();
         device_recorder get_device_recorder();
@@ -65,6 +67,7 @@ namespace nixnan {
             std::string line;
             std::string func;
             char opertypes[OPERANDS];
+            bool is_mem;
         };
         host_entry* inst_info;
         // Notice this is a pointer to a device array
