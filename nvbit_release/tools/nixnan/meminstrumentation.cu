@@ -72,7 +72,8 @@ void instrument_memory_instruction(Instr* instr, CUcontext ctx, CUfunction func,
     ri.type = type;
     // Register with the recorder
     std::vector<std::pair<reginfo, std::vector<reginsertion>>> v =
-        {std::pair<reginfo, std::vector<reginsertion>>(ri, std::vector<reginsertion>{})};
+        {std::pair<reginfo, std::vector<reginsertion>>(ri, std::vector<reginsertion>{}),
+         std::pair<reginfo, std::vector<reginsertion>>(ri, std::vector<reginsertion>{})};
     uint32_t inst_id = recorder->mk_entry(instr, v, ctx, func, true);
 
     nvbit_insert_call(instr, "nixnan_check_nans", IPOINT_BEFORE);

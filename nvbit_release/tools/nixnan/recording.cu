@@ -32,7 +32,7 @@ namespace nixnan {
     }
 
     uint32_t recorder::mk_entry(Instr *instr, const std::vector<std::pair<reginfo, std::vector<reginsertion>>> &regs,
-                                CUcontext ctx, CUfunction f, bool is_mem = false) {
+                                CUcontext ctx, CUfunction f, bool is_mem) {
         std::string instr_str = instr->getSass();
         uint32_t offset = instr->getOffset();
         // char *file_name;
@@ -92,5 +92,8 @@ namespace nixnan {
     uint32_t recorder::get_exce(uint32_t id, uint32_t exce, uint32_t op) {
         size_t index = id << (SH_AMT) | op << EXCEBITS | exce;
         return host_errors[index];
+    }
+    bool recorder::is_mem(uint32_t id) {
+        return inst_info[id].is_mem;
     }
 }

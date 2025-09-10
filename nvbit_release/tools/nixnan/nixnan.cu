@@ -50,6 +50,7 @@ int verbose = 0;
 int func_details = 0;
 int print_ill_instr = 0;
 int sampling = 0;
+bool instrument_mem = false;
 volatile bool recv_thread_started = false;
 volatile bool recv_thread_receiving = false;
 
@@ -86,6 +87,8 @@ void nvbit_at_init() {
   GET_VAR_INT(
       sampling, "SAMPLING", 0,
       "Instrument a repeat kernel every SAMPLING times");
+  GET_VAR_INT(instrument_mem, "INSTR_MEM", 0,
+              "Instrument memory instructions for NaN/Inf detection");
   std::string filename;
   GET_VAR_STR(
     filename,
@@ -369,11 +372,12 @@ void nvbit_at_ctx_term(CUcontext ctx) {
   recorder->free_device();
   size_t num_inst = recorder->get_size();
 
-  std::map<uint32_t, std::array<std::pair<uint32_t, uint32_t>, 4>> exception_counts;
-  exception_counts[FP16] = {};
-  exception_counts[BF16] = {};
-  exception_counts[FP32] = {};
-  exception_counts[FP64] = {};
+  std::map<std::pair<uint32_t, bool>, std::array<std::pair<uint32_t, uint32_t>, 4>> exception_counts;
+  for (auto ftype : {FP16, BF16, FP32, FP64}) {
+    for (bool is_mem : {false, true}) {
+      exception_counts[{ftype, is_mem}] = {};
+    }
+  }
 
   for (size_t i = 0; i < num_inst; ++i) {
     for (int op = 0; op < OPERANDS; ++op) {
@@ -381,28 +385,29 @@ void nvbit_at_ctx_term(CUcontext ctx) {
         size_t errors = recorder->get_exce(i, exce, op);
         if (errors == 0) continue;
         uint32_t type = recorder->get_type(i, op);
+        bool is_mem = recorder->is_mem(i);
         if (exce & E_NAN) {
-          std::get<0>(exception_counts[type][0]) += errors;
+          std::get<0>(exception_counts[{type, is_mem}][0]) += errors;
           if (errors > 0) {
-            std::get<1>(exception_counts[type][0])++;
+            std::get<1>(exception_counts[{type, is_mem}][0])++;
           }
         }
         if (exce & E_INF) {
-          std::get<0>(exception_counts[type][1]) += errors;
+          std::get<0>(exception_counts[{type, is_mem}][1]) += errors;
           if (errors > 0) {
-            std::get<1>(exception_counts[type][1])++;
+            std::get<1>(exception_counts[{type, is_mem}][1])++;
           }
         }
         if (exce & E_SUB) {
-          std::get<0>(exception_counts[type][2]) += errors;
+          std::get<0>(exception_counts[{type, is_mem}][2]) += errors;
           if (errors > 0) {
-            std::get<1>(exception_counts[type][2])++;
+            std::get<1>(exception_counts[{type, is_mem}][2])++;
           }
         }
         if (exce & E_DIV0) {
-          std::get<0>(exception_counts[type][3]) += errors;
+          std::get<0>(exception_counts[{type, is_mem}][3]) += errors;
           if (errors > 0) {
-            std::get<1>(exception_counts[type][3])++;
+            std::get<1>(exception_counts[{type, is_mem}][3])++;
           }
         }
       }
@@ -410,28 +415,32 @@ void nvbit_at_ctx_term(CUcontext ctx) {
   }
   for (auto ftype : {FP16, BF16, FP32, FP64}) {
       for (size_t i = 0; i < 4; ++i) {
-          std::get<0>(exception_counts[ftype][i]) -= std::get<1>(exception_counts[ftype][i]);
+          std::get<0>(exception_counts[{ftype, false}][i]) -= std::get<1>(exception_counts[{ftype, false}][i]);
+          std::get<0>(exception_counts[{ftype, true}][i]) -= std::get<1>(exception_counts[{ftype, true}][i]);
       }
   }
   nnout() << "Finalizing GPU context...\n\n";
 
   nnout() << "------------ nixnan Report -----------\n\n";
+  
+  auto print_type_exceptions = [&](const std::string& type_name, uint32_t type_id, bool is_mem) {
+    nnout() << "--- " << type_name << (is_mem ? " Memory " : "") << " Operations ---\n";
 
-  auto print_type_exceptions = [&](const std::string& type_name, uint32_t type_id) {
-  nnout() << "--- " << type_name << " Operations ---\n";
-
-  auto ecp = exception_counts[type_id];
-  auto old_flags = nnout_stream().flags();
-  nnout_stream() << std::dec;
-  nnout() << "NaN:           " << std::setw(10) << std::get<1>(ecp[0]) << " (" << std::get<0>(ecp[0]) << " repeats)\n";
-  nnout() << "Infinity:      " << std::setw(10) << std::get<1>(ecp[1]) << " (" << std::get<0>(ecp[1]) << " repeats)\n";
-  nnout() << "Subnormal:     " << std::setw(10) << std::get<1>(ecp[2]) << " (" << std::get<0>(ecp[2]) << " repeats)\n";
-  nnout() << "Division by 0: " << std::setw(10) << std::get<1>(ecp[3]) << " (" << std::get<0>(ecp[3]) << " repeats)\n\n";
-  nnout_stream().flags(old_flags);
+    auto ecp = exception_counts[{type_id, is_mem}];
+    auto old_flags = nnout_stream().flags();
+    nnout_stream() << std::dec;
+    nnout() << "NaN:           " << std::setw(10) << std::get<1>(ecp[0]) << " (" << std::get<0>(ecp[0]) << " repeats)\n";
+    if (!is_mem) {
+      nnout() << "Infinity:      " << std::setw(10) << std::get<1>(ecp[1]) << " (" << std::get<0>(ecp[1]) << " repeats)\n";
+      nnout() << "Subnormal:     " << std::setw(10) << std::get<1>(ecp[2]) << " (" << std::get<0>(ecp[2]) << " repeats)\n";
+      nnout() << "Division by 0: " << std::setw(10) << std::get<1>(ecp[3]) << " (" << std::get<0>(ecp[3]) << " repeats)\n\n";
+    }
+    nnout_stream().flags(old_flags);
   };
-
-  print_type_exceptions("FP16", FP16);
-  print_type_exceptions("BF16", BF16);
-  print_type_exceptions("FP32", FP32);
-  print_type_exceptions("FP64", FP64);
+  for (bool is_mem : {false, true}) {
+    print_type_exceptions("FP16", FP16, is_mem);
+    print_type_exceptions("BF16", BF16, is_mem);
+    print_type_exceptions("FP32", FP32, is_mem);
+    print_type_exceptions("FP64", FP64, is_mem);
+  }
 }

@@ -55,6 +55,7 @@ namespace nixnan {
         uint32_t get_type(uint32_t id, uint32_t op);
         uint32_t get_exce(uint32_t id, uint32_t exce, uint32_t op);
         size_t get_size() const { return size; }
+        bool is_mem(uint32_t id);
         uint32_t * get_host_errors() const {
             return host_errors;
         }
