@@ -280,23 +280,5 @@
       }
     ],
     "description": ""
-  },
-  "FSEL":
-  {"registers":
-    [
-      {
-        "type": "f32",
-        "count": 1
-      },
-      {
-        "type": "f32",
-        "count": 1
-      },
-      {
-        "type": "f32",
-        "count": 1
-      }
-    ],
-    "description": "Floating-point select"
   }
 }
