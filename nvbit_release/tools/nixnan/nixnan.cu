@@ -42,6 +42,7 @@ using nixnan::exception_info;
 #include "common.cuh"
 #include "instruction_info.cuh"
 #include "nnout.hh"
+#include "meminstrumentation.cuh"
 
 uint32_t instr_begin_interval = 0;
 uint32_t instr_end_interval = UINT32_MAX;
@@ -49,6 +50,7 @@ int verbose = 0;
 int func_details = 0;
 int print_ill_instr = 0;
 int sampling = 0;
+bool instrument_mem = false;
 volatile bool recv_thread_started = false;
 volatile bool recv_thread_receiving = false;
 
@@ -85,6 +87,8 @@ void nvbit_at_init() {
   GET_VAR_INT(
       sampling, "SAMPLING", 0,
       "Instrument a repeat kernel every SAMPLING times");
+  GET_VAR_INT(instrument_mem, "INSTR_MEM", 0,
+              "Instrument memory instructions for NaN/Inf detection");
   std::string filename;
   GET_VAR_STR(
     filename,
@@ -122,58 +126,62 @@ void instrument_function(CUcontext ctx, CUfunction func) {
 
     for (auto instr : nvbit_get_instrs(ctx, func)){
       auto reg_infos = instruction_info::get_reginfo(instr);
-      if (reg_infos.empty()) { continue; }
+      bool meminstr = is_memory_instruction(instr);
+      if (reg_infos.empty() && !meminstr) { continue; }
       if (verbose) {
         nnout() << "Instrumenting instruction " << instr->getSass() << std::endl;
       }
-
-      uint32_t inst_id = recorder->mk_entry(instr, reg_infos, ctx, f);
-      nvbit_insert_call(instr, "nixnan_check_regs", IPOINT_AFTER);
-      nvbit_add_call_arg_guard_pred_val(instr);
-      nvbit_add_call_arg_const_val64(instr, tobits64(recorder->get_device_recorder()), false);
-      // std::cerr << "#nixnan: Instrumenting instruction with ID " << inst_id << std::endl;
-      nvbit_add_call_arg_const_val32(instr, inst_id, false);
-      nvbit_add_call_arg_const_val64(instr, tobits64(&channel_dev), false);
+      if (meminstr) {
+        instrument_memory_instruction(instr, ctx, f, recorder, channel_dev);
+      } else {
+        uint32_t inst_id = recorder->mk_entry(instr, reg_infos, ctx, f);
+        nvbit_insert_call(instr, "nixnan_check_regs", IPOINT_AFTER);
+        nvbit_add_call_arg_guard_pred_val(instr);
+        nvbit_add_call_arg_const_val64(instr, tobits64(recorder->get_device_recorder()), false);
+        // std::cerr << "#nixnan: Instrumenting instruction with ID " << inst_id << std::endl;
+        nvbit_add_call_arg_const_val32(instr, inst_id, false);
+        nvbit_add_call_arg_const_val64(instr, tobits64(&channel_dev), false);
         if (verbose) {
           nnout() << "Instrumenting instruction with " << 1 + std::get<0>(reg_infos[0]).num_regs << " registers" << std::endl;
         }
-      {
-        auto [ri, rfuns] = reg_infos[0];
-        nvbit_add_call_arg_const_val32(instr, 1 + rfuns.size());
-        nvbit_add_call_arg_const_val32(instr, tobits32(ri), true);
-        if (verbose) {
-          nnout() << "Instrumenting operand " << ri.operand << ". div0: " << ri.div0 << ", regs: " << ri.num_regs << ", count: " << ri.count << std::endl;
+        {
+          auto [ri, rfuns] = reg_infos[0];
+          nvbit_add_call_arg_const_val32(instr, 1 + rfuns.size());
+          nvbit_add_call_arg_const_val32(instr, tobits32(ri), true);
+          if (verbose) {
+            nnout() << "Instrumenting operand " << ri.operand << ". div0: " << ri.div0 << ", regs: " << ri.num_regs << ", count: " << ri.count << std::endl;
+          }
+          for (auto& rfun : rfuns) {
+            rfun();
+          }
         }
-        for (auto& rfun : rfuns) {
-          rfun();
-        }
-      }
 
-      nvbit_insert_call(instr, "nixnan_check_regs", IPOINT_BEFORE);
-      nvbit_add_call_arg_guard_pred_val(instr);
-      nvbit_add_call_arg_const_val64(instr, tobits64(recorder->get_device_recorder()), false);
-      // std::cerr << "#nixnan: Instrumenting instruction with ID " << inst_id << std::endl;
-      nvbit_add_call_arg_const_val32(instr, inst_id, false);
-      nvbit_add_call_arg_const_val64(instr, tobits64(&channel_dev), false);
-      size_t num_regs = 0;
-      for (size_t i = 1; i < reg_infos.size(); ++i) {
-        auto [ri, rfuns] = reg_infos[i];
-        num_regs += ri.num_regs;
-      }
-      // This is the number of registers that were sent as arguments, plus the
-      // number of reg_info functions, minus the first one.
-      if (verbose) {
-        nnout() << "Instrumenting instruction with " << num_regs + reg_infos.size() - 1 << " registers" << std::endl;
-      }
-      nvbit_add_call_arg_const_val32(instr, num_regs + reg_infos.size() - 1);
-      for (size_t i = 1; i < reg_infos.size(); ++i) {
-        auto [ri, rfuns] = reg_infos[i];
-        nvbit_add_call_arg_const_val32(instr, tobits32(ri), true);
-        if (verbose) {
-          nnout() << "Instrumenting operand " << ri.operand << ". div0: " << ri.div0 << ", regs: " << ri.num_regs << std::endl;
+        nvbit_insert_call(instr, "nixnan_check_regs", IPOINT_BEFORE);
+        nvbit_add_call_arg_guard_pred_val(instr);
+        nvbit_add_call_arg_const_val64(instr, tobits64(recorder->get_device_recorder()), false);
+        // std::cerr << "#nixnan: Instrumenting instruction with ID " << inst_id << std::endl;
+        nvbit_add_call_arg_const_val32(instr, inst_id, false);
+        nvbit_add_call_arg_const_val64(instr, tobits64(&channel_dev), false);
+        size_t num_regs = 0;
+        for (size_t i = 1; i < reg_infos.size(); ++i) {
+          auto [ri, rfuns] = reg_infos[i];
+          num_regs += ri.num_regs;
         }
-        for (auto& rfun : rfuns) {
-          rfun();
+        // This is the number of registers that were sent as arguments, plus the
+        // number of reg_info functions, minus the first one.
+        if (verbose) {
+          nnout() << "Instrumenting instruction with " << num_regs + reg_infos.size() - 1 << " registers" << std::endl;
+        }
+        nvbit_add_call_arg_const_val32(instr, num_regs + reg_infos.size() - 1);
+        for (size_t i = 1; i < reg_infos.size(); ++i) {
+          auto [ri, rfuns] = reg_infos[i];
+          nvbit_add_call_arg_const_val32(instr, tobits32(ri), true);
+          if (verbose) {
+            nnout() << "Instrumenting operand " << ri.operand << ". div0: " << ri.div0 << ", regs: " << ri.num_regs << std::endl;
+          }
+          for (auto& rfun : rfuns) {
+            rfun();
+          }
         }
       }
     }
@@ -205,6 +213,10 @@ void recv_thread_fun(std::shared_ptr<nixnan::recorder> recorder, ChannelHost cha
         exception_info *ei = reinterpret_cast<exception_info*>(&recv_buffer[num_processed_bytes]);
         /* when we get this cta_id_x it means the kernel has completed
           */
+        if (ei->to_skip()) {
+          num_processed_bytes += sizeof(exception_info);
+          continue;
+        }
         if (ei->warp() == -1) {
           recv_thread_receiving = false;
           break;
@@ -214,7 +226,13 @@ void recv_thread_fun(std::shared_ptr<nixnan::recorder> recorder, ChannelHost cha
         std::string func = recorder->get_func(id);
         std::string path = recorder->get_path(id);
         std::string line = recorder->get_line(id);
-        std::string type = type_to_string.at(recorder->get_type(id, ei->operand()));
+        std::string type;
+        if (ei->type() == UNKNOWN) {
+          type = type_to_string.at(recorder->get_type(id, ei->operand()));
+        }
+        else {
+          type = type_to_string.at(ei->type());
+        }
 
         uint32_t exce = ei->exception();
         std::vector<std::string> exceptions;
@@ -354,11 +372,12 @@ void nvbit_at_ctx_term(CUcontext ctx) {
   recorder->free_device();
   size_t num_inst = recorder->get_size();
 
-  std::map<uint32_t, std::array<std::pair<uint32_t, uint32_t>, 4>> exception_counts;
-  exception_counts[FP16] = {};
-  exception_counts[BF16] = {};
-  exception_counts[FP32] = {};
-  exception_counts[FP64] = {};
+  std::map<std::pair<uint32_t, bool>, std::array<std::pair<uint32_t, uint32_t>, 4>> exception_counts;
+  for (auto ftype : {FP16, BF16, FP32, FP64}) {
+    for (bool is_mem : {false, true}) {
+      exception_counts[{ftype, is_mem}] = {};
+    }
+  }
 
   for (size_t i = 0; i < num_inst; ++i) {
     for (int op = 0; op < OPERANDS; ++op) {
@@ -366,28 +385,29 @@ void nvbit_at_ctx_term(CUcontext ctx) {
         size_t errors = recorder->get_exce(i, exce, op);
         if (errors == 0) continue;
         uint32_t type = recorder->get_type(i, op);
+        bool is_mem = recorder->is_mem(i);
         if (exce & E_NAN) {
-          std::get<0>(exception_counts[type][0]) += errors;
+          std::get<0>(exception_counts[{type, is_mem}][0]) += errors;
           if (errors > 0) {
-            std::get<1>(exception_counts[type][0])++;
+            std::get<1>(exception_counts[{type, is_mem}][0])++;
           }
         }
         if (exce & E_INF) {
-          std::get<0>(exception_counts[type][1]) += errors;
+          std::get<0>(exception_counts[{type, is_mem}][1]) += errors;
           if (errors > 0) {
-            std::get<1>(exception_counts[type][1])++;
+            std::get<1>(exception_counts[{type, is_mem}][1])++;
           }
         }
         if (exce & E_SUB) {
-          std::get<0>(exception_counts[type][2]) += errors;
+          std::get<0>(exception_counts[{type, is_mem}][2]) += errors;
           if (errors > 0) {
-            std::get<1>(exception_counts[type][2])++;
+            std::get<1>(exception_counts[{type, is_mem}][2])++;
           }
         }
         if (exce & E_DIV0) {
-          std::get<0>(exception_counts[type][3]) += errors;
+          std::get<0>(exception_counts[{type, is_mem}][3]) += errors;
           if (errors > 0) {
-            std::get<1>(exception_counts[type][3])++;
+            std::get<1>(exception_counts[{type, is_mem}][3])++;
           }
         }
       }
@@ -395,28 +415,32 @@ void nvbit_at_ctx_term(CUcontext ctx) {
   }
   for (auto ftype : {FP16, BF16, FP32, FP64}) {
       for (size_t i = 0; i < 4; ++i) {
-          std::get<0>(exception_counts[ftype][i]) -= std::get<1>(exception_counts[ftype][i]);
+          std::get<0>(exception_counts[{ftype, false}][i]) -= std::get<1>(exception_counts[{ftype, false}][i]);
+          std::get<0>(exception_counts[{ftype, true}][i]) -= std::get<1>(exception_counts[{ftype, true}][i]);
       }
   }
   nnout() << "Finalizing GPU context...\n\n";
 
   nnout() << "------------ nixnan Report -----------\n\n";
+  
+  auto print_type_exceptions = [&](const std::string& type_name, uint32_t type_id, bool is_mem) {
+    nnout() << "--- " << type_name << (is_mem ? " Memory " : "") << " Operations ---\n";
 
-  auto print_type_exceptions = [&](const std::string& type_name, uint32_t type_id) {
-  nnout() << "--- " << type_name << " Operations ---\n";
-
-  auto ecp = exception_counts[type_id];
-  auto old_flags = nnout_stream().flags();
-  nnout_stream() << std::dec;
-  nnout() << "NaN:           " << std::setw(10) << std::get<1>(ecp[0]) << " (" << std::get<0>(ecp[0]) << " repeats)\n";
-  nnout() << "Infinity:      " << std::setw(10) << std::get<1>(ecp[1]) << " (" << std::get<0>(ecp[1]) << " repeats)\n";
-  nnout() << "Subnormal:     " << std::setw(10) << std::get<1>(ecp[2]) << " (" << std::get<0>(ecp[2]) << " repeats)\n";
-  nnout() << "Division by 0: " << std::setw(10) << std::get<1>(ecp[3]) << " (" << std::get<0>(ecp[3]) << " repeats)\n\n";
-  nnout_stream().flags(old_flags);
+    auto ecp = exception_counts[{type_id, is_mem}];
+    auto old_flags = nnout_stream().flags();
+    nnout_stream() << std::dec;
+    nnout() << "NaN:           " << std::setw(10) << std::get<1>(ecp[0]) << " (" << std::get<0>(ecp[0]) << " repeats)\n";
+    if (!is_mem) {
+      nnout() << "Infinity:      " << std::setw(10) << std::get<1>(ecp[1]) << " (" << std::get<0>(ecp[1]) << " repeats)\n";
+      nnout() << "Subnormal:     " << std::setw(10) << std::get<1>(ecp[2]) << " (" << std::get<0>(ecp[2]) << " repeats)\n";
+      nnout() << "Division by 0: " << std::setw(10) << std::get<1>(ecp[3]) << " (" << std::get<0>(ecp[3]) << " repeats)\n\n";
+    }
+    nnout_stream().flags(old_flags);
   };
-
-  print_type_exceptions("FP16", FP16);
-  print_type_exceptions("BF16", BF16);
-  print_type_exceptions("FP32", FP32);
-  print_type_exceptions("FP64", FP64);
+  for (bool is_mem : {false, true}) {
+    print_type_exceptions("FP16", FP16, is_mem);
+    print_type_exceptions("BF16", BF16, is_mem);
+    print_type_exceptions("FP32", FP32, is_mem);
+    print_type_exceptions("FP64", FP64, is_mem);
+  }
 }

@@ -30,7 +30,9 @@ namespace nixnan {
             cudaDeviceSynchronize();
         }
     }
-    uint32_t recorder::mk_entry(Instr *instr, const std::vector<std::pair<reginfo, std::vector<reginsertion>>> &regs, CUcontext ctx, CUfunction f) {
+
+    uint32_t recorder::mk_entry(Instr *instr, const std::vector<std::pair<reginfo, std::vector<reginsertion>>> &regs,
+                                CUcontext ctx, CUfunction f, bool is_mem) {
         std::string instr_str = instr->getSass();
         uint32_t offset = instr->getOffset();
         // char *file_name;
@@ -49,14 +51,16 @@ namespace nixnan {
         for (size_t i = 0; i < regs.size(); i++) {
             optypes[i] = regs[i].first.type;
         }
-        return mk_entry(instr_str, path, line_str, func, optypes);
+        return mk_entry(instr_str, path, line_str, func, optypes, is_mem);
     }
-    uint32_t recorder::mk_entry(std::string& instr, std::string& path, std::string& line, std::string& func, char* optypes) {
+    uint32_t recorder::mk_entry(std::string& instr, std::string& path, std::string& line,
+                                std::string& func, char* optypes, bool is_mem) {
         inst_info[current_entry].instr = instr;
         inst_info[current_entry].path = path;
         inst_info[current_entry].line = line;
         inst_info[current_entry].func = func;
         std::memcpy(inst_info[current_entry].opertypes, optypes, OPERANDS);
+        inst_info[current_entry].is_mem = is_mem;
         return current_entry++;
     }
     void recorder::free_device() {
@@ -88,5 +92,8 @@ namespace nixnan {
     uint32_t recorder::get_exce(uint32_t id, uint32_t exce, uint32_t op) {
         size_t index = id << (SH_AMT) | op << EXCEBITS | exce;
         return host_errors[index];
+    }
+    bool recorder::is_mem(uint32_t id) {
+        return inst_info[id].is_mem;
     }
 }

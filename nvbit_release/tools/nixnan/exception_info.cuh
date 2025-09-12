@@ -6,8 +6,9 @@
 namespace nixnan {
     struct exception_info {
         __host__ __device__
-        exception_info(int4 cta, uint32_t warp_id, uint32_t inst_id, uint32_t exce, uint32_t operand) :
-                       inst_id(inst_id), exce(exce), oper(operand) {
+        exception_info(int4 cta, uint32_t warp_id, uint32_t inst_id, uint32_t exce, uint32_t operand,
+                       uint32_t tp_override = UNKNOWN, bool skip = false) : skip(skip),
+                       inst_id(inst_id), exce(exce), oper(operand), tp_override(tp_override) {
             this->cta = cta;
             cta.w = warp_id;
         }
@@ -33,12 +34,21 @@ namespace nixnan {
         __host__ __device__ inline uint32_t operand() const {
             return oper;
         }
+        
+        __host__ __device__ inline uint32_t type() const {
+            return tp_override;
+        }
+        __host__ __device__ inline bool to_skip() const {
+            return skip;
+        }
     private:
         exception_info() {};
         int4 cta;
         uint32_t inst_id;
         uint32_t exce;
         uint32_t oper;
+        uint32_t tp_override;
+        bool skip = false;
     };
 }
 #undef WARPSIZE
