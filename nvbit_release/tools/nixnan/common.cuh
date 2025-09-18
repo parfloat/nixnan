@@ -5,6 +5,7 @@ extern int verbose;
 extern int func_details;
 extern int print_ill_instr;
 extern int sampling;
+extern bool line_info;
 
 #include <cstdint>
 #include <string>

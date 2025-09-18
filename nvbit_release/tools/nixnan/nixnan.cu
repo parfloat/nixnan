@@ -51,6 +51,8 @@ int func_details = 0;
 int print_ill_instr = 0;
 int sampling = 0;
 bool instrument_mem = false;
+bool line_info = true;
+
 volatile bool recv_thread_started = false;
 volatile bool recv_thread_receiving = false;
 
@@ -97,6 +99,8 @@ void nvbit_at_init() {
     "This is useful for the case when an instrumented program is "
     "capturing stderr."
   );
+  GET_VAR_INT(line_info, "LINE_INFO", 1,
+              "Enable debug information for source code locations. This may cause crashes, so set this to 0 if you encounter issues.");
   if (!filename.empty()) {
     set_out_file(filename);
   }

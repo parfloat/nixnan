@@ -3,9 +3,35 @@
 #include <cuda.h>
 #include <stdexcept>
 #include "common.cuh"
+#include <signal.h>
+#include "nnout.hh"
 
 namespace nixnan {
     const char NOTYPE = 127;
+
+    struct sigaction install_handler() {
+        struct sigaction sa;
+        memset(&sa, 0, sizeof(struct sigaction));
+        sigemptyset(&sa.sa_mask);
+        sa.sa_flags = SA_SIGINFO | SA_NODEFER;
+
+        sa.sa_sigaction = [](int signum, siginfo_t *info, void *ucontext) {
+            nnout() << "A segmentation fault occurred in NVBit while trying to access debug information. Please try with the LINE_INFO variable set to 0.\n";
+            _exit(1);
+        };
+        struct sigaction osa;
+        if (sigaction(SIGSEGV, &sa, &osa) == -1) {
+            perror("sigaction");
+        }
+        return osa;
+    }
+
+    void remove_handler(struct sigaction osa) {
+        if (sigaction(SIGSEGV, &osa, NULL) == -1) {
+            perror("sigaction");
+        }
+    }
+
     recorder::recorder(size_t sz) : size(sz), current_entry(0) {
         size_t sh_amt = SH_AMT;
         if (sz > (1ULL << (32 - sh_amt))) {
@@ -35,15 +61,21 @@ namespace nixnan {
                                 CUcontext ctx, CUfunction f, bool is_mem) {
         std::string instr_str = instr->getSass();
         uint32_t offset = instr->getOffset();
-        // char *file_name;
-        // char *dir_name;
         uint32_t line = 0;
-        // bool ret_line_info = nvbit_get_line_info(ctx, f, offset, &file_name, &dir_name, &line);
         std::string path = "[unknown]";
-        // if (ret_line_info) {
-        //     path = file_name;
-        //     path += dir_name;
-        // }
+        if (line_info) {
+            struct sigaction sa = install_handler();
+            char *file_name;
+            char *dir_name;
+            bool ret_line_info = nvbit_get_line_info(ctx, f, offset, &file_name, &dir_name, &line);
+            if (ret_line_info) {
+                path = std::string(file_name);
+                if (dir_name != nullptr && strlen(dir_name) > 0) {
+                    path = std::string(dir_name) + "/" + path;
+                }
+            }
+            remove_handler(sa);
+        }
         std::string line_str = std::to_string(line);
 
         std::string func = cut_kernel_name(nvbit_get_func_name(ctx, f));
