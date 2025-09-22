@@ -99,7 +99,7 @@ void nvbit_at_init() {
     "This is useful for the case when an instrumented program is "
     "capturing stderr."
   );
-  GET_VAR_INT(line_info, "LINE_INFO", 1,
+  GET_VAR_INT(line_info, "LINE_INFO", 0,
               "Enable debug information for source code locations. This may cause crashes, so set this to 0 if you encounter issues.");
   if (!filename.empty()) {
     set_out_file(filename);
@@ -243,8 +243,9 @@ void recv_thread_fun(std::shared_ptr<nixnan::recorder> recorder, ChannelHost cha
         if (exce & E_NAN) {
           exceptions.push_back("NaN");
         }
-        if (exce & E_INF) {
-          exceptions.push_back("infinity");
+        if (exce & E_INF || exce & E_NINF) {
+          std::string prefix = (exce & E_INF) ? "" : "-";
+          exceptions.push_back(prefix + "infinity");
         }
         if (exce & E_SUB) {
           exceptions.push_back("subnormal");
@@ -385,7 +386,7 @@ void nvbit_at_ctx_term(CUcontext ctx) {
 
   for (size_t i = 0; i < num_inst; ++i) {
     for (int op = 0; op < OPERANDS; ++op) {
-      for (int exce = 0; exce < 16; exce++) {
+      for (int exce = 0; exce < (1<<EXCEBITS); exce++) {
         size_t errors = recorder->get_exce(i, exce, op);
         if (errors == 0) continue;
         uint32_t type = recorder->get_type(i, op);
@@ -396,7 +397,7 @@ void nvbit_at_ctx_term(CUcontext ctx) {
             std::get<1>(exception_counts[{type, is_mem}][0])++;
           }
         }
-        if (exce & E_INF) {
+        if (exce & E_INF || exce & E_NINF) {
           std::get<0>(exception_counts[{type, is_mem}][1]) += errors;
           if (errors > 0) {
             std::get<1>(exception_counts[{type, is_mem}][1])++;

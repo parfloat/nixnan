@@ -16,8 +16,9 @@ extern bool line_info;
 
 const uint32_t E_NAN = 1,
   E_INF = 2,
-  E_SUB = 4,
-  E_DIV0 = 8;
+  E_NINF = 4,
+  E_SUB = 8,
+  E_DIV0 = 16;
 
 const char FP16 = 0,
   BF16 = 1,
@@ -71,6 +72,6 @@ uint32_t tobits32(T value) {
 
 const int OPERANDS = 4;
 const int OPBITS = 2;
-const int EXCEBITS = 4;
+const int EXCEBITS = 5;
 
 #endif // COMMON_CUH

@@ -5,6 +5,16 @@
 #include "common.cuh"
 
 
+template <typename T>
+__device__ __host__ inline
+int sinf(T x) {
+    if (x & (((T)1)<<(sizeof(T)*8-1))) {
+        return E_NINF;
+    } else {
+        return E_INF;
+    }
+}
+
 // Half utils
 __device__ __host__ inline
 uint16_t half_exp(uint16_t h) {
@@ -28,7 +38,7 @@ uint32_t half_is_nan(uint16_t h) {
 
 __device__ __host__ inline
 uint32_t half_is_inf(uint16_t h) {
-    return (half_exp(h) == 0x1F && half_mant(h) == 0) ? E_INF : 0;
+    return (half_exp(h) == 0x1F && half_mant(h) == 0) ? sinf(h) : 0;
 }
 
 __device__ __host__ inline
@@ -115,7 +125,7 @@ uint32_t bf16_is_nan(uint16_t h) {
 
 __device__ __host__ inline
 uint32_t bf16_is_inf(uint16_t h) {
-    return (bf16_exp(h) == 0xFF && bf16_mant(h) == 0) ? E_INF : 0;
+    return (bf16_exp(h) == 0xFF && bf16_mant(h) == 0) ? sinf(h) : 0;
 }
 
 __device__ __host__ inline
@@ -197,7 +207,7 @@ uint32_t float_is_nan(uint32_t f) {
 
 __device__ __host__ inline
 uint32_t float_is_inf(uint32_t f) {
-    return (float_exp(f) == 0xFF && float_mant(f) == 0) ? E_INF : 0;
+    return (float_exp(f) == 0xFF && float_mant(f) == 0) ? sinf(f) : 0;
 }
 
 __device__ __host__ inline
@@ -239,7 +249,8 @@ uint32_t double_is_nan(uint32_t low, uint32_t high) {
 
 __device__ __host__ inline
 uint32_t double_is_inf(uint32_t low, uint32_t high) {
-    return (double_exp(low, high) == 0x7FF && double_mant(low, high) == 0) ? E_INF : 0;
+    uint64_t val = ((uint64_t)high << 32 | low);
+    return (double_exp(low, high) == 0x7FF && double_mant(low, high) == 0) ? sinf(val) : 0;
 }
 
 __device__ __host__ inline
