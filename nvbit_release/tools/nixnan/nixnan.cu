@@ -377,7 +377,7 @@ void nvbit_at_ctx_term(CUcontext ctx) {
   recorder->free_device();
   size_t num_inst = recorder->get_size();
 
-  std::map<std::pair<uint32_t, bool>, std::array<std::pair<uint32_t, uint32_t>, 4>> exception_counts;
+  std::map<std::pair<uint32_t, bool>, std::array<std::pair<uint32_t, uint32_t>, EXCEBITS>> exception_counts;
   for (auto ftype : {FP16, BF16, FP32, FP64}) {
     for (bool is_mem : {false, true}) {
       exception_counts[{ftype, is_mem}] = {};
@@ -397,22 +397,28 @@ void nvbit_at_ctx_term(CUcontext ctx) {
             std::get<1>(exception_counts[{type, is_mem}][0])++;
           }
         }
-        if (exce & E_INF || exce & E_NINF) {
+        if (exce & E_INF) {
           std::get<0>(exception_counts[{type, is_mem}][1]) += errors;
           if (errors > 0) {
             std::get<1>(exception_counts[{type, is_mem}][1])++;
           }
         }
-        if (exce & E_SUB) {
+        if (exce & E_NINF) {
           std::get<0>(exception_counts[{type, is_mem}][2]) += errors;
           if (errors > 0) {
             std::get<1>(exception_counts[{type, is_mem}][2])++;
           }
         }
-        if (exce & E_DIV0) {
+        if (exce & E_SUB) {
           std::get<0>(exception_counts[{type, is_mem}][3]) += errors;
           if (errors > 0) {
             std::get<1>(exception_counts[{type, is_mem}][3])++;
+          }
+        }
+        if (exce & E_DIV0) {
+          std::get<0>(exception_counts[{type, is_mem}][4]) += errors;
+          if (errors > 0) {
+            std::get<1>(exception_counts[{type, is_mem}][4])++;
           }
         }
       }
@@ -437,8 +443,9 @@ void nvbit_at_ctx_term(CUcontext ctx) {
     nnout() << "NaN:           " << std::setw(10) << std::get<1>(ecp[0]) << " (" << std::get<0>(ecp[0]) << " repeats)\n";
     if (!is_mem) {
       nnout() << "Infinity:      " << std::setw(10) << std::get<1>(ecp[1]) << " (" << std::get<0>(ecp[1]) << " repeats)\n";
-      nnout() << "Subnormal:     " << std::setw(10) << std::get<1>(ecp[2]) << " (" << std::get<0>(ecp[2]) << " repeats)\n";
-      nnout() << "Division by 0: " << std::setw(10) << std::get<1>(ecp[3]) << " (" << std::get<0>(ecp[3]) << " repeats)\n\n";
+      nnout() << "-Infinity:     " << std::setw(10) << std::get<1>(ecp[1]) << " (" << std::get<0>(ecp[2]) << " repeats)\n";
+      nnout() << "Subnormal:     " << std::setw(10) << std::get<1>(ecp[2]) << " (" << std::get<0>(ecp[3]) << " repeats)\n";
+      nnout() << "Division by 0: " << std::setw(10) << std::get<1>(ecp[3]) << " (" << std::get<0>(ecp[4]) << " repeats)\n\n";
     }
     nnout_stream().flags(old_flags);
   };
