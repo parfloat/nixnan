@@ -383,7 +383,13 @@ void nvbit_at_ctx_term(CUcontext ctx) {
       exception_counts[{ftype, is_mem}] = {};
     }
   }
-
+  std::array<std::pair<uint32_t, size_t>, EXCEBITS> exce_idxs = {
+    std::make_pair(E_NAN, 0),
+    std::make_pair(E_INF, 1),
+    std::make_pair(E_NINF, 2),
+    std::make_pair(E_SUB, 3),
+    std::make_pair(E_DIV0, 4)
+  };
   for (size_t i = 0; i < num_inst; ++i) {
     for (int op = 0; op < OPERANDS; ++op) {
       for (int exce = 0; exce < (1<<EXCEBITS); exce++) {
@@ -391,43 +397,25 @@ void nvbit_at_ctx_term(CUcontext ctx) {
         if (errors == 0) continue;
         uint32_t type = recorder->get_type(i, op);
         bool is_mem = recorder->is_mem(i);
-        if (exce & E_NAN) {
-          std::get<0>(exception_counts[{type, is_mem}][0]) += errors;
-          if (errors > 0) {
-            std::get<1>(exception_counts[{type, is_mem}][0])++;
+        auto count_exceptions = [&](uint32_t error, size_t index) {
+          if (exce & error) {
+            std::get<0>(exception_counts[{type, is_mem}][index]) += errors;
+            if (errors > 0) {
+              std::get<1>(exception_counts[{type, is_mem}][index])++;
+            }
           }
-        }
-        if (exce & E_INF) {
-          std::get<0>(exception_counts[{type, is_mem}][1]) += errors;
-          if (errors > 0) {
-            std::get<1>(exception_counts[{type, is_mem}][1])++;
-          }
-        }
-        if (exce & E_NINF) {
-          std::get<0>(exception_counts[{type, is_mem}][2]) += errors;
-          if (errors > 0) {
-            std::get<1>(exception_counts[{type, is_mem}][2])++;
-          }
-        }
-        if (exce & E_SUB) {
-          std::get<0>(exception_counts[{type, is_mem}][3]) += errors;
-          if (errors > 0) {
-            std::get<1>(exception_counts[{type, is_mem}][3])++;
-          }
-        }
-        if (exce & E_DIV0) {
-          std::get<0>(exception_counts[{type, is_mem}][4]) += errors;
-          if (errors > 0) {
-            std::get<1>(exception_counts[{type, is_mem}][4])++;
-          }
+        };
+        for (auto [error, index] : exce_idxs) {
+          count_exceptions(error, index);
         }
       }
     }
   }
   for (auto ftype : {FP16, BF16, FP32, FP64}) {
       for (size_t i = 0; i < 4; ++i) {
-          std::get<0>(exception_counts[{ftype, false}][i]) -= std::get<1>(exception_counts[{ftype, false}][i]);
-          std::get<0>(exception_counts[{ftype, true}][i]) -= std::get<1>(exception_counts[{ftype, true}][i]);
+        for (auto is_mem : {false, true}) {
+          std::get<0>(exception_counts[{ftype, is_mem}][i]) -= std::get<1>(exception_counts[{ftype, is_mem}][i]);
+        }
       }
   }
   nnout() << "Finalizing GPU context...\n\n";
@@ -443,9 +431,9 @@ void nvbit_at_ctx_term(CUcontext ctx) {
     nnout() << "NaN:           " << std::setw(10) << std::get<1>(ecp[0]) << " (" << std::get<0>(ecp[0]) << " repeats)\n";
     if (!is_mem) {
       nnout() << "Infinity:      " << std::setw(10) << std::get<1>(ecp[1]) << " (" << std::get<0>(ecp[1]) << " repeats)\n";
-      nnout() << "-Infinity:     " << std::setw(10) << std::get<1>(ecp[1]) << " (" << std::get<0>(ecp[2]) << " repeats)\n";
-      nnout() << "Subnormal:     " << std::setw(10) << std::get<1>(ecp[2]) << " (" << std::get<0>(ecp[3]) << " repeats)\n";
-      nnout() << "Division by 0: " << std::setw(10) << std::get<1>(ecp[3]) << " (" << std::get<0>(ecp[4]) << " repeats)\n\n";
+      nnout() << "-Infinity:     " << std::setw(10) << std::get<1>(ecp[2]) << " (" << std::get<0>(ecp[2]) << " repeats)\n";
+      nnout() << "Subnormal:     " << std::setw(10) << std::get<1>(ecp[3]) << " (" << std::get<0>(ecp[3]) << " repeats)\n";
+      nnout() << "Division by 0: " << std::setw(10) << std::get<1>(ecp[4]) << " (" << std::get<0>(ecp[4]) << " repeats)\n\n";
     }
     nnout_stream().flags(old_flags);
   };
