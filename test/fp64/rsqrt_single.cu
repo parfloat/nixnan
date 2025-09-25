@@ -11,11 +11,11 @@
 
 __global__ void test_rsqrt_approx(const double* a, double* b) {
     int idx = threadIdx.x;
-    asm ("sqrt.f64 %0, %1;" : "=d"(b[idx]) : "d"(a[idx]));
+    asm ("sqrt.rn.f64 %0, %1;" : "=d"(b[idx]) : "d"(a[idx]));
 }
 __global__ void test_rsqrt_approx_ftz(const double* a, double* b) {
     int idx = threadIdx.x;
-    asm ("sqrt.f64 %0, %1;" : "=d"(b[idx]) : "d"(a[idx]));
+    asm ("sqrt.rn.f64 %0, %1;" : "=d"(b[idx]) : "d"(a[idx]));
 }
 
 
