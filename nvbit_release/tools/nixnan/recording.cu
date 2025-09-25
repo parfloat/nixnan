@@ -62,7 +62,7 @@ namespace nixnan {
         std::string instr_str = instr->getSass();
         uint32_t offset = instr->getOffset();
         uint32_t line = 0;
-        std::string path = "[unknown]";
+        std::string path = "";
         if (line_info) {
             struct sigaction sa = install_handler();
             char *file_name;
