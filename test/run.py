@@ -4,13 +4,23 @@ import subprocess
 import argparse
 import sys
 
+def report_str(result, marker_index):
+    res = ""
+    # Extract content from the marker to the end of stderr
+    report_content = result.stderr[marker_index:]
+    res += report_content
+    # Ensure there's a newline before the exit code
+    if not report_content.endswith('\n'):
+        res += '\n'
+    res += f"Exit Code: {result.returncode}\n"
+    return res
+
 def record_results(result, report_marker, filepath):
     # Search for the report marker in stderr
     marker_index = result.stderr.find(report_marker)
 
     if marker_index != -1:
-        # Extract content from the marker to the end of stderr
-        report_content = result.stderr[marker_index:]
+        
 
         # Define the output file name
         output_filename = f"{filepath}.expect"
@@ -18,13 +28,11 @@ def record_results(result, report_marker, filepath):
 
         # Write the report and exit code to the output file
         with open(output_filename, 'w') as f:
-            f.write(report_content)
-            # Ensure there's a newline before the exit code
-            if not report_content.endswith('\n'):
-                f.write('\n')
-            f.write(f"Exit Code: {result.returncode}\n")
+            f.write(report_str(result, marker_index))
     else:
         print(f"  -> No report marker found in stderr.")
+
+
 
 def find_and_run_executables(ld_preload_lib, root_dir='.'):
     """
