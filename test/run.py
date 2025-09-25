@@ -20,8 +20,6 @@ def record_results(result, report_marker, filepath):
     marker_index = result.stderr.find(report_marker)
 
     if marker_index != -1:
-        
-
         # Define the output file name
         output_filename = f"{filepath}.expect"
         print(f"  -> Found report. Writing to {output_filename}")
@@ -32,9 +30,28 @@ def record_results(result, report_marker, filepath):
     else:
         print(f"  -> No report marker found in stderr.")
 
+def check_results(result, report_marker, filepath):
+    marker_index = result.stderr.find(report_marker)
+    if marker_index == -1:
+        print(f"  -> No report marker found in stderr.")
+        return
 
+    output_str = report_str(result, marker_index)
 
-def find_and_run_executables(ld_preload_lib, root_dir='.'):
+    expect_filename = f"{filepath}.expect"
+    if not os.path.exists(expect_filename):
+        print(f"[ERROR]  -> Expect file {expect_filename} does not exist. Skipping check.")
+        return
+
+    with open(expect_filename, 'r') as f:
+        expected_str = f.read()
+
+    if output_str == expected_str:
+        print("[PASSED]")
+    else:
+        print("[ERROR]")
+
+def find_and_run_executables(ld_preload_lib, root_dir='.', check=False):
     """
     Finds and runs all executable files in a directory hierarchy,
     capturing their output and exit codes to generate report files.
@@ -63,7 +80,10 @@ def find_and_run_executables(ld_preload_lib, root_dir='.'):
                         check=False,  # Do not raise exception for non-zero exit codes
                         env=env
                     )
-                    record_results(result, report_marker, filepath)
+                    if not check:
+                        record_results(result, report_marker, filepath)
+                    else:
+                        check_results(result, report_marker, filepath)
 
                 except Exception as e:
                     print(f"  -> Error running {filepath}: {e}")
@@ -77,6 +97,11 @@ if __name__ == "__main__":
         "ld_preload_lib",
         help="Path to the .so library to be preloaded via LD_PRELOAD."
     )
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="Check results against .expect files instead of generating them."
+    )
     args = parser.parse_args()
 
     lib_path = args.ld_preload_lib
@@ -87,8 +112,6 @@ if __name__ == "__main__":
         print(f"Error: Library file must be a .so file, but got '{lib_path}'", file=sys.stderr)
         sys.exit(1)
 
-    find_and_run_executables(lib_path)
+    find_and_run_executables(lib_path, check=args.check)
     print("Finished.")
     sys.exit(0)
-    find_and_run_executables()
-    print("Finished.")
