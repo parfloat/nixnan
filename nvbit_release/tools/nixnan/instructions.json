@@ -219,6 +219,22 @@
     "description": "MUFU reciprocal and reciprocal square root instructions"
 
   },
+  "(MUFU.(RSQ64H|RCP64H))":
+  {"registers":
+    [
+      {
+        "type": "f64",
+        "count": 1
+      },
+      {
+        "type": "f64",
+        "count": 1,
+        "div0": true
+      }
+    ],
+    "description": "MUFU reciprocal and reciprocal square root instructions"
+
+  },
   "(D(ADD|MUL)(?:\\.(RP|RM|RZ))?)":
   {"registers":
     [
