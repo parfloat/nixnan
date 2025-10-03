@@ -119,8 +119,6 @@ void instrument_function(CUcontext ctx, CUfunction func) {
     if (!instrumented_functions.insert(f).second) {
       continue;
     }
-
-    std::string kname = cut_kernel_name(nvbit_get_func_name(ctx, func));
     if (verbose) {
       auto old_flags = nnout_stream().flags();
       nnout() << "Inspecting function " << nvbit_get_func_name(ctx, f) <<
@@ -131,6 +129,7 @@ void instrument_function(CUcontext ctx, CUfunction func) {
     for (auto instr : nvbit_get_instrs(ctx, func)){
       auto reg_infos = instruction_info::get_reginfo(instr);
       bool meminstr = is_memory_instruction(instr);
+      std::cout << nvbit_get_func_name(ctx, f) << ": " << instr->getSass() << std::endl;
       if (reg_infos.empty() && !meminstr) { continue; }
       if (verbose) {
         nnout() << "Instrumenting instruction " << instr->getSass() << std::endl;
