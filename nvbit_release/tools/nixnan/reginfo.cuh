@@ -10,8 +10,9 @@ struct reginfo {
     bool div0: 1;
     unsigned int operand: 2;
     int num_regs: 4;
+    bool f64high: 1;
 private:
-    int32_t reserved: 13;
+    int32_t reserved: 12;
 };
 static_assert(sizeof(reginfo) == sizeof(int32_t));
 #endif // REGINFO_CUH

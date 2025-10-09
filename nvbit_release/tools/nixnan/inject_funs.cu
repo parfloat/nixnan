@@ -55,6 +55,7 @@ nixnan_check_regs(int pred, device_recorder recorder, uint32_t inst_id,
           arg_count--;
           uint32_t high = va_arg(ap, uint32_t);
           arg_count--;
+          low = (reg_info.f64high) ? 0 : low;
           exces[operand] |= double_classify(low, high, reg_info.div0);
           break;
         }
