@@ -141,9 +141,8 @@ std::vector<std::pair<reginfo, std::vector<reginsertion>>> instruction_info::get
             // ri.num_regs = get_num_regs(ri.type, ri.count);
             assert(get_num_regs(ri.type, ri.count) < 16);
             std::string opcode_str(instr->getOpcode());
-            bool f64high = is_f64high(opcode_str);
-            ri.f64high = f64high;
-            auto reg_info = get_regs(instr, i, ri.type, ri.count, ri, f64high);
+            ri.f64high = is_f64high(opcode_str);
+            auto reg_info = get_regs(instr, i, ri.type, ri.count, ri, ri.f64high);
             if (ri.num_regs > 0) {
                 reg_infos.push_back({ri, reg_info});
             }
