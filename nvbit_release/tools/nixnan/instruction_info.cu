@@ -29,7 +29,7 @@ size_t clamp(size_t val) {
     return (val > 255) ? 255 : val;
 }
 
-std::vector<reginsertion> get_regs(Instr *instr, size_t operand, size_t type, size_t count, reginfo &reg_info) {
+std::vector<reginsertion> get_regs(Instr *instr, size_t operand, size_t type, size_t count, reginfo &reg_info, bool f64high = false) {
     std::vector<reginsertion> reg_ops;
     auto num_operands = instr->getNumOperands();
     assert(num_operands > 0);
@@ -43,7 +43,7 @@ std::vector<reginsertion> get_regs(Instr *instr, size_t operand, size_t type, si
     switch (op->type) {
         case OperandType::REG:
         case OperandType::UREG: {
-            size_t reg_start = op->u.reg.num;
+            size_t reg_start = op->u.reg.num - (f64high ? 1 : 0);
             OperandType type = op->type;
             for (size_t i = 0; i < num_regs; i++) {
                 reg_ops.push_back([instr, reg_start, i, type]() {
@@ -70,10 +70,11 @@ std::vector<reginsertion> get_regs(Instr *instr, size_t operand, size_t type, si
             num_regs = 0;
             break;
         } case OperandType::CBANK: {
-            size_t bank_start = op->u.cbank.id;
+            auto cbank = op->u.cbank;
             for (size_t i = 0; i < num_regs; i++) {
-                reg_ops.push_back([instr, bank_start, i]() {
-                    nvbit_add_call_arg_reg_val(instr, bank_start+i, true);
+                reg_ops.push_back([instr, cbank, i, f64high]() {
+                    int offset = cbank.imm_offset + 4 * (i + (f64high ? -1 : 0));
+                    nvbit_add_call_arg_cbank_val(instr, cbank.id, offset, true);
                 });
             }
             break;
@@ -100,6 +101,11 @@ std::vector<reginsertion> get_regs(Instr *instr, size_t operand, size_t type, si
     return reg_ops;
 }
 
+bool is_f64high(std::string opcode_str) {
+    std::string f64high_suffix = "64H";
+    size_t num_chars = f64high_suffix.size();
+    return opcode_str.size() >= num_chars && opcode_str.rfind(f64high_suffix) == opcode_str.size() - num_chars;
+}
 
 std::vector<std::pair<reginfo, std::vector<reginsertion>>> instruction_info::get_reginfo(Instr *instr) {
     static nlohmann::json instructions;
@@ -134,8 +140,10 @@ std::vector<std::pair<reginfo, std::vector<reginsertion>>> instruction_info::get
             ri.operand = i;
             // ri.num_regs = get_num_regs(ri.type, ri.count);
             assert(get_num_regs(ri.type, ri.count) < 16);
-
-            auto reg_info = get_regs(instr, i, ri.type, ri.count, ri);
+            std::string opcode_str(instr->getOpcode());
+            bool f64high = is_f64high(opcode_str);
+            ri.f64high = f64high;
+            auto reg_info = get_regs(instr, i, ri.type, ri.count, ri, f64high);
             if (ri.num_regs > 0) {
                 reg_infos.push_back({ri, reg_info});
             }
