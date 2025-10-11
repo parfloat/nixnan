@@ -35,6 +35,7 @@
 #include <unordered_set>
 #include <memory>
 #include <thread>
+#include <atomic>
 
 #include "recording.h"
 #include "exception_info.cuh"
