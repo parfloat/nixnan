@@ -73,6 +73,10 @@ std::unordered_set<CUfunction> instrumented_functions;
 bool skip_flag = false;
 
 void nvbit_at_init() {
+  static std::atomic<bool> init_once_flag{false};
+  if (init_once_flag.exchange(true)) {
+    return;
+  }
   // Disable warning about using CUDA API calls in nvbit_at_init.
   setenv("ACK_CTX_INIT_LIMITATION", "1", 1);
   setenv("CUDA_MANAGED_FORCE_DEVICE_ALLOC", "1", 1);
@@ -348,6 +352,10 @@ void nvbit_at_cuda_event(CUcontext ctx, int is_exit, nvbit_api_cuda_t cbid,
 }
 
 void nvbit_tool_init(CUcontext ctx) {
+  static std::atomic<bool> init_once_flag{false};
+  if (init_once_flag.exchange(true)) {
+    return;
+  }
   std::string k_whitelist_name = "kernel_whitelist.txt";
   std::string k_blacklist_name = "kernel_blacklist.txt";
 
