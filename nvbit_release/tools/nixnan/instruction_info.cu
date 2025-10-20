@@ -53,17 +53,27 @@ std::vector<reginsertion> get_regs(Instr *instr, size_t operand, size_t type, si
             }
             break;
         } case OperandType::IMM_DOUBLE: {
-            double val = op->u.imm_double.value;
-            uint64_t tmp;
-            memcpy(&tmp, &val, sizeof(double));
-            reg_ops.push_back([instr, tmp]() {
-                nvbit_add_call_arg_const_val32(instr, tmp & 0xFFFFFFFF, true);
-                nvbit_add_call_arg_const_val32(instr, (tmp >> 32) & 0xFFFFFFFF, true);
-            });
-            if (reg_info.type == FP32) {
-                num_regs++;
+            // This is a double immediate, check if it is exceptional and warn
+            num_regs = 0;
+            std::string error = "";
+            switch (fpclassify(op->u.imm_double.value)) {
+                case FP_NAN:
+                    // This is a NAN immediate, we don't need to do anything
+                    error = "NaN";
+                    break;
+                case FP_INFINITE:
+                    // This is an INF immediate, we don't need to do anything
+                    error = "Infinite";
+                    break;
+                case FP_SUBNORMAL:
+                    error = "Subnormal";
+                    break;
+                default:
+                    break;
             }
-            reg_info.type = FP64;
+            if (!error.empty()) {
+                nnout() << "#nixnan: warning: " << error << " immediate found in operand " << reg_info.operand << " of " << instr->getSass() << std::endl;
+            }
             break;
         } case OperandType::IMM_UINT64: {
             // This shouldn't be an error???
@@ -84,11 +94,11 @@ std::vector<reginsertion> get_regs(Instr *instr, size_t operand, size_t type, si
             if (x_str.find("NAN") != std::string::npos) {
                 // This is a NAN register, we don't need to do anything
                 num_regs = 0;
-                nnout() << "#nixnan: NaN immediate found in operand " << reg_info.operand << " of " << instr->getSass() << std::endl;
+                nnout() << "#nixnan: warning: NaN immediate found in operand " << reg_info.operand << " of " << instr->getSass() << std::endl;
             } else if (x_str.find("INF") != std::string::npos) {
                 // This is an INF register, we don't need to do anything
                 num_regs = 0;
-                nnout() << "#nixnan: Infinite immediate found in operand " << reg_info.operand << " of " << instr->getSass() << std::endl;
+                nnout() << "#nixnan: warning: Infinite immediate found in operand " << reg_info.operand << " of " << instr->getSass() << std::endl;
             }
             break;
         }

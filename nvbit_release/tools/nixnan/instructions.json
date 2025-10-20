@@ -171,6 +171,28 @@
     ],
     "description": "Half-precision multiply-accumulate with optional FTZ and saturation"
   },
+    "HFMA2.BF16_V2":
+  {"registers":
+    [
+      {
+        "type": "bf16",
+        "count": 2
+      },
+      {
+        "type": "bf16",
+        "count": 2
+      },
+      {
+        "type": "bf16",
+        "count": 2
+      },
+      {
+        "type": "bf16",
+        "count": 2
+      }
+    ],
+    "description": ""
+  },
   "(F(ADD|MUL)(?:\\.FTZ)?(?:\\.(RP|RM|RZ))?(?:\\.SAT)?)":
   {"registers":
     [
