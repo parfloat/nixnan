@@ -84,11 +84,11 @@ std::vector<reginsertion> get_regs(Instr *instr, size_t operand, size_t type, si
             if (x_str.find("NAN") != std::string::npos) {
                 // This is a NAN register, we don't need to do anything
                 num_regs = 0;
-                std::cerr << "#nixnan: NaN immediate found in operand " << op->str << std::endl;
+                nnout() << "#nixnan: NaN immediate found in operand " << reg_info.operand << " of " << instr->getSass() << std::endl;
             } else if (x_str.find("INF") != std::string::npos) {
                 // This is an INF register, we don't need to do anything
                 num_regs = 0;
-                std::cerr << "#nixnan: Infinite immediate found in operand " << op->str << std::endl;
+                nnout() << "#nixnan: Infinite immediate found in operand " << reg_info.operand << " of " << instr->getSass() << std::endl;
             }
             break;
         }
