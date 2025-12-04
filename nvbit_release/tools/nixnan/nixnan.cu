@@ -43,6 +43,7 @@ using nixnan::exception_info;
 #include "instruction_info.cuh"
 #include "nnout.hh"
 #include "meminstrumentation.cuh"
+#include "fp-histogram.cuh"
 
 uint32_t instr_begin_interval = 0;
 uint32_t instr_end_interval = UINT32_MAX;
@@ -91,6 +92,7 @@ void nvbit_at_init() {
       "Instrument a repeat kernel every SAMPLING times");
   GET_VAR_INT(instrument_mem, "INSTR_MEM", 0,
               "Instrument memory instructions for NaN/Inf detection");
+  nixnan::fp_histogram::init();
   std::string filename;
   GET_VAR_STR(
     filename,
@@ -132,6 +134,7 @@ void instrument_function(CUcontext ctx, CUfunction func) {
       auto reg_infos = instruction_info::get_reginfo(instr);
       bool meminstr = is_memory_instruction(instr);
       if (reg_infos.empty() && !meminstr) { continue; }
+      nixnan::fp_histogram::instrument(ctx, instr, kname);
       if (verbose) {
         nnout() << "Instrumenting instruction " << instr->getSass() << std::endl;
       }
@@ -367,6 +370,7 @@ void nvbit_tool_init(CUcontext ctx) {
   recv_thread_started = true;
   channel_host.init(0, CHANNEL_SIZE, &channel_dev, NULL);
   recv_thread = std::thread(recv_thread_fun, recorder, channel_host);
+  nixnan::fp_histogram::tool_init(ctx);
 }
 
 void nvbit_at_ctx_term(CUcontext ctx) {
@@ -444,4 +448,5 @@ void nvbit_at_ctx_term(CUcontext ctx) {
     print_type_exceptions("FP32", FP32, is_mem);
     print_type_exceptions("FP64", FP64, is_mem);
   }
+  nixnan::fp_histogram::term(ctx);
 }
