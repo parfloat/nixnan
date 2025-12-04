@@ -1,4 +1,4 @@
-#include "fp_utils.cuh"
+//#include "fp_utils.cuh"
 #include <cstdint>
 #include "utils/utils.h"
 #include <cstdarg>
@@ -6,7 +6,7 @@
 #include "recording.h"
 #include "utils/channel.hpp"
 #include "common.cuh"
-#include "nvbit_reg_rw.h"
+//#include "nvbit_reg_rw.h"
 
 using namespace nixnan;
 
@@ -24,19 +24,18 @@ void report_error(device_recorder recorder, uint32_t inst_id,
     /* first active lane pushes information on the channel */
     if (exce && first_laneid == laneid) {
         uint32_t num_exceptions = recorder.record(inst_id, E_NAN, 1);
-        if (num_exceptions == 0) { // atomic array - # times seen - first time seeing!
+        if (num_exceptions == 0) {
             ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
             for (int skip = 0; skip < 2; skip++) {
                 exception_info ei(get_ctaid(), get_warpid(), inst_id, E_NAN, 1, type, skip);
-                channel_dev->push(&ei, sizeof(exception_info)); // GG: imitate
-		// ALSO CREATE barrier_info struct to convey the info pertinent to barriers
+                channel_dev->push(&ei, sizeof(exception_info));
             }
         }
     }
 }
 
 extern "C" __device__ __noinline__
-void nixnan_check_nans(int pred, device_recorder recorder, uint32_t inst_id, // recorder records arg which contains err (excn)
+void nixnan_check_nans(int pred, device_recorder recorder, uint32_t inst_id,
                   ChannelDev* pchannel_dev, uint32_t type, uint32_t arg_count, ...) {
     if (!pred) { return; }
 

@@ -1,6 +1,6 @@
 #include "nvbit.h"
 #include "meminstrumentation.cuh"
-#include "common.cuh"
+#include "common.cuh" // has device channel prototypes
 #include "nnout.hh"
 #include "utils/channel.hpp"
 #include "instruction_info.cuh"
