@@ -26,6 +26,7 @@ nixnan_fp_histogram_counter(int pred, unsigned long long int* histogram, uint32_
                 case FP16: {
                     uint32_t val = va_arg(ap, uint32_t);
                     arg_count--;
+                    j++;
                     uint32_t exp0 = half_exp(val & 0xFFFF);
                     record(histogram, FP16, exp0);
                     uint32_t exp1 = half_exp((val >> 16) & 0xFFFF);
@@ -35,6 +36,7 @@ nixnan_fp_histogram_counter(int pred, unsigned long long int* histogram, uint32_
                 case BF16: {
                     uint32_t val = va_arg(ap, uint32_t);
                     arg_count--;
+                    j++;
                     uint32_t exp0 = bf16_exp(val & 0xFFFF);
                     record(histogram, BF16, exp0);
                     uint32_t exp1 = bf16_exp((val >> 16) & 0xFFFF);

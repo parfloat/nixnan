@@ -28,6 +28,11 @@ int get_exp_bits(uint32_t type) {
     }
 }
 
+int get_exp_bias(uint32_t type) {
+    int exp_bits = get_exp_bits(type);
+    return (1 << (exp_bits - 1)) - 1;
+}
+
 void tool_init(CUcontext ctx) {
 if (histogram_enabled) {
     cudaMalloc(&device_histogram, num_entries * sizeof(unsigned long long int));
@@ -44,19 +49,19 @@ void instrument(CUcontext ctx, Instr* instr) {
 if (histogram_enabled) {
     assert(device_histogram != nullptr && "Histogram not initialized!");
     auto reg_infos = instruction_info::get_reginfo(instr);
+    if (reg_infos.size() == 0) {
+        return;
+    }
     nvbit_insert_call(instr, "nixnan_fp_histogram_counter", IPOINT_AFTER);
     nvbit_add_call_arg_guard_pred_val(instr);
     nvbit_add_call_arg_const_val64(instr, tobits64(device_histogram), false);
     if (verbose) {
-        nnout() << "Histogram instrumenting instruction with " << 1 + std::get<0>(reg_infos[0]).num_regs << " registers" << std::endl;
+        nnout() << "Histogram instrumenting: " << instr->getSass() << std::endl;
     }
     {
         auto [ri, rfuns] = reg_infos[0];
         nvbit_add_call_arg_const_val32(instr, 1 + rfuns.size());
         nvbit_add_call_arg_const_val32(instr, tobits32(ri), true);
-        if (verbose) {
-            nnout() << "Histogram instrumenting: " << instr->getSass() << std::endl;
-        }
         for (auto& rfun : rfuns) {
             rfun();
         }
@@ -76,14 +81,21 @@ if (histogram_enabled) {
     for (size_t i = 1; i < reg_infos.size(); ++i) {
         auto [ri, rfuns] = reg_infos[i];
         nvbit_add_call_arg_const_val32(instr, tobits32(ri), true);
-        if (verbose) {
-        nnout() << "Instrumenting operand " << ri.operand << ". div0: " << ri.div0 << ", regs: " << ri.num_regs << std::endl;
-        }
         for (auto& rfun : rfuns) {
-        rfun();
+            rfun();
         }
     }
 }
+}
+
+std::string exp_with_bias(char format, int exp) {
+    if (exp == 0) {
+        return "zero";
+    }
+    if (exp == (1 << get_exp_bits(format)) - 1) {
+        return "inf";
+    }
+    return std::to_string(exp - get_exp_bias(format));
 }
 
 void term(CUcontext ctx) {
@@ -92,11 +104,31 @@ if (histogram_enabled) {
     cudaMemcpy(host_histogram, device_histogram, num_entries * sizeof(unsigned long long int), cudaMemcpyDeviceToHost);
     cudaError_t err = cudaGetLastError();
     if (err != cudaSuccess) {
-        printf("Error copying device histogram to host: %s\n", cudaGetErrorString(err));
+        nnout() << "Error copying device histogram to host: " << cudaGetErrorString(err) << "\n";
         exit(1);
     }
-    // Print non-zero entries
+    bool printed_header = false;
     for (auto format : {BF16, FP16, FP32, FP64}) {
+        int min = INT_MAX, max = 0;
+        bool seen = false;
+        for (int exp = 0; exp < (1 << get_exp_bits(format)); exp++) {
+            unsigned long long int count = host_histogram[get_index(format, exp)];
+            if (count > 0) {
+                seen = true;
+                min = std::min(min, exp);
+                max = std::max(max, exp);
+            }
+        }
+        if (seen) {
+            if (!printed_header) {
+                std::cout << "\n";
+                nnout() << "--- FP exponent ranges --- \n";
+                printed_header = true;
+            }
+            nnout() << "Exponent range for " << type_to_string.at(format) <<
+                       ": [" << exp_with_bias(format, min) << ", " <<
+                       exp_with_bias(format, max) << "]\n";
+        }
     }
     delete[] host_histogram;
     cudaFree(device_histogram);
