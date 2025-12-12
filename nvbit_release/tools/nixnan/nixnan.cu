@@ -65,11 +65,11 @@ volatile bool recv_thread_receiving = false;	// pthread vars
 static __managed__ ChannelDev channel_dev;	// allocate channel_dev in managed mem in static scope
 
 //GG-- for barriers
-static __managed__ ChannelDev barChannel_dev;  // new channel for barriers
+//static __managed__ ChannelDev barChannel_dev;  // new channel for barriers
 
 static ChannelHost channel_host;		// allocate host in static scope
 //GG-- for host-side for barriers
-static ChannelHost barChannel_host;
+//static ChannelHost barChannel_host;
 
 std::unordered_set<std::string> kernel_whitelist;  // if in white-list, analyze 
 std::unordered_set<std::string> kernel_blacklist;  // if in black-list, do not analyze
@@ -82,6 +82,8 @@ std::unordered_set<CUfunction> instrumented_functions;	// set of already intrum 
 
 bool skip_flag = false;	       				// tbd
 
+//---- nvbit tool at init ----
+//
 void nvbit_at_init() { 					// Basically gets the env flags
   static std::atomic<bool> init_once_flag{false};	// Mark added this?
   if (init_once_flag.exchange(true)) {			// tests if initialized, if so return
@@ -149,7 +151,7 @@ void instrument_function(CUcontext ctx, CUfunction func) {		//GG: how instructio
       bool meminstr = is_memory_instruction(instr);		// see if mem instr
       //GG: Added this
       bool barrier_instr = is_barrier_instruction(instr);	// see if barrier instr
-      //if (barrier_instr) nnout() << "BAR found in nixnan"; else nnout() << "BAR not found in nixnan";      
+      if (barrier_instr) nnout() << "BAR found in nixnan"; else nnout() << "BAR not found in nixnan";      
       //---
       if (reg_infos.empty() && !meminstr && !barrier_instr)
       { if (verbose)
@@ -447,7 +449,7 @@ void nvbit_tool_init(CUcontext ctx) {
   recv_thread_started = true;
   channel_host.init(0, CHANNEL_SIZE, &channel_dev, NULL); // comes from NVBIT; 0 => 1 for barriers
   // GG new channel for barriers below
-  barChannel_host.init(1, CHANNEL_SIZE, &barChannel_dev, NULL); // goes with barChannel_host that's allocated above
+  // barChannel_host.init(1, CHANNEL_SIZE, &barChannel_dev, NULL); // goes with barChannel_host that's allocated above
   // the host channel now knows what dev channel ptr it goes with
 
   

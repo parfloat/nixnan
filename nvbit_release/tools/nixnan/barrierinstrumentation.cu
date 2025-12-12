@@ -8,9 +8,9 @@
 using namespace InstrType;
 
 bool is_barrier_instruction(Instr* instr) {
-  // nnout() << " checking if barrier; Opcode is  " << instr->getOpcode()      <<  std::endl;
+  nnout() << " checking if barrier; Opcode is  " << instr->getOpcode()      <<  std::endl;
   bool barfound = std::string(instr->getOpcode()).find("BAR") != std::string::npos; // looking for BAR.SYNC; might do more robustly later
-  // if (barfound) nnout() << "BAR found"; else nnout() << "BAR not found";
+  if (barfound) nnout() << "BAR found"; else nnout() << "BAR not found";
   return barfound;
  
 } // https://claude.ai/share/ee6fb49f-ba11-4cab-9ebe-8c0880f7e48a has a more robust set of alternatives
@@ -46,28 +46,22 @@ void instrument_barrier_instruction(Instr* instr, CUcontext ctx, CUfunction func
 /******* USEFUL REF BELOW *********/
 
 /*-->
-
   // Thread coordinates within block
   // uint32_t tid_x = nvbit_get_tid(ctx, 0);  // 0 = x dimension
   // uint32_t tid_y = nvbit_get_tid(ctx, 1);  // 1 = y dimension
   // uint32_t tid_z = nvbit_get_tid(ctx, 2);  // 2 = z dimension
-
   // Block coordinates within grid
   // uint32_t ctaid_x = nvbit_get_ctaid(ctx, 0); // 0 = x dimension
   // uint32_t ctaid_y = nvbit_get_ctaid(ctx, 1); // 1 = y dimension
   // uint32_t ctaid_z = nvbit_get_ctaid(ctx, 2); // 2 = z dimension
-
   // Warp ID (within the block)
   uint32_t warp_id = (threadIdx.x + threadIdx.y * blockDim.x + 
                       threadIdx.z * blockDim.x * blockDim.y) / 32;
-
   uint32_t flat_tid = threadIdx.x + threadIdx.y * blockDim.x + 
                       threadIdx.z * blockDim.x * blockDim.y;
   uint32_t laneid = flat_tid & 0x1f;  // flat_tid % 32
-
   // Lane ID (thread within warp, 0-31)
   // uint32_t laneid = __laneid(); // nvbit_get_laneid(ctx);
- 
   std::string opcode = instr->getOpcode();
      nnout() << "Instrumenting barrier instruction: " << opcode 
      //-------------------------------------------------------
