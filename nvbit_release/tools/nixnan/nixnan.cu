@@ -268,7 +268,8 @@ void recv_thread_fun(std::shared_ptr<nixnan::recorder> recorder, ChannelHost cha
         // Handle barrier events
         if (ei->is_barrier_event()) {
           nnout() << "Barrier event: Block[" << ei->x() << "," << ei->y() << "," << ei->z()
-                  << "] barrier_count=" << ei->barrier_cnt()
+                  << "] block_id=" << ei->block_linear_id()
+                  << " barrier_count=" << ei->barrier_cnt()
                   << " inst_id=" << ei->inst() << std::endl;
           num_processed_bytes += sizeof(exception_info);
           continue;

@@ -30,7 +30,7 @@ void my_bar_callback(ChannelDev* pchannel_dev, uint32_t inst_id) {
 
         // Create barrier event info
         int4 cta = make_int4(blockIdx.x, blockIdx.y, blockIdx.z, 0);
-        exception_info ei(cta, 0, inst_id, barrier_cnt);
+        exception_info ei(barrier_tag{}, cta, 0, inst_id, barrier_cnt, block_id);
 
         // Push to channel
         ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
