@@ -8,9 +8,9 @@
 using namespace InstrType;
 
 bool is_barrier_instruction(Instr* instr) {
-  nnout() << " checking if barrier; Opcode is  " << instr->getOpcode()      <<  std::endl;
+  // nnout() << " checking if barrier; Opcode is  " << instr->getOpcode()      <<  std::endl;
   bool barfound = std::string(instr->getOpcode()).find("BAR") != std::string::npos; // looking for BAR.SYNC; might do more robustly later
-  if (barfound) nnout() << "BAR found"; else nnout() << "BAR not found";
+  if (barfound) nnout() << "BAR found" << std::endl;
   return barfound;
  
 } // https://claude.ai/share/ee6fb49f-ba11-4cab-9ebe-8c0880f7e48a has a more robust set of alternatives
@@ -27,10 +27,14 @@ void instrument_barrier_instruction(Instr* instr, CUcontext ctx, CUfunction func
    nnout() << "Instrumenting barrier instruction: " << opcode << std::endl;
 
   //-------------------------adding stuff to get threadIdx.x etc
-  // Host side - in nvbit_at_init or similar  
-  nvbit_insert_call(instr, "my_bar_callback", IPOINT_BEFORE); //GG: maybe IPOINT_AFTER??
+  // Host side - in nvbit_at_init or similar
+  nvbit_insert_call(instr, "my_bar_callback", IPOINT_AFTER);  // Changed to IPOINT_AFTER
   //
-  nnout() << " Inserted my_bar_callback for " << opcode << std::endl ;	
+  // Pass channel_dev pointer and instruction ID
+  nvbit_add_call_arg_const_val64(instr, (uint64_t)&channel_dev);
+  nvbit_add_call_arg_const_val32(instr, (uint32_t)instr->getIdx());
+  //
+  nnout() << " Inserted my_bar_callback for " << opcode << " (IPOINT_AFTER)" << std::endl;	
   // Add launch configuration values as arguments
   /*---
   nvbit_add_call_arg_launch_val(instr, NVBIT_CALL_ARG_LAUNCH_TID_X);

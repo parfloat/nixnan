@@ -151,7 +151,7 @@ void instrument_function(CUcontext ctx, CUfunction func) {		//GG: how instructio
       bool meminstr = is_memory_instruction(instr);		// see if mem instr
       //GG: Added this
       bool barrier_instr = is_barrier_instruction(instr);	// see if barrier instr
-      if (barrier_instr) nnout() << "BAR found in nixnan"; else nnout() << "BAR not found in nixnan";      
+      if (barrier_instr) nnout() << "BAR found in nixnan" << std::endl;
       //---
       if (reg_infos.empty() && !meminstr && !barrier_instr)
       { if (verbose)
@@ -264,6 +264,16 @@ void recv_thread_fun(std::shared_ptr<nixnan::recorder> recorder, ChannelHost cha
           num_processed_bytes += sizeof(exception_info);
           continue;
         }
+
+        // Handle barrier events
+        if (ei->is_barrier_event()) {
+          nnout() << "Barrier event: Block[" << ei->x() << "," << ei->y() << "," << ei->z()
+                  << "] barrier_count=" << ei->barrier_cnt()
+                  << " inst_id=" << ei->inst() << std::endl;
+          num_processed_bytes += sizeof(exception_info);
+          continue;
+        }
+
         if (ei->warp() == -1) {
           recv_thread_receiving = false;
           break;

@@ -10,43 +10,32 @@
 
 using namespace nixnan;
 
-/*--->
-__device__
-void report_error(device_recorder recorder, uint32_t inst_id,
-                  ChannelDev* pchannel_dev, uint32_t type, uint32_t exce) {
-    int active_mask = __ballot_sync(__activemask(), 1);
-    const int laneid = get_laneid();
-    const int first_laneid = __ffs(active_mask) - 1;
+// GPU-side static array to maintain barrier count per block (max 65536 blocks)
+__device__ static uint32_t barrier_count_per_block[65536];
 
-    for (int tid = 0; tid < 32; tid++) {
-      exce |= __shfl_sync(active_mask, exce, tid);
-    }
-
-    // first active lane pushes information on the channel 
-    if (exce && first_laneid == laneid) {
-        uint32_t num_exceptions = recorder.record(inst_id, E_NAN, 1);
-        if (num_exceptions == 0) {
-            ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
-            for (int skip = 0; skip < 2; skip++) {
-                exception_info ei(get_ctaid(), get_warpid(), inst_id, E_NAN, 1, type, skip);
-                channel_dev->push(&ei, sizeof(exception_info));
-            }
-        }
-    }
+// Helper to compute linear block ID from 3D coordinates
+__device__ __inline__ uint32_t compute_block_id(int x, int y, int z) {
+    return x + y * 256 + z * 256 * 256;  // Assuming max 256 blocks per dimension
 }
-<---*/
-
 
 extern "C" __device__ __noinline__
-void my_bar_callback(int tid_x, int tid_y, int tid_z,
-                                int ctaid_x, int ctaid_y, int ctaid_z) {
-    // Use the coordinates
-    // nnout() << "In my_bar_callback" << //printf("Block(%d,%d,%d) Thread(%d,%d,%d)\n" 
-    //    ctaid_x, ctaid_y, ctaid_z, tid_x, tid_y, tid_z << std::endl;;
+void my_bar_callback(ChannelDev* pchannel_dev, uint32_t inst_id) {
+    // Only thread 0 in each block updates and reports
+    if (threadIdx.x == 0 && threadIdx.y == 0 && threadIdx.z == 0) {
+        // Compute linear block ID
+        uint32_t block_id = compute_block_id(blockIdx.x, blockIdx.y, blockIdx.z);
 
-    //printf("Block %d, Thread %d\n", 
-    //        blockIdx.x, threadIdx.x);
+        // Atomically increment barrier count for this block
+        uint32_t barrier_cnt = atomicAdd(&barrier_count_per_block[block_id], 1);
 
+        // Create barrier event info
+        int4 cta = make_int4(blockIdx.x, blockIdx.y, blockIdx.z, 0);
+        exception_info ei(cta, 0, inst_id, barrier_cnt);
+
+        // Push to channel
+        ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
+        channel_dev->push(&ei, sizeof(exception_info));
+    }
 }
 
 /*
