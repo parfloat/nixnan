@@ -2,12 +2,22 @@
 #include "common.cuh"
 #include "instruction_info.cuh"
 #include "nnout.hh"
+#include "utils/channel.hpp"
+#include <thread>
 
 namespace nixnan {
 namespace fp_histogram {
 
 static unsigned long long int* device_histogram = nullptr;
 static const size_t num_entries = 4 * (1 << FP64_EXP_BITS);
+
+
+volatile bool recv_thread_started = false;
+volatile bool recv_thread_receiving = false;
+
+static __managed__ ChannelDev chan_dev;
+static ChannelHost chan_host;
+int counter = 0;
 
 void init() {
     GET_VAR_INT(histogram_enabled, "HISTOGRAM", 0, "Enable FP exponent histogramming");
@@ -42,6 +52,19 @@ if (histogram_enabled) {
         printf("Error allocating device histogram: %s\n", cudaGetErrorString(err));
         exit(1);
     }
+    chan_host.init(10, sizeof(int), &chan_dev, nullptr, nullptr);
+    std::thread(
+        []() {
+            recv_thread_started = true;
+            int buffer;;
+            while (recv_thread_started) {
+                uint32_t nbytes = chan_host.recv(&buffer, sizeof(buffer));
+                if (nbytes > 0) {
+                    nnout() << "Hello from " << buffer << "\n";
+                }
+            }
+        }
+    ).detach();
 }
 }
 
@@ -52,8 +75,12 @@ if (histogram_enabled) {
     if (reg_infos.size() == 0) {
         return;
     }
+    int id = counter++;
+    // nixnan_fp_histogram_counter(int pred, ChannelDev ch, int id, unsigned long long int* histogram, uint32_t arg_count, ...)
     nvbit_insert_call(instr, "nixnan_fp_histogram_counter", IPOINT_AFTER);
     nvbit_add_call_arg_guard_pred_val(instr);
+    nvbit_add_call_arg_const_val64(instr, tobits64(&chan_dev), false);
+    nvbit_add_call_arg_const_val32(instr, tobits32(id), false);
     nvbit_add_call_arg_const_val64(instr, tobits64(device_histogram), false);
     if (verbose) {
         nnout() << "Histogram instrumenting: " << instr->getSass() << std::endl;
@@ -69,6 +96,8 @@ if (histogram_enabled) {
 
     nvbit_insert_call(instr, "nixnan_fp_histogram_counter", IPOINT_BEFORE);
     nvbit_add_call_arg_guard_pred_val(instr);
+    nvbit_add_call_arg_const_val64(instr, tobits64(&chan_dev), false);
+    nvbit_add_call_arg_const_val32(instr, tobits32(id), false);
     nvbit_add_call_arg_const_val64(instr, tobits64(device_histogram), false);
     size_t num_regs = 0;
     for (size_t i = 1; i < reg_infos.size(); ++i) {
@@ -100,6 +129,8 @@ std::string exp_with_bias(char format, int exp) {
 
 void term(CUcontext ctx) {
 if (histogram_enabled) {
+    recv_thread_started = false;
+
     unsigned long long int* host_histogram = new unsigned long long int[num_entries];
     cudaMemcpy(host_histogram, device_histogram, num_entries * sizeof(unsigned long long int), cudaMemcpyDeviceToHost);
     cudaError_t err = cudaGetLastError();

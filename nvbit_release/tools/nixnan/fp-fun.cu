@@ -2,6 +2,7 @@
 #include <cstdarg>
 #include "reginfo.cuh"
 #include "fp_utils.cuh"
+#include "utils/channel.hpp"
 using nixnan::fp_histogram::get_index;
 
 __device__ __inline__
@@ -11,9 +12,11 @@ void record(unsigned long long int* histogram, int format, uint32_t exp) {
 }
 
 extern "C" __device__ __noinline__ void
-nixnan_fp_histogram_counter(int pred, unsigned long long int* histogram, uint32_t arg_count, ...) {
+nixnan_fp_histogram_counter(int pred, ChannelDev* ch, int id, unsigned long long int* histogram, uint32_t arg_count, ...) {
     if (!pred) return;
-
+    if (get_laneid() == 0) {
+        ch->push(&id, sizeof(int));
+    }
     va_list ap;
     va_start(ap, arg_count);
 
