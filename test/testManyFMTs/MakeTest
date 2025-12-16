@@ -1,0 +1,65 @@
+# MakeTest - Makefile for testManyFMTs with nixnan dependency
+#
+# This Makefile ensures nixnan.so is built before building/running testManyFMTs
+
+NIXNAN_DIR = ../..
+NIXNAN_SO = $(NIXNAN_DIR)/nixnan.so
+NIXNAN_TOOLS_DIR = $(NIXNAN_DIR)/nvbit_release/tools/nixnan
+
+NVCC = nvcc
+NVCC_FLAGS = -O2 -lcurand
+
+# Detect GPU architecture
+GPU_ARCH := $(shell nvidia-smi --query-gpu=compute_cap --format=csv,noheader 2>/dev/null | head -1 | tr -d '.')
+ifneq ($(GPU_ARCH),)
+    NVCC_FLAGS += -arch=sm_$(GPU_ARCH)
+endif
+
+TARGET = testManyFMTs
+SRC = testManyFMTs.cu
+
+.PHONY: all clean nixnan run run-histogram run-no-histogram
+
+all: $(NIXNAN_SO) $(TARGET)
+
+# Build nixnan.so if it doesn't exist
+$(NIXNAN_SO):
+	@echo "=== Building nixnan.so ==="
+	@if [ ! -d "$(NIXNAN_TOOLS_DIR)" ]; then \
+		echo "Error: nixnan tools directory not found at $(NIXNAN_TOOLS_DIR)"; \
+		echo "Please ensure nvbit_release is extracted"; \
+		exit 1; \
+	fi
+	$(MAKE) -C $(NIXNAN_TOOLS_DIR)
+	@if [ ! -f "$(NIXNAN_SO)" ]; then \
+		echo "Creating symlink to nixnan.so"; \
+		ln -sf $(NIXNAN_TOOLS_DIR)/nixnan.so $(NIXNAN_SO); \
+	fi
+	@echo "=== nixnan.so ready ==="
+
+# Build the test program
+$(TARGET): $(SRC)
+	@echo "=== Building $(TARGET) ==="
+	$(NVCC) $(NVCC_FLAGS) -o $@ $<
+	@echo "=== $(TARGET) ready ==="
+
+# Convenience targets
+nixnan: $(NIXNAN_SO)
+
+clean:
+	rm -f $(TARGET)
+
+clean-all: clean
+	$(MAKE) -C $(NIXNAN_TOOLS_DIR) clean
+
+# Run targets
+run: $(TARGET)
+	./$(TARGET)
+
+run-histogram: $(NIXNAN_SO) $(TARGET)
+	@echo "=== Running with HISTOGRAM=1 ==="
+	HISTOGRAM=1 LD_PRELOAD=$(NIXNAN_SO) ./$(TARGET)
+
+run-no-histogram: $(NIXNAN_SO) $(TARGET)
+	@echo "=== Running with nixnan (no histogram) ==="
+	LD_PRELOAD=$(NIXNAN_SO) ./$(TARGET)
