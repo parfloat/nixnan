@@ -20,11 +20,13 @@ const uint32_t E_NAN = 1,
   E_SUB = 8,
   E_DIV0 = 16;
 
-const char FP16 = 0,
+const unsigned char FP16 = 0,
   BF16 = 1,
   FP32 = 2,
   FP64 = 3,
   UNKNOWN = 127;
+
+const unsigned char NUM_FORMATS = 4;
 
 #include <unordered_map>
 

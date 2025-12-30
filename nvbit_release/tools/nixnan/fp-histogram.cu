@@ -2,12 +2,27 @@
 #include "common.cuh"
 #include "instruction_info.cuh"
 #include "nnout.hh"
+#include "utils/channel.hpp"
 
 namespace nixnan {
 namespace fp_histogram {
 
 static unsigned long long int* device_histogram = nullptr;
 static const size_t num_entries = 4 * (1 << FP64_EXP_BITS);
+static BinArray* device_bins = nullptr;
+
+void process_bin_spec() {
+    // (cnt, 
+    // [ (fmt, [min1, max1], [min2, max2], ... ), 
+    //  ... ])
+
+    // example
+
+    // (12,
+    // [ (fp32, [2,6], [5,9]),
+    //  (fp16, [-4,-2]) ]
+    // )
+}
 
 void init() {
     GET_VAR_INT(histogram_enabled, "HISTOGRAM", 0, "Enable FP exponent histogramming");
@@ -42,6 +57,22 @@ if (histogram_enabled) {
         printf("Error allocating device histogram: %s\n", cudaGetErrorString(err));
         exit(1);
     }
+    BinArray host_bins[NUM_FORMATS];
+    cudaMalloc(&device_bins, NUM_FORMATS * sizeof(BinArray));
+    for (auto fmt : {BF16, FP16, FP32, FP64}) {
+        BinCounter h_cnts[] = {BinCounter(-1,0), BinCounter(2,3), BinCounter(4,5), BinCounter(6,7), BinCounter(10, 16)};
+        BinCounter* d_cnts;
+        cudaMalloc(&d_cnts, sizeof(h_cnts));
+        cudaMemcpy(d_cnts, h_cnts, sizeof(h_cnts), cudaMemcpyHostToDevice);
+        host_bins[fmt].bins = d_cnts;
+        host_bins[fmt].num_bins = sizeof(h_cnts) / sizeof(BinCounter);
+    }
+    cudaMemcpy(device_bins, host_bins, NUM_FORMATS * sizeof(BinArray), cudaMemcpyHostToDevice);
+    err = cudaGetLastError();
+    if (err != cudaSuccess) {
+        printf("Error allocating device histogram: %s\n", cudaGetErrorString(err));
+        exit(1);
+    }
 }
 }
 
@@ -54,6 +85,8 @@ if (histogram_enabled) {
     }
     nvbit_insert_call(instr, "nixnan_fp_histogram_counter", IPOINT_AFTER);
     nvbit_add_call_arg_guard_pred_val(instr);
+    nvbit_add_call_arg_const_val64(instr, tobits64(device_bins), false);
+    nvbit_add_call_arg_const_val64(instr, tobits64(0ULL), false);
     nvbit_add_call_arg_const_val64(instr, tobits64(device_histogram), false);
     if (verbose) {
         nnout() << "Histogram instrumenting: " << instr->getSass() << std::endl;
@@ -69,6 +102,8 @@ if (histogram_enabled) {
 
     nvbit_insert_call(instr, "nixnan_fp_histogram_counter", IPOINT_BEFORE);
     nvbit_add_call_arg_guard_pred_val(instr);
+    nvbit_add_call_arg_const_val64(instr, tobits64(device_bins), false);
+    nvbit_add_call_arg_const_val64(instr, tobits64(0ULL), false);
     nvbit_add_call_arg_const_val64(instr, tobits64(device_histogram), false);
     size_t num_regs = 0;
     for (size_t i = 1; i < reg_infos.size(); ++i) {
@@ -132,6 +167,15 @@ if (histogram_enabled) {
     }
     delete[] host_histogram;
     cudaFree(device_histogram);
+    {
+        BinArray host_bins[NUM_FORMATS];
+        cudaMemcpy(host_bins, device_bins, NUM_FORMATS * sizeof(BinArray), cudaMemcpyDeviceToHost);
+        for (auto fmt : {BF16, FP16, FP32, FP64}) {
+            BinCounter* d_cnts = host_bins[fmt].bins;
+            cudaFree(d_cnts);
+        }
+        cudaFree(device_bins);
+    }
 }
 }
 
