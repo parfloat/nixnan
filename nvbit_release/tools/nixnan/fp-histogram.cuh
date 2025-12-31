@@ -45,6 +45,45 @@ __inline__ __host__ __device__
 size_t get_index(int format, uint32_t exp) {
     return format << FP64_EXP_BITS | exp;
 }
+
+class exp_info {
+    unsigned long long count;
+    int lb;
+    int ub;
+    int kerid;
+    int fmt;
+    bool _to_skip;
+
+    public:
+    __host__ __device__
+    exp_info(unsigned long long count, int fmt, int lb, int ub, int kerid, bool to_skip)
+        : count(count), fmt(fmt), lb(lb), ub(ub), kerid(kerid), _to_skip(to_skip) {}
+
+    std::pair<int,int> range() {
+        return {lb, ub};
+    }
+
+    unsigned long long int get_count() {
+        return count;
+    }
+
+    int kernel_id() {
+        return kerid;
+    }
+
+    int warp() {
+        return 0;
+    }
+
+    bool to_skip() {
+        return _to_skip;
+    }
+
+    int format() {
+        return fmt;
+    }
+};
+
 } // namespace fp_histogram
 } // namespace nixnan
 

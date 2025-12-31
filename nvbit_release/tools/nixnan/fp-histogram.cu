@@ -3,6 +3,8 @@
 #include "instruction_info.cuh"
 #include "nnout.hh"
 #include "utils/channel.hpp"
+#include <thread>
+#include <atomic>
 
 namespace nixnan {
 namespace fp_histogram {
@@ -10,6 +12,45 @@ namespace fp_histogram {
 static unsigned long long int* device_histogram = nullptr;
 static const size_t num_entries = 4 * (1 << FP64_EXP_BITS);
 static BinArray* device_bins = nullptr;
+
+static std::atomic<bool> recv_thread_running;
+static std::atomic<bool> recv_thread_receiving;
+static ChannelHost channel_host;
+static __managed__ ChannelDev  channel_dev;
+std::thread recv_thread;
+
+template<typename T>
+void recv_thread_fun(std::atomic<bool> *recv_thread_running,
+                     std::atomic<bool> *recv_thread_receiving,
+                     ChannelHost channel_host,
+                     std::function<void(T*)> process_data) {
+  size_t CHANNEL_SIZE = sizeof(T);
+  char *recv_buffer = new char[CHANNEL_SIZE];
+
+  while (*recv_thread_running) {
+    uint32_t num_recv_bytes = 0;
+
+    if (*recv_thread_receiving &&
+        (num_recv_bytes = channel_host.recv(recv_buffer, CHANNEL_SIZE)) > 0) {
+      uint32_t num_processed_bytes = 0;
+      while (num_processed_bytes < num_recv_bytes) {
+        T *data = reinterpret_cast<T*>(&recv_buffer[num_processed_bytes]);
+        if (data->to_skip()) {
+          num_processed_bytes += CHANNEL_SIZE;
+          continue;
+        }
+        if (data->warp() == -1) {
+          *recv_thread_receiving = false;
+          break;
+        }
+        process_data(data);
+        num_processed_bytes += CHANNEL_SIZE;
+      }
+    }
+  }
+  delete[] recv_buffer;
+  return;
+}
 
 void process_bin_spec() {
     // (cnt, 
@@ -60,7 +101,7 @@ if (histogram_enabled) {
     BinArray host_bins[NUM_FORMATS];
     cudaMalloc(&device_bins, NUM_FORMATS * sizeof(BinArray));
     for (auto fmt : {BF16, FP16, FP32, FP64}) {
-        BinCounter h_cnts[] = {BinCounter(-1,0), BinCounter(2,3), BinCounter(4,5), BinCounter(6,7), BinCounter(10, 16)};
+        BinCounter h_cnts[] = {BinCounter(0,31), BinCounter(2,3), BinCounter(4,5), BinCounter(6,7), BinCounter(10, 16)};
         BinCounter* d_cnts;
         cudaMalloc(&d_cnts, sizeof(h_cnts));
         cudaMemcpy(d_cnts, h_cnts, sizeof(h_cnts), cudaMemcpyHostToDevice);
@@ -73,6 +114,21 @@ if (histogram_enabled) {
         printf("Error allocating device histogram: %s\n", cudaGetErrorString(err));
         exit(1);
     }
+    channel_host.init(20, sizeof(exp_info), &channel_dev, nullptr);
+    recv_thread_running = true;
+    recv_thread_receiving = true;
+    recv_thread = std::thread(recv_thread_fun<exp_info>,
+                              &recv_thread_running,
+                              &recv_thread_receiving,
+                              channel_host,
+                              [](exp_info* data) {
+                                  nnout()
+                                    << "Received exp_info: kerid="
+                                    << data->kernel_id()
+                                    << " range=[" << data->range().first
+                                    << "," << data->range().second
+                                    << "] count=" << data->get_count() << "\n";
+                              });
 }
 }
 
@@ -83,11 +139,16 @@ if (histogram_enabled) {
     if (reg_infos.size() == 0) {
         return;
     }
+    /*nixnan_fp_histogram_counter(int pred, BinArray* bins, unsigned long count,
+    unsigned long long int* histogram, ChannelDev* channel_dev, int kerid,
+    uint32_t arg_count, ...)*/
     nvbit_insert_call(instr, "nixnan_fp_histogram_counter", IPOINT_AFTER);
     nvbit_add_call_arg_guard_pred_val(instr);
     nvbit_add_call_arg_const_val64(instr, tobits64(device_bins), false);
-    nvbit_add_call_arg_const_val64(instr, tobits64(0ULL), false);
+    nvbit_add_call_arg_const_val64(instr, tobits64(8192ULL), false);
     nvbit_add_call_arg_const_val64(instr, tobits64(device_histogram), false);
+    nvbit_add_call_arg_const_val64(instr, tobits64(&channel_dev), false);
+    nvbit_add_call_arg_const_val32(instr, tobits32(0U), false); // kerid
     if (verbose) {
         nnout() << "Histogram instrumenting: " << instr->getSass() << std::endl;
     }
@@ -103,8 +164,10 @@ if (histogram_enabled) {
     nvbit_insert_call(instr, "nixnan_fp_histogram_counter", IPOINT_BEFORE);
     nvbit_add_call_arg_guard_pred_val(instr);
     nvbit_add_call_arg_const_val64(instr, tobits64(device_bins), false);
-    nvbit_add_call_arg_const_val64(instr, tobits64(0ULL), false);
+    nvbit_add_call_arg_const_val64(instr, tobits64(8192ULL), false);
     nvbit_add_call_arg_const_val64(instr, tobits64(device_histogram), false);
+    nvbit_add_call_arg_const_val64(instr, tobits64(&channel_dev), false);
+    nvbit_add_call_arg_const_val32(instr, tobits32(0U), false); // kerid
     size_t num_regs = 0;
     for (size_t i = 1; i < reg_infos.size(); ++i) {
         auto [ri, rfuns] = reg_infos[i];
@@ -135,6 +198,8 @@ std::string exp_with_bias(char format, int exp) {
 
 void term(CUcontext ctx) {
 if (histogram_enabled) {
+    recv_thread_running = false;
+    recv_thread.join();
     unsigned long long int* host_histogram = new unsigned long long int[num_entries];
     cudaMemcpy(host_histogram, device_histogram, num_entries * sizeof(unsigned long long int), cudaMemcpyDeviceToHost);
     cudaError_t err = cudaGetLastError();
