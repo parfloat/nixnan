@@ -52,17 +52,66 @@ void recv_thread_fun(std::atomic<bool> *recv_thread_running,
   return;
 }
 
-void process_bin_spec() {
-    // (cnt, 
-    // [ (fmt, [min1, max1], [min2, max2], ... ), 
-    //  ... ])
+struct VecValue {
+    bool is_value;
+    std::string value;
+    std::vector<VecValue> vec_values;
+    VecValue() : is_value(false) {}
+    VecValue(std::string val) : is_value(true), value(val) {}
+};
 
-    // example
+/*  (cnt, 
+    [ (fmt, [int, int], ([int, int])* ),
+      (fmt, [int, int], ([int, int])* )
+     ... ])
+    cnt: positive integer
+    fmt: one of fp16, fp32, fp64, bf16
+    [int,int]: inclusive range of exponents to include in the bin
+    example
 
-    // (12,
-    // [ (fp32, [2,6], [5,9]),
-    //  (fp16, [-4,-2]) ]
-    // )
+    (12,
+    [ (fp32, [2,6], [5,9]),
+     (fp16, [-4,-2]) ]
+    ) */
+
+VecValue
+process_bin_spec(std::string bin_spec) {
+    char opens[] = {'(', '[', '{'};
+    char closes[] = {')', ']', '}'};
+    std::vector<VecValue> stack;
+    bin_spec.erase(std::remove_if(bin_spec.begin(), bin_spec.end(), 
+                                  [](unsigned char c) { return std::isspace(c); }), 
+                   bin_spec.end());
+    VecValue root;
+    stack.push_back(root);
+    std::string curr_token;
+    for (char c : bin_spec) {
+        if (std::find(std::begin(opens), std::end(opens), c) != std::end(opens)) {
+            if (!curr_token.empty()) {
+                stack.back().vec_values.push_back(VecValue(curr_token));
+                curr_token.clear();
+            }
+        } else if (std::find(std::begin(closes), std::end(closes), c) != std::end(closes)) {
+            if (!curr_token.empty()) {
+                stack.back().vec_values.push_back(VecValue(curr_token));
+                curr_token.clear();
+            }
+            VecValue completed = stack.back();
+            stack.pop_back();
+            stack.back().vec_values.push_back(completed);
+        } else if (c == ',') {
+            if (!curr_token.empty()) {
+                stack.back().vec_values.push_back(VecValue(curr_token));
+                curr_token.clear();
+            }
+        } else {
+            curr_token.push_back(c);
+        }
+    }
+    if (!curr_token.empty()) {
+        stack.back().vec_values.push_back(VecValue(curr_token));
+    }
+    return stack.back();
 }
 
 void init() {
