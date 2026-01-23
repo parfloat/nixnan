@@ -5,6 +5,8 @@
 #include "utils/channel.hpp"
 #include <thread>
 #include <atomic>
+#include "nlohmann/json.hpp"
+#include <fstream>
 
 namespace nixnan {
 namespace fp_histogram {
@@ -18,6 +20,7 @@ static std::atomic<bool> recv_thread_receiving;
 static ChannelHost channel_host;
 static __managed__ ChannelDev  channel_dev;
 std::thread recv_thread;
+std::string bin_spec_file;
 
 template<typename T>
 void recv_thread_fun(std::atomic<bool> *recv_thread_running,
@@ -52,21 +55,42 @@ void recv_thread_fun(std::atomic<bool> *recv_thread_running,
   return;
 }
 
-void process_bin_spec() {
-    // (cnt, 
-    // [ (fmt, [min1, max1], [min2, max2], ... ), 
-    //  ... ])
-
-    // example
-
-    // (12,
-    // [ (fp32, [2,6], [5,9]),
-    //  (fp16, [-4,-2]) ]
-    // )
-}
-
 void init() {
     GET_VAR_INT(histogram_enabled, "HISTOGRAM", 0, "Enable FP exponent histogramming");
+    GET_VAR_STR(bin_spec_file, "BIN_SPEC_FILE",
+                R"(Specification for which exponent ranges to report. If the file does not exist, a template specification will be created.
+For example:
+{
+    "count": 128,
+    "bf16": [],
+    "fp16": [[0,5],[-4,-1]],
+    "fp32": [],
+    "fp64": []
+}
+will report every 128 occurrences of exponents in the ranges 0 to 5 and -4 to -1 for fp16 numbers.)");
+    if (bin_spec_file != "") {
+        histogram_enabled = true;
+        std::fstream bin_spec_ifs(bin_spec_file);
+        if (!bin_spec_ifs.good()) {
+            try {
+                bin_spec_ifs = std::fstream(bin_spec_file, std::ios::out | std::ios::trunc);
+                std::string default_spec = R"({
+    "count": 128,
+    "bf16": [],
+    "fp16": [],
+    "fp32": [],
+    "fp64": []
+})";
+                bin_spec_ifs.write(default_spec.c_str(), default_spec.size());
+                bin_spec_ifs.close();
+                nnout() << "Created template bin specification file at " << bin_spec_file << "\nExiting now. Please edit the file to specify which exponent ranges to report.\n";
+                exit(0);
+            } catch (...) {
+                nnout() << "Error creating template bin specification file at " << bin_spec_file << "\nExiting now.\n";
+                exit(1);
+            }
+        }
+    }
 }
 
 int get_exp_bits(uint32_t type) {
