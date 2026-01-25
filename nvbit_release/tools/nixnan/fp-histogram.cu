@@ -63,11 +63,11 @@ For example:
 {
     "count": 128,
     "bf16": [],
-    "fp16": [[0,5],[-4,-1]],
-    "fp32": [],
-    "fp64": []
+    "f16": [[0,5],[-4,-1]],
+    "f32": [],
+    "f64": []
 }
-will report every 128 occurrences of exponents in the ranges 0 to 5 and -4 to -1 for fp16 numbers.)");
+will report every 128 occurrences of exponents in the ranges 0 to 5 and -4 to -1 for f16 numbers.)");
     if (bin_spec_file != "") {
         histogram_enabled = true;
         std::fstream bin_spec_ifs(bin_spec_file);
@@ -77,9 +77,9 @@ will report every 128 occurrences of exponents in the ranges 0 to 5 and -4 to -1
                 std::string default_spec = R"({
     "count": 128,
     "bf16": [],
-    "fp16": [],
-    "fp32": [],
-    "fp64": []
+    "f16": [],
+    "f32": [],
+    "f64": []
 })";
                 bin_spec_ifs.write(default_spec.c_str(), default_spec.size());
                 bin_spec_ifs.close();
@@ -113,6 +113,66 @@ int get_exp_bias(uint32_t type) {
     return (1 << (exp_bits - 1)) - 1;
 }
 
+BinCounter bin_from_json(const nlohmann::json& j, unsigned char fmt) {
+    int bias = get_exp_bias(fmt);
+    if (j.type() != nlohmann::json::value_t::array ||
+        j.size() != 2) {
+        nnout() << "Invalid bin specification format: " << j.dump() << "\nExiting now.\n";
+        exit(1);
+    }
+    int lower = j[0].get<int>();
+    int upper = j[1].get<int>();
+    if (lower > upper ||
+        lower + bias < 0 ||
+        upper + bias >= (1 << get_exp_bits(fmt))) {
+        nnout() << "Invalid exponent range [" << lower << "," << upper
+                << "] for format " << type_to_string.at(fmt) << "\nExiting now.\n";
+        exit(1);
+    }
+    return BinCounter(lower + bias, upper+bias);
+}
+
+void process_bin_spec() {
+    using json = nlohmann::json;
+    std::ifstream bin_spec_ifs(bin_spec_file);
+    json bin_spec_json = json::parse(bin_spec_ifs);
+    unsigned long long int count_threshold = bin_spec_json["count"].get<unsigned long long int>();
+
+    if (count_threshold <= 0) {
+        nnout() << "Invalid count threshold of " << count_threshold << " in bin specification file " << bin_spec_file << "\nExiting now.\n";
+        exit(1);
+    }
+
+    BinArray host_bins[NUM_FORMATS];
+    cudaMalloc(&device_bins, NUM_FORMATS * sizeof(BinArray));
+    for (auto fmt : {BF16, FP16, FP32, FP64}) {
+        std::string fmt_str = type_to_string.at(fmt);
+        if (bin_spec_json.find(fmt_str) == bin_spec_json.end()) {
+            continue;
+        }
+
+        // BinCounter h_cnts[] = {BinCounter(0,31), BinCounter(2,3), BinCounter(4,5), BinCounter(6,7), BinCounter(10, 16)};
+        std::vector<BinCounter> h_cnts;
+        for (const auto& bin_json : bin_spec_json[fmt_str]) {
+            h_cnts.push_back(bin_from_json(bin_json, fmt));
+        }
+        BinCounter* d_cnts;
+        size_t to_copy = sizeof(BinCounter) * h_cnts.size();
+        cudaMalloc(&d_cnts, to_copy);
+        cudaMemcpy(d_cnts, h_cnts.data(), to_copy, cudaMemcpyHostToDevice);
+        host_bins[fmt].bins = d_cnts;
+        host_bins[fmt].num_bins = h_cnts.size();
+    }
+    cudaMemcpy(device_bins, host_bins, NUM_FORMATS * sizeof(BinArray), cudaMemcpyHostToDevice);
+    cudaError_t err = cudaGetLastError();
+    if (err != cudaSuccess) {
+        printf("Error allocating device histogram: %s\n", cudaGetErrorString(err));
+        exit(1);
+    }
+}
+
+std::string exp_with_bias(char format, int exp);
+
 void tool_init(CUcontext ctx) {
 if (histogram_enabled) {
     cudaMalloc(&device_histogram, num_entries * sizeof(unsigned long long int));
@@ -122,22 +182,7 @@ if (histogram_enabled) {
         printf("Error allocating device histogram: %s\n", cudaGetErrorString(err));
         exit(1);
     }
-    BinArray host_bins[NUM_FORMATS];
-    cudaMalloc(&device_bins, NUM_FORMATS * sizeof(BinArray));
-    for (auto fmt : {BF16, FP16, FP32, FP64}) {
-        BinCounter h_cnts[] = {BinCounter(0,31), BinCounter(2,3), BinCounter(4,5), BinCounter(6,7), BinCounter(10, 16)};
-        BinCounter* d_cnts;
-        cudaMalloc(&d_cnts, sizeof(h_cnts));
-        cudaMemcpy(d_cnts, h_cnts, sizeof(h_cnts), cudaMemcpyHostToDevice);
-        host_bins[fmt].bins = d_cnts;
-        host_bins[fmt].num_bins = sizeof(h_cnts) / sizeof(BinCounter);
-    }
-    cudaMemcpy(device_bins, host_bins, NUM_FORMATS * sizeof(BinArray), cudaMemcpyHostToDevice);
-    err = cudaGetLastError();
-    if (err != cudaSuccess) {
-        printf("Error allocating device histogram: %s\n", cudaGetErrorString(err));
-        exit(1);
-    }
+    process_bin_spec();
     channel_host.init(20, sizeof(exp_info), &channel_dev, nullptr);
     recv_thread_running = true;
     recv_thread_receiving = true;
@@ -146,11 +191,13 @@ if (histogram_enabled) {
                               &recv_thread_receiving,
                               channel_host,
                               [](exp_info* data) {
+                                  unsigned char fmt = data->format();
+                                  std::string fmt_str = type_to_string.at(fmt);
                                   nnout()
-                                    << "Received exp_info: kerid="
+                                    << fmt_str << " bin has reached threshold: kernel="
                                     << data->kernel_id()
-                                    << " range=[" << data->range().first
-                                    << "," << data->range().second
+                                    << " range=[" << exp_with_bias(fmt, data->range().first)
+                                    << "," << exp_with_bias(fmt, data->range().second)
                                     << "] count=" << data->get_count() << "\n";
                               });
 }
