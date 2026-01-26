@@ -16,7 +16,7 @@ static int histogram_enabled = false;
 
 void init();
 void tool_init(CUcontext ctx);
-void instrument(CUcontext ctx, Instr* instr);
+void instrument(CUcontext ctx, Instr* instr, const std::string& kname);
 void term(CUcontext ctx);
 
 class BinCounter {

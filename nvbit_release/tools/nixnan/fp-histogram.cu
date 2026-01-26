@@ -14,6 +14,7 @@ namespace fp_histogram {
 static unsigned long long int* device_histogram = nullptr;
 static const size_t num_entries = 4 * (1 << FP64_EXP_BITS);
 static BinArray* device_bins = nullptr;
+static unsigned long long int count_threshold = 0;
 
 static std::atomic<bool> recv_thread_running;
 static std::atomic<bool> recv_thread_receiving;
@@ -21,7 +22,8 @@ static ChannelHost channel_host;
 static __managed__ ChannelDev  channel_dev;
 std::thread recv_thread;
 std::string bin_spec_file;
-
+std::unordered_map<std::string, uint32_t> kernel_to_id;
+std::unordered_map<uint32_t, std::string> id_to_kernel;
 template<typename T>
 void recv_thread_fun(std::atomic<bool> *recv_thread_running,
                      std::atomic<bool> *recv_thread_receiving,
@@ -136,7 +138,7 @@ void process_bin_spec() {
     using json = nlohmann::json;
     std::ifstream bin_spec_ifs(bin_spec_file);
     json bin_spec_json = json::parse(bin_spec_ifs);
-    unsigned long long int count_threshold = bin_spec_json["count"].get<unsigned long long int>();
+    count_threshold = bin_spec_json["count"].get<unsigned long long int>();
 
     if (count_threshold <= 0) {
         nnout() << "Invalid count threshold of " << count_threshold << " in bin specification file " << bin_spec_file << "\nExiting now.\n";
@@ -147,14 +149,12 @@ void process_bin_spec() {
     cudaMalloc(&device_bins, NUM_FORMATS * sizeof(BinArray));
     for (auto fmt : {BF16, FP16, FP32, FP64}) {
         std::string fmt_str = type_to_string.at(fmt);
-        if (bin_spec_json.find(fmt_str) == bin_spec_json.end()) {
-            continue;
-        }
 
-        // BinCounter h_cnts[] = {BinCounter(0,31), BinCounter(2,3), BinCounter(4,5), BinCounter(6,7), BinCounter(10, 16)};
         std::vector<BinCounter> h_cnts;
-        for (const auto& bin_json : bin_spec_json[fmt_str]) {
-            h_cnts.push_back(bin_from_json(bin_json, fmt));
+        if (bin_spec_json.find(fmt_str) != bin_spec_json.end()) {
+            for (const auto& bin_json : bin_spec_json[fmt_str]) {
+                h_cnts.push_back(bin_from_json(bin_json, fmt));
+            }
         }
         BinCounter* d_cnts;
         size_t to_copy = sizeof(BinCounter) * h_cnts.size();
@@ -195,7 +195,7 @@ if (histogram_enabled) {
                                   std::string fmt_str = type_to_string.at(fmt);
                                   nnout()
                                     << fmt_str << " bin has reached threshold: kernel="
-                                    << data->kernel_id()
+                                    << id_to_kernel[data->kernel_id()]
                                     << " range=[" << exp_with_bias(fmt, data->range().first)
                                     << "," << exp_with_bias(fmt, data->range().second)
                                     << "] count=" << data->get_count() << "\n";
@@ -203,12 +203,17 @@ if (histogram_enabled) {
 }
 }
 
-void instrument(CUcontext ctx, Instr* instr) {
+void instrument(CUcontext ctx, Instr* instr, const std::string& kname) {
 if (histogram_enabled) {
     assert(device_histogram != nullptr && "Histogram not initialized!");
     auto reg_infos = instruction_info::get_reginfo(instr);
     if (reg_infos.size() == 0) {
         return;
+    }
+    if (kernel_to_id.find(kname) == kernel_to_id.end()) {
+        uint32_t new_id = kernel_to_id.size();
+        kernel_to_id[kname] = new_id;
+        id_to_kernel[new_id] = kname;
     }
     /*nixnan_fp_histogram_counter(int pred, BinArray* bins, unsigned long count,
     unsigned long long int* histogram, ChannelDev* channel_dev, int kerid,
@@ -216,10 +221,10 @@ if (histogram_enabled) {
     nvbit_insert_call(instr, "nixnan_fp_histogram_counter", IPOINT_AFTER);
     nvbit_add_call_arg_guard_pred_val(instr);
     nvbit_add_call_arg_const_val64(instr, tobits64(device_bins), false);
-    nvbit_add_call_arg_const_val64(instr, tobits64(8192ULL), false);
+    nvbit_add_call_arg_const_val64(instr, tobits64(count_threshold), false);
     nvbit_add_call_arg_const_val64(instr, tobits64(device_histogram), false);
     nvbit_add_call_arg_const_val64(instr, tobits64(&channel_dev), false);
-    nvbit_add_call_arg_const_val32(instr, tobits32(0U), false); // kerid
+    nvbit_add_call_arg_const_val32(instr, tobits32(kernel_to_id[kname]), false); // kerid
     if (verbose) {
         nnout() << "Histogram instrumenting: " << instr->getSass() << std::endl;
     }
@@ -235,10 +240,10 @@ if (histogram_enabled) {
     nvbit_insert_call(instr, "nixnan_fp_histogram_counter", IPOINT_BEFORE);
     nvbit_add_call_arg_guard_pred_val(instr);
     nvbit_add_call_arg_const_val64(instr, tobits64(device_bins), false);
-    nvbit_add_call_arg_const_val64(instr, tobits64(8192ULL), false);
+    nvbit_add_call_arg_const_val64(instr, tobits64(count_threshold), false);
     nvbit_add_call_arg_const_val64(instr, tobits64(device_histogram), false);
     nvbit_add_call_arg_const_val64(instr, tobits64(&channel_dev), false);
-    nvbit_add_call_arg_const_val32(instr, tobits32(0U), false); // kerid
+    nvbit_add_call_arg_const_val32(instr, tobits32(kernel_to_id[kname]), false); // kerid
     size_t num_regs = 0;
     for (size_t i = 1; i < reg_infos.size(); ++i) {
         auto [ri, rfuns] = reg_infos[i];

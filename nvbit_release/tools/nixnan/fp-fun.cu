@@ -12,21 +12,19 @@ void record(unsigned long long int* histogram, BinArray* bins,
     ChannelDev* channel_dev) {
     size_t index = get_index(format, exp);
     atomicAdd(&histogram[index], 1L);
-    for (auto fmt : {FP16, BF16, FP32, FP64}) {
-        for (size_t i = 0; i < bins->num_bins; i++) {
-            BinCounter& bin = bins->bins[i];
-            if (bin.in_bin(exp)) {
-                unsigned long long int prev = bin.increment();
-                if (prev % count == 0 && prev != 0) {
-                    // Send update to host
-                    for (auto skip : {false, true}) {
-                        //(unsigned long long count, int fmt, int lb, int ub, int kerid, bool to_skip)
-                        exp_info ei(count, fmt, bin.lower, bin.upper, kerid, skip);
-                        channel_dev->push((void*)&ei, sizeof(ei));
-                    }
+    for (size_t i = 0; i < bins[format].num_bins; i++) {
+        BinCounter& bin = bins[format].bins[i];
+        if (bin.in_bin(exp)) {
+            unsigned long long int prev = bin.increment();
+            if (prev % count == 0 && prev != 0) {
+                // Send update to host
+                for (auto skip : {false, true}) {
+                    //(unsigned long long count, int fmt, int lb, int ub, int kerid, bool to_skip)
+                    exp_info ei(count, format, bin.lower, bin.upper, kerid, skip);
+                    channel_dev->push((void*)&ei, sizeof(ei));
                 }
-                break;
             }
+            break;
         }
     }
 }
