@@ -90,3 +90,62 @@ For example in:
 An infinity was detected arising in a 16-bit matrix-multiply-and-accumulate instruction.
 
 The summary at the end indicates that there were four NaN values, three infinity values and two subnormal values generated during program execution.
+
+# FP Exponent Histogramming
+
+Nixnan now has the facility to track FP exponent binades. This can be controlled with the 
+`HISTOGRAM` and `BIN_SPEC_FILE` environment variables.
+
+## Whole program histogramming
+The `HISTOGRAM` variable enables
+general tracking of exponents encountered per format in a CUDA program's execution,
+producing a summary of the results at the end of execution. For example
+```bash
+$ HISTOGRAM=1 LD_PRELOAD=nixnan.so half-matmul
+...
+#nixnan: --- FP16 Memory  Operations ---
+#nixnan: NaN:                    4 (60 repeats)
+#nixnan: --- BF16 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- FP32 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- FP64 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+
+#nixnan: --- FP exponent ranges --- 
+#nixnan: Exponent range for f16: [-5, 3]
+$
+```
+Shows that in this program, the exponent range of the f16 format is between -5 and 3.
+
+## Targeted range warning
+The `BIN_SPEC_FILE` is a JSON file specification for which exponent ranges should
+be tracked per format, and the frequency of when these fill. This variable expects
+a path to a file containing the specification. If the file does not exist,
+then it will be created and filled in with a template for the specification for what
+exponent ranges per format should be tracked, and how often they should be reported.
+
+For example:
+```json
+{
+    "count": 128,
+    "bf16": [],
+    "f16": [[0,5],[-4,-1]],
+    "f32": [],
+    "f64": []
+}
+```
+will track exponent in the ranges [0,5] and [-4,-1] for the f16 format. The `"count"`
+entry means that exponents in a range are reported every 128 hits.
+
+An example use is:
+```bash
+$ BIN_SPEC_FILE=./spec.json HISTOGRAM=1 LD_PRELOAD=nixnan.so half-matmul
+...
+#nixnan: f16 bin has reached threshold: kernel=WMMAF16TensorCore range=[0,5] count=128
+#nixnan: f16 bin has reached threshold: kernel=WMMAF16TensorCore range=[-4,-1] count=128
+#nixnan: f16 bin has reached threshold: kernel=WMMAF16TensorCore range=[0,5] count=128
+...
+```
+This shows that the threshold was reached twice in the [0,5] range and once in 
+the [-4,-1] range.
