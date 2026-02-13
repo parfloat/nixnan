@@ -152,7 +152,12 @@ void process_bin_spec() {
         bin_spec_json = empty_bin_spec();
     } else {
         std::ifstream bin_spec_ifs(bin_spec_file);
-        bin_spec_json = json::parse(bin_spec_ifs);
+        try {
+            bin_spec_json = json::parse(bin_spec_ifs);
+        } catch (const std::exception& e) {
+            nnout() << "Error parsing bin specification file " << bin_spec_file << ": " << e.what() << "\nExiting now.\n";
+            exit(1);
+        }
     }
     count_threshold = bin_spec_json["count"].get<unsigned long long int>();
 
