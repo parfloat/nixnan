@@ -134,10 +134,26 @@ BinCounter bin_from_json(const nlohmann::json& j, unsigned char fmt) {
     return BinCounter(lower + bias, upper+bias);
 }
 
+using json = nlohmann::json;
+
+json empty_bin_spec() {
+    return json{
+        {"count", 1},
+        {"bf16", json::array()},
+        {"f16", json::array()},
+        {"f32", json::array()},
+        {"f64", json::array()}
+    };
+}
+
 void process_bin_spec() {
-    using json = nlohmann::json;
-    std::ifstream bin_spec_ifs(bin_spec_file);
-    json bin_spec_json = json::parse(bin_spec_ifs);
+    json bin_spec_json;
+    if (bin_spec_file == "") {
+        bin_spec_json = empty_bin_spec();
+    } else {
+        std::ifstream bin_spec_ifs(bin_spec_file);
+        bin_spec_json = json::parse(bin_spec_ifs);
+    }
     count_threshold = bin_spec_json["count"].get<unsigned long long int>();
 
     if (count_threshold <= 0) {
