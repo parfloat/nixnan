@@ -1,4 +1,5 @@
 # Nixnan Tutorial: Comprehensive Guide to GPU Floating-Point Exception Detection
+### Authored by Claude (that might lie) with human edits (that could be fallible - tagged [HE])
 
 ## Table of Contents
 
@@ -29,7 +30,7 @@ Nixnan is a binary instrumentation tool for detecting floating-point exceptional
 - **Exponent histogram tracking**: Monitors numerical ranges during execution
 - **Source line information**: Reports exception locations with file and line numbers (when debug info available)
 - **Low overhead modes**: Sampling support for reduced performance impact
-- **Memory instrumentation**: Optional detection of exceptional values in memory operations
+- **Exceptions being written into memory**: Reports exceptions flowing into memory via STG ("store global") [HE]
 
 ---
 
@@ -53,7 +54,7 @@ According to IEEE 754, there are five types of floating-point exceptions:
 | **Invalid Operation** | Mathematically undefined (e.g., sqrt(-1), 0/0) | NaN |
 | **Division by Zero** | Non-zero divided by zero | Infinity (INF) |
 | **Overflow** | Result exceeds representable range | Infinity (INF) |
-| **Underflow** | Result too small to represent normally | Subnormal or Zero |
+| **Underflow** | Result too small to represent normally | Subnormal [HE] |
 | **Inexact** | Result requires rounding | Rounded value |
 
 ### Why This Matters for ML and HPC
@@ -63,14 +64,14 @@ Consider this common scenario in machine learning:
 ```python
 # Uninitialized tensor - carries garbage values
 x = torch.FloatTensor(20, 32, 128).cuda()
-# This may contain NaN values that propagate silently!
+# This may contain uninitialized values that may propagate, later generating NaNs [HE]
 ```
 
 Or in numerical algorithms:
 
 ```c
 // Division without zero-check
-const float recipPrecision = 0.5f / eb;  // If eb is subnormal or zero, this explodes
+const float recipPrecision = 0.5f / eb;  // If eb is subnormal or zero, this couldexplode [HE]
 ```
 
 Tools like nixnan help identify these issues before they cause training failures or incorrect scientific results.
@@ -94,8 +95,7 @@ Unlike source-level analysis, binary instrumentation:
 - **GPU Driver**: Compatible with CUDA 12
 - **Build Tools**: GCC, Make
 
-> **Note**: ARM compatibility is possible with modifications to the NVBit binary.
-
+[HE] : removed mention of ARM
 ---
 
 ## Installation <a name="installation"></a>
@@ -118,7 +118,7 @@ make
 ```bash
 # Compile the basic example
 cd examples
-nvcc -arch=compute_86 -lineinfo basic.cu -o basic
+nvcc -arch=sm_86 -lineinfo basic.cu -o basic [HE: changed compute_86]
 
 # Run with nixnan instrumentation
 LD_PRELOAD=../nvbit_release/tools/nixnan/nixnan.so ./basic
@@ -142,6 +142,16 @@ LD_PRELOAD=/path/to/nixnan.so ./your_cuda_program [args]
 LD_PRELOAD=/path/to/nixnan.so python train.py
 ```
 
+### Our SC'25 Tutorial [this section is fully HE]
+
+[https://fpanalysistools.org/](This is a great source of info covering NixNan + other tools.)
+
+(Drill into SC25 at the top.)
+
+### Private Github
+
+[https://github.com/parfloat/parfloat-class](Ask to be included in more projects in progress - send email to ganeshutah at gmail)
+ 
 ### Example Output
 
 ```
