@@ -142,15 +142,12 @@ LD_PRELOAD=/path/to/nixnan.so ./your_cuda_program [args]
 LD_PRELOAD=/path/to/nixnan.so python train.py
 ```
 
-### Our SC'25 Tutorial [this section is fully HE]
+### Additional material (presentations/projects) [this section is fully HE]
 
-[https://fpanalysistools.org/](This is a great source of info covering NixNan + other tools.)
-
-(Drill into SC25 at the top.)
-
-### Private Github
-
-[https://github.com/parfloat/parfloat-class](Ask to be included in more projects in progress - send email to ganeshutah at gmail)
+- This is a great source of info covering NixNan + other tools.
+  - [Our SC'25 tutorial listed at the top.](https://fpanalysistools.org)
+- Ask to be included in more projects in progress - send email to ganeshutah at gmail.
+  - Our [Private Github](https://github.com/parfloat/parfloat-class) 
  
 ### Example Output
 
