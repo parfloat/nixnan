@@ -1,3 +1,6 @@
+# News
+Updated NVBit to 1.7.7.3: This may cause GPU functions to not be instrumented on CUDA versions below 13. If you encounter an issue, use an older version of Nixnan or upgrade CUDA to version 13+.
+
 # About
 A tool designed to provide a new framework for floating-point exceptional-value detection.
 The tool uses [NVbit](https://github.com/NVlabs/NVBit) in order to instrument Nvidia CUDA programs.
