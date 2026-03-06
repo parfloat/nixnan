@@ -59,6 +59,7 @@ void recv_thread_fun(std::atomic<bool> *recv_thread_running,
 
 void init() {
     GET_VAR_INT(histogram_enabled, "HISTOGRAM", 0, "Enable FP exponent histogramming");
+    histogram_enabled = 1;
     GET_VAR_STR(bin_spec_file, "BIN_SPEC_FILE",
                 R"(Specification for which exponent ranges to report. If the file does not exist, a template specification will be created.
 For example:
@@ -95,6 +96,7 @@ will report every 128 occurrences of exponents in the ranges 0 to 5 and -4 to -1
     }
 }
 
+extern "C" {
 int get_exp_bits(uint32_t type) {
     switch (type) {
         case FP16:
@@ -108,6 +110,7 @@ int get_exp_bits(uint32_t type) {
         default:
             return -1; // invalid type
     }
+}
 }
 
 int get_exp_bias(uint32_t type) {
@@ -293,10 +296,17 @@ std::string exp_with_bias(char format, int exp) {
     return std::to_string(exp - get_exp_bias(format));
 }
 
-void term(CUcontext ctx) {
-if (histogram_enabled) {
-    recv_thread_running = false;
-    recv_thread.join();
+extern "C" {
+int nixnan_fp_histogram_fp64 = FP64;
+int nixnan_fp_histogram_fp32 = FP32;
+int nixnan_fp_histogram_fp16 = FP16;
+int nixnan_fp_histogram_bf16 = BF16;
+
+unsigned long long int* nixnan_fp_histogram_get_histogram() {
+    if (device_histogram == nullptr) {
+        nnout() << "Error: device histogram not initialized!\n";
+        return nullptr;
+    }
     unsigned long long int* host_histogram = new unsigned long long int[num_entries];
     cudaMemcpy(host_histogram, device_histogram, num_entries * sizeof(unsigned long long int), cudaMemcpyDeviceToHost);
     cudaError_t err = cudaGetLastError();
@@ -304,6 +314,59 @@ if (histogram_enabled) {
         nnout() << "Error copying device histogram to host: " << cudaGetErrorString(err) << "\n";
         exit(1);
     }
+    return host_histogram;
+}
+
+void nixnan_fp_histogram_destroy_histogram(unsigned long long int* histogram) {
+    if (device_histogram == nullptr) {
+        nnout() << "Warning: device histogram not initialized!\n";
+        return;
+    }
+    delete[] histogram;
+}
+
+void nixnan_fp_histogram_reset_histogram() {
+    if (device_histogram == nullptr) {
+        nnout() << "Error: device histogram not initialized!\n";
+        return;
+    }
+    cudaMemset(device_histogram, 0, num_entries * sizeof(unsigned long long int));
+    cudaError_t err = cudaGetLastError();
+    if (err != cudaSuccess) {
+        nnout() << "Error resetting device histogram: " << cudaGetErrorString(err) << "\n";
+        exit(1);
+    }
+}
+
+__global__
+void nixnan_fp_histogram_kernel(float* a, float* b) {
+    size_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    a[idx] = b[idx] + 1.0f;
+    return;
+}
+
+void nixnan_fp_histogram_run_kernel() {
+    float* d_a;
+    cudaMalloc(&d_a, sizeof(float));
+    float* d_b;
+    cudaMalloc(&d_b, sizeof(float));
+    cudaMemset(d_b, 0.0001, sizeof(float));
+    nixnan_fp_histogram_kernel<<<1,1>>>(d_a, d_b);
+    int* ptr;
+    cudaMalloc(&ptr, num_entries * sizeof(unsigned long long int));
+    cudaError_t err = cudaGetLastError();
+    if (err != cudaSuccess) {
+        nnout() << "Error launching histogram kernel: " << cudaGetErrorString(err) << "\n";
+        return;
+    }
+}
+}
+
+void term(CUcontext ctx) {
+if (histogram_enabled) {
+    recv_thread_running = false;
+    recv_thread.join();
+    unsigned long long int* host_histogram = nixnan_fp_histogram_get_histogram();
     bool printed_header = false;
     for (auto format : {BF16, FP16, FP32, FP64}) {
         int min = INT_MAX, max = 0;
@@ -327,7 +390,7 @@ if (histogram_enabled) {
                        exp_with_bias(format, max) << "]\n";
         }
     }
-    delete[] host_histogram;
+    nixnan_fp_histogram_destroy_histogram(host_histogram);
     cudaFree(device_histogram);
     {
         BinArray host_bins[NUM_FORMATS];

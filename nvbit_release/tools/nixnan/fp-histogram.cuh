@@ -87,4 +87,9 @@ class exp_info {
 } // namespace fp_histogram
 } // namespace nixnan
 
+extern "C" {
+    unsigned long long int* nixnan_fp_histogram_get_histogram();
+    void nixnan_fp_histogram_destroy_histogram(unsigned long long int* histogram);
+}
+
 #endif // NIXNAN_FP_HISTOGRAM_CUH
