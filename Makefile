@@ -2,7 +2,7 @@
 
 all:analyzer detector nixnan nixnan.so
 
-nvbit_version = 1.7.5
+nvbit_version = 1.7.7.3
 
 nvbit_tar=nvbit-Linux-x86_64-$(nvbit_version).tar.bz2
 nvbit_tool=$(shell pwd)/nvbit_release/tools

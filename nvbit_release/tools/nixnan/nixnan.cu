@@ -101,8 +101,8 @@ void nvbit_at_init() {
     "This is useful for the case when an instrumented program is "
     "capturing stderr."
   );
-  GET_VAR_INT(line_info, "LINE_INFO", 0,
-              "Enable debug information for source code locations. This may cause crashes, so set this to 0 if you encounter issues.");
+  GET_VAR_INT(line_info, "LINE_INFO", 1,
+              "Disable debug information for source code locations. Having this enabled may cause crashes, so set this to 0 if you encounter issues.");
   if (!filename.empty()) {
     set_out_file(filename);
   }
