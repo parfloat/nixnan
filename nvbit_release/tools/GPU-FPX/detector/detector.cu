@@ -300,9 +300,12 @@ void instrument_function_if_needed(CUcontext ctx, CUfunction func) {
 __global__ void flush_channel() {
   /* push memory access with negative cta id to communicate the kernel is
    * completed */
-  reg_info_t ri;
-  ri.cta_id_x = -1;
-  channel_dev.push(&ri, sizeof(reg_info_t));
+  for (bool ignore : {true, false}) {
+    reg_info_t ri;
+    ri.cta_id_x = ignore ? 0 : -1;
+    ri.ignore = ignore;
+    channel_dev.push(&ri, sizeof(reg_info_t));
+  }
 
   /* flush channel */
   channel_dev.flush();
@@ -422,6 +425,10 @@ void *recv_thread_fun(void *) {
           break;
         }
 
+        if (ri->ignore) {
+          num_processed_bytes += sizeof(reg_info_t);
+          continue;
+        }
         // char *loc = ri->location;
         uint32_t index = ri->mem_index;
         uint32_t loc_id = 0;

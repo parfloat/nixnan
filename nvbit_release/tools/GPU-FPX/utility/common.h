@@ -49,6 +49,7 @@ typedef struct {
   uint32_t mem_index_ar[32];
   uint32_t exce_type[32];
   uint32_t warp_exec_info[32];
+  bool ignore;
   // uint32_t reg_vals[32][2];
 } reg_info_t;
 

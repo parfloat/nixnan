@@ -222,6 +222,14 @@ __device__ static __forceinline__ uint32_t encode_index(uint32_t mem_index,
 //     }
 // }
 
+__device__ void send_to_host(ChannelDev *cd, reg_info_t &ri) {
+  for (bool ignore : {false, true}) {
+    reg_info_t temp_ri = ri;
+    temp_ri.ignore = ignore;
+    cd->push(&temp_ri, sizeof(reg_info_t));
+  }
+}
+
 extern "C" __device__ __noinline__ void
 record_mma_val_16_stand(int pred, int opcode_id, int kernel_id,
                         // uint64_t location,
@@ -283,8 +291,7 @@ record_mma_val_16_stand(int pred, int opcode_id, int kernel_id,
         if (index_info == 0) {
           // atomicAdd((unsigned int*)&device_table[table_index], 1);
           ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
-          channel_dev->push(&ri, sizeof(reg_info_t));
-          break;
+          send_to_host(channel_dev, ri);
         }
         // ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
         // channel_dev->push(&ri, sizeof(reg_info_t));
@@ -355,8 +362,7 @@ record_mma_val_32_stand(int pred, int opcode_id, int kernel_id,
         if (index_info == 0) {
           // atomicAdd((unsigned int*)&device_table[table_index], 1);
           ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
-          channel_dev->push(&ri, sizeof(reg_info_t));
-          break;
+          send_to_host(channel_dev, ri);
         }
         // ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
         // channel_dev->push(&ri, sizeof(reg_info_t));
@@ -426,8 +432,7 @@ record_mma_val_64_stand(int pred, int opcode_id, int kernel_id,
         if (index_info == 0) {
           // atomicAdd((unsigned int*)&device_table[table_index], 1);
           ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
-          channel_dev->push(&ri, sizeof(reg_info_t));
-          break;
+          send_to_host(channel_dev, ri);
         }
         // ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
         // channel_dev->push(&ri, sizeof(reg_info_t));
@@ -479,8 +484,7 @@ record_reg_val_16_stand(int pred, int opcode_id, int kernel_id,
             atomicAdd((unsigned int *)&device_table[table_index], 1);
         if (index_info == 0) {
           ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
-          channel_dev->push(&ri, sizeof(reg_info_t));
-          break;
+          send_to_host(channel_dev, ri);
         }
       }
     }
@@ -532,8 +536,7 @@ record_reg_val_16x2_stand(int pred, int opcode_id, int kernel_id,
             atomicAdd((unsigned int *)&device_table[table_index], 1);
         if (index_info == 0) {
           ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
-          channel_dev->push(&ri, sizeof(reg_info_t));
-          break;
+          send_to_host(channel_dev, ri);
         }
       }
     }
@@ -604,8 +607,7 @@ record_reg_val_32_stand(int pred, int opcode_id, int kernel_id,
         if (index_info == 0) {
           // atomicAdd((unsigned int*)&device_table[table_index], 1);
           ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
-          channel_dev->push(&ri, sizeof(reg_info_t));
-          break;
+          send_to_host(channel_dev, ri);
         }
         // ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
         // channel_dev->push(&ri, sizeof(reg_info_t));
@@ -677,8 +679,7 @@ record_reg_val_32_div0(int pred, int opcode_id, int kernel_id,
         if (index_info == 0) {
           // atomicAdd((unsigned int*)&device_table[table_index], 1);
           ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
-          channel_dev->push(&ri, sizeof(reg_info_t));
-          break;
+          send_to_host(channel_dev, ri);
         }
         // ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
         // channel_dev->push(&ri, sizeof(reg_info_t));
@@ -759,8 +760,7 @@ record_reg_val_64_stand(int pred, int opcode_id, int kernel_id,
         if (index_info == 0) {
           // atomicAdd((unsigned int*)&device_table[table_index], 1);
           ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
-          channel_dev->push(&ri, sizeof(reg_info_t));
-          break;
+          send_to_host(channel_dev, ri);
         }
         // printf("index info is %u\n", index_info);
 
@@ -829,8 +829,7 @@ record_reg_val_64_div0(int pred, int opcode_id, int kernel_id,
           //		    atomicAdd((unsigned int*)&device_table[table_index],
           //1);
           ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
-          channel_dev->push(&ri, sizeof(reg_info_t));
-          break;
+          send_to_host(channel_dev, ri);
         }
         // ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
         // channel_dev->push(&ri, sizeof(reg_info_t));
