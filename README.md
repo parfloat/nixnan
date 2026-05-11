@@ -8,7 +8,7 @@ The goals are to add more support for instructions (and instruction types) from 
 
 # Requirements
 Linux on x86 with Cuda version 12 and compute capability greater than or equal to 8.6.
-ARM should work, but will replacing the x86 version of NVbit downloaded by `make`.
+ARM should work, but will require replacing the x86 version of NVbit downloaded by `make`.
 
 # Setup
 Run `make` in the root directory.
