@@ -1,0 +1,815 @@
+#nixnan: ----------------------------------------------------------------------------------
+#nixnan: Initializing GPU context...
+#nixnan: Could not open kernel_whitelist.txt!
+#nixnan: Could not open kernel_blacklist.txt!
+#nixnan: Instrumenting all kernels
+#nixnan: running kernel [void ] ...
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[6,6] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[6,6] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[5,5] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[6,6] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[6,6] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[5,5] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[6,6] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[6,6] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[4,4] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[6,6] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[5,5] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[6,6] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[6,6] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[5,5] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[3,3] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void  range=[4,4] count=1024
+#nixnan: running kernel [void at::native::reduce_kernel] ...
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[5,5] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[6,6] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[6,6] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[4,4] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[5,5] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[6,6] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[6,6] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[5,5] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[6,6] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[6,6] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[2,2] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[3,3] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[4,4] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[5,5] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[6,6] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[6,6] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[10,10] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[10,10] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[10,10] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[10,10] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[10,10] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[10,10] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[10,10] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[5,5] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[6,6] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[10,10] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[10,10] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[10,10] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[10,10] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[10,10] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[10,10] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[6,6] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[10,10] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[10,10] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[10,10] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[10,10] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[10,10] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[10,10] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[10,10] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[10,10] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[4,4] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[5,5] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[6,6] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[10,10] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[10,10] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[10,10] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[10,10] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[6,6] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[10,10] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[10,10] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[10,10] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[10,10] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[10,10] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[5,5] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[6,6] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[6,6] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[7,7] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[10,10] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[8,8] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[10,10] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[9,9] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[10,10] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[10,10] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[11,11] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[12,12] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[16,16] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[16,16] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[13,13] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[16,16] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[16,16] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[16,16] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[16,16] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[17,17] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[16,16] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[16,16] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[17,17] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[16,16] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[17,17] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[16,16] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[14,14] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[16,16] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[17,17] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[16,16] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[16,16] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[17,17] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[16,16] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[17,17] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[16,16] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[18,18] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[16,16] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[17,17] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[16,16] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[16,16] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[18,18] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[17,17] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[16,16] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[16,16] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[17,17] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[18,18] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[16,16] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[17,17] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[16,16] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[15,15] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[16,16] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[18,18] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[17,17] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[16,16] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[16,16] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[17,17] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[18,18] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[16,16] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[16,16] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[17,17] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[16,16] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[16,16] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[18,18] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[17,17] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[16,16] count=1024
+#nixnan: f32 bin has reached threshold: kernel=void at::native::reduce_kernel range=[19,19] count=1024
+#nixnan: Finalizing GPU context...
+
+#nixnan: ------------ nixnan Report -----------
+
+#nixnan: --- FP16 Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- BF16 Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- FP32 Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- FP64 Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- FP16 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- BF16 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- FP32 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- FP64 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- FP exponent ranges --- 
+#nixnan: Exponent range for f32: [zero, 19]

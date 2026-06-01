@@ -1,0 +1,40 @@
+------------- NVBit (NVidia Binary Instrumentation Tool v1.8) Loaded --------------
+NVBit core environment variables (mostly for nvbit-devs):
+ACK_CTX_INIT_LIMITATION = 0 - if set, no warning will be printed for nvbit_at_ctx_init()
+            NVDISASM = nvdisasm - override default nvdisasm found in PATH
+            NOBANNER = 0 - if set, does not print this banner
+       NO_EAGER_LOAD = 1 - lazy module loading is now turned on by default. If you see deadlocks in your tool, set NO_EAGER_LOAD to 0
+---------------------------------------------------------------------------------
+         INSTR_BEGIN = 0 - Beginning of the instruction interval where to apply instrumentation
+           INSTR_END = 4294967295 - End of the instruction interval where to apply instrumentation
+        TOOL_VERBOSE = 0 - Enable verbosity inside the tool
+   ENABLE_FUN_DETAIL = 1 - Enable detailed function information for kernel
+     PRINT_ILL_INSTR = 1 - Print the instruction which caused the exception
+            SAMPLING = 1 - Instrument a repeat kernel every SAMPLING times
+           INSTR_MEM = 1 - Instrument memory instructions for NaN/Inf detection
+           HISTOGRAM = 1 - Enable FP exponent histogramming
+       BIN_SPEC_FILE = /home/ganesh/repos/parfloat-work/parfloat-class/pytorch-nixnan/repros/bin_spec.json - Specification for which exponent ranges to report. If the file does not exist, a template specification will be created.
+For example:
+{
+    "count": 128,
+    "bf16": [],
+    "f16": [[0,5],[-4,-1]],
+    "f32": [],
+    "f64": []
+}
+will report every 128 occurrences of exponents in the ranges 0 to 5 and -4 to -1 for f16 numbers.
+             LOGFILE = /home/ganesh/repos/parfloat-work/parfloat-class/pytorch-nixnan/repros/k6_conv2d_overflow/nixnan.nnlog - Path to the optional log file. Default is to print to stderr. This is useful for the case when an instrumented program is capturing stderr.
+           LINE_INFO = 1 - Disable debug information for source code locations. Having this enabled may cause crashes, so set this to 0 if you encounter issues.
+=== K6: nn.Conv2d near FLT_MAX
+=== issue : https://github.com/pytorch/pytorch/issues/173529
+=== expect: CUDA produces NaN/Inf; CPU stays finite.
+=== torch : 2.3.1+cu121    python: 3.10.12
+=== device: NVIDIA GeForce RTX 3090  sm_86
+WARNING: Do not call CUDA memory allocation in nvbit_at_ctx_init(). It will cause deadlocks. Do them in nvbit_tool_init(). If you encounter deadlocks, remove CUDA API calls to debug.
+torch: 2.3.1+cu121
+Input Consistency: 0.000000e+00
+Input Range: min=0.00e+00, max=3.17e+38, nan=False
+[CUDA] nan=True, inf=True, min=nan, max=nan
+[CPU ] nan=False, inf=False, min=-2.89e+38, max=3.15e+38
+divergence: True
+

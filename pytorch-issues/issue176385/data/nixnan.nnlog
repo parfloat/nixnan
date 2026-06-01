@@ -1,0 +1,53 @@
+#nixnan: ----------------------------------------------------------------------------------
+#nixnan: Initializing GPU context...
+#nixnan: Could not open kernel_whitelist.txt!
+#nixnan: Could not open kernel_blacklist.txt!
+#nixnan: Instrumenting all kernels
+#nixnan: running kernel [erfinv_kernel_vectorized4_kernel] ...
+#nixnan: error [NaN] detected in operand 2 of instruction DMUL R14, R14, R2 ; in function erfinv_kernel_vectorized4_kernel of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DMUL R14, R14, R2 ; in function erfinv_kernel_vectorized4_kernel of type f64
+#nixnan: running kernel [void at::native::vectorized_elementwise_kernel] ...
+#nixnan: running kernel [void at::native::unrolled_elementwise_kernel] ...
+#nixnan: running kernel [void at::native::reduce_kernel] ...
+#nixnan: Finalizing GPU context...
+
+#nixnan: ------------ nixnan Report -----------
+
+#nixnan: --- FP16 Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- BF16 Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- FP32 Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- FP64 Operations ---
+#nixnan: NaN:                    2 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- FP16 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- BF16 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- FP32 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- FP64 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- FP exponent ranges --- 
+#nixnan: Exponent range for f64: [zero, inf]
