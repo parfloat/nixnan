@@ -2,6 +2,14 @@
 
 Upstream: https://github.com/pytorch/pytorch/issues/182131
 
+
+<!-- survey-callout -->
+> 📋 **Short feedback survey** — if you have a moment, please fill
+> out [this Google form](https://docs.google.com/forms/d/e/1FAIpQLSe6crMdlrEKOtUdwfLiXj54T3p-LzVhzYODsOgp7KHYITbIqQ/viewform?usp=publish-editor) (also linked from
+> `GoogleSurveyForm.md` in this folder). Your answers help us
+> understand whether NixNan-style traces would shorten time-to-cause
+> for the kind of issue you reported.
+<!-- survey-callout -->
 ## What this folder is
 
 One of a small set of PyTorch FP-exception issues we ran under
