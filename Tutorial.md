@@ -147,7 +147,7 @@ LD_PRELOAD=/path/to/nixnan.so python train.py
 - This is a great source of info covering NixNan + other tools.
   - [Our SC'25 tutorial listed at the top.](https://fpanalysistools.org)
 - Ask to be included in more projects in progress - send email to ganeshutah at gmail.
-  - Our [Private Github](https://github.com/parfloat/parfloat-class) 
+  - Public NixNan repository and PyTorch issue artifacts: [pytorch-issues/README.md](https://github.com/parfloat/nixnan/blob/pytorch-issues/pytorch-issues/README.md)
  
 ### Example Output
 

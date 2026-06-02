@@ -42,12 +42,10 @@ built, then runs the reproducer under the canonical sweep profile
 
 ## Broader context
 
-This is a curated subset of a larger 50-repro corpus. The full corpus
-— including sweep history (peek1.md through peek8.md), plan documents
-(Plan2.md through Plan5_next10.md), and a 50-repro ranking with a
-HARMFUL / HARMLESS verdict column (`kernel_summary.md`) — lives in
-[parfloat/parfloat-class](https://github.com/parfloat/parfloat-class)
-under `pytorch-nixnan/`.
+This branch contains the curated PyTorch issue corpus published in
+[pytorch-issues/README.md](https://github.com/parfloat/nixnan/blob/pytorch-issues/pytorch-issues/README.md).
+Each issue folder includes the reproducer, captured NixNan trace/stdout,
+analysis, and a rerun script.
 
 ## What's in each issueFeedback.md
 

@@ -79,9 +79,9 @@ README.md             this file
 
 ## Broader context
 
-This bundle is one of many we generated; the full corpus (50 repros,
-the rolling synopsis, sweep history, plan documents) lives in
-[parfloat/parfloat-class](https://github.com/parfloat/parfloat-class)
-under `pytorch-nixnan/`. The `kernel_summary.md` there ranks every
-repro by total IEEE-exception event count and includes a
-HARMFUL / HARMLESS verdict column.
+This bundle is part of the curated PyTorch issue corpus published in
+[pytorch-issues/README.md](https://github.com/parfloat/nixnan/blob/pytorch-issues/pytorch-issues/README.md).
+The current issue artifacts live in
+[pytorch-issues/issue176385/README.md](https://github.com/parfloat/nixnan/blob/pytorch-issues/pytorch-issues/issue176385/README.md).
+Each issue directory includes the reproducer, captured NixNan trace/stdout,
+analysis, and a rerun script.

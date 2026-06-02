@@ -13,7 +13,7 @@ ACK_CTX_INIT_LIMITATION = 0 - if set, no warning will be printed for nvbit_at_ct
             SAMPLING = 1 - Instrument a repeat kernel every SAMPLING times
            INSTR_MEM = 1 - Instrument memory instructions for NaN/Inf detection
            HISTOGRAM = 1 - Enable FP exponent histogramming
-       BIN_SPEC_FILE = /home/ganesh/repos/parfloat-work/parfloat-class/pytorch-nixnan/repros/bin_spec.json - Specification for which exponent ranges to report. If the file does not exist, a template specification will be created.
+       BIN_SPEC_FILE = /home/ganesh/repos/parfloat-work/nixnan/pytorch-issues/issue173912/data/bin_spec.json - Specification for which exponent ranges to report. If the file does not exist, a template specification will be created.
 For example:
 {
     "count": 128,
@@ -23,7 +23,7 @@ For example:
     "f64": []
 }
 will report every 128 occurrences of exponents in the ranges 0 to 5 and -4 to -1 for f16 numbers.
-             LOGFILE = /home/ganesh/repos/parfloat-work/parfloat-class/pytorch-nixnan/repros/k27_kumaraswamy_wrong_mode/nixnan.nnlog - Path to the optional log file. Default is to print to stderr. This is useful for the case when an instrumented program is capturing stderr.
+             LOGFILE = /home/ganesh/repos/parfloat-work/nixnan/pytorch-issues/issue173912/data/nixnan.nnlog - Path to the optional log file. Default is to print to stderr. This is useful for the case when an instrumented program is capturing stderr.
            LINE_INFO = 1 - Disable debug information for source code locations. Having this enabled may cause crashes, so set this to 0 if you encounter issues.
 === K27: Kumaraswamy distribution mode is wrong
 === issue : https://github.com/pytorch/pytorch/issues/173912

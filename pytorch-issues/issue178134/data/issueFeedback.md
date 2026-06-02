@@ -6,8 +6,8 @@ profile (`SAMPLING=1`, per-binade histogram `count=1024`,
 `ENABLE_FUN_DETAIL=1`, `PRINT_ILL_INSTR=1`, `INSTR_MEM=1`).
 
 The reproducer, trace, captured stdout, and run command live in
-`parfloat/parfloat-class/pytorch-nixnan/repros/k45_compile_conv2d_drift/` on the
-`main` branch.
+[pytorch-issues/issue178134/README.md](https://github.com/parfloat/nixnan/blob/pytorch-issues/pytorch-issues/issue178134/README.md)
+on the `pytorch-issues` branch.
 
 ## What the trace observed
 
@@ -35,6 +35,8 @@ Trace truncated past the 20 MB summary. The Inductor Conv2d lowering ran heavily
 
 ## Where to find the artifacts
 
-- Reproducer + trace: `parfloat/parfloat-class/pytorch-nixnan/repros/k45_compile_conv2d_drift/`
-- 50-repro synopsis: `parfloat/parfloat-class/pytorch-nixnan/repros/kernel_summary.md`
-- Project narrative: `parfloat/parfloat-class/pytorch-nixnan/May30Summary.md`
+- Issue README: [pytorch-issues/issue178134/README.md](https://github.com/parfloat/nixnan/blob/pytorch-issues/pytorch-issues/issue178134/README.md)
+- Reproducer: [pytorch-issues/issue178134/data/repro.py](https://github.com/parfloat/nixnan/blob/pytorch-issues/pytorch-issues/issue178134/data/repro.py)
+- Captured trace: [pytorch-issues/issue178134/data/nixnan.nnlog](https://github.com/parfloat/nixnan/blob/pytorch-issues/pytorch-issues/issue178134/data/nixnan.nnlog)
+- Captured stdout: [pytorch-issues/issue178134/data/stdout.nnlog](https://github.com/parfloat/nixnan/blob/pytorch-issues/pytorch-issues/issue178134/data/stdout.nnlog)
+- Curated issue index: [pytorch-issues/README.md](https://github.com/parfloat/nixnan/blob/pytorch-issues/pytorch-issues/README.md)
