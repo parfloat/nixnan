@@ -1,6 +1,6 @@
-:point_right: Look at `data/`, especially `issueFeedback.md`.
-
 # issue178251 — K25 — SDPA backward NaN with attn_mask
+
+:point_right: Look at `./data/`, especially `issueFeedback.md`.
 
 Upstream: https://github.com/pytorch/pytorch/issues/178251
 

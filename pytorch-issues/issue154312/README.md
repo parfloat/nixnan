@@ -1,6 +1,6 @@
-:point_right: Look at `data/`, especially `issueFeedback.md`.
-
 # issue154312 — K7 — `torch.logdet` incorrect for singular matrix on CUDA
+
+:point_right: Look at `./data/`, especially `issueFeedback.md`.
 
 Upstream: https://github.com/pytorch/pytorch/issues/154312
 

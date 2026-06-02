@@ -1,6 +1,6 @@
-:point_right: Look at `data/`, especially `issueFeedback.md`.
-
 # issue173799 — K5 — `F.pdist(p=0)` disagrees CPU vs CUDA on inf input
+
+:point_right: Look at `./data/`, especially `issueFeedback.md`.
 
 Upstream: https://github.com/pytorch/pytorch/issues/173799
 

@@ -1,6 +1,6 @@
-:point_right: Look at `data/`, especially `issueFeedback.md`.
-
 # issue173520 — K24 — `nn.Conv2d` near `FLT_MAX` overflow
+
+:point_right: Look at `./data/`, especially `issueFeedback.md`.
 
 Upstream: https://github.com/pytorch/pytorch/issues/173520
 

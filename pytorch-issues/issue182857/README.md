@@ -1,6 +1,6 @@
-:point_right: Look at `data/`, especially `issueFeedback.md`.
-
 # issue182857 — K38 — SDPA backward `head_dim % 16 != 0`
+
+:point_right: Look at `./data/`, especially `issueFeedback.md`.
 
 Upstream: https://github.com/pytorch/pytorch/issues/182857
 

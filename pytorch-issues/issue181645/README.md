@@ -1,6 +1,6 @@
-:point_right: Look at `data/`, especially `issueFeedback.md`.
-
 # issue181645 — K39 — `flex_attention(BACKEND='FLASH', return_lse=True)` off by `ln(2)`
+
+:point_right: Look at `./data/`, especially `issueFeedback.md`.
 
 Upstream: https://github.com/pytorch/pytorch/issues/181645
 

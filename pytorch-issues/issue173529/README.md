@@ -1,6 +1,6 @@
-:point_right: Look at `data/`, especially `issueFeedback.md`.
-
 # issue173529 — K6 — `nn.Conv2d` produces NaN on CUDA, finite on CPU, near `FLT_MAX` input
+
+:point_right: Look at `./data/`, especially `issueFeedback.md`.
 
 Upstream: https://github.com/pytorch/pytorch/issues/173529
 
