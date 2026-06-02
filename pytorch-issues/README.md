@@ -42,10 +42,9 @@ built, then runs the reproducer under the canonical sweep profile
 
 ## Broader context
 
-This branch contains the curated PyTorch issue corpus published in
-[pytorch-issues/README.md](https://github.com/parfloat/nixnan/blob/pytorch-issues/pytorch-issues/README.md).
-Each issue folder includes the reproducer, captured NixNan trace/stdout,
-analysis, and a rerun script.
+This branch contains the curated PyTorch issue corpus. Each issue folder
+includes the reproducer, captured NixNan trace/stdout, analysis, and a rerun
+script.
 
 ## What's in each issueFeedback.md
 
