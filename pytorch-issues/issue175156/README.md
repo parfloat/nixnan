@@ -1,3 +1,5 @@
+:point_right: Look at `data/`, especially `issueFeedback.md`.
+
 # issue175156 — K43 — inductor randint inconsistent RNG
 
 Upstream: https://github.com/pytorch/pytorch/issues/175156

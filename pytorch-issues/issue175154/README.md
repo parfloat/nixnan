@@ -1,3 +1,5 @@
+:point_right: Look at `data/`, especially `issueFeedback.md`.
+
 # issue175154 — K44 — `F.interpolate(mode='nearest')` under inductor
 
 Upstream: https://github.com/pytorch/pytorch/issues/175154

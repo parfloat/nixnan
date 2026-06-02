@@ -1,3 +1,5 @@
+:point_right: Look at `data/`, especially `issueFeedback.md`.
+
 # issue181618 — K37 — `GroupNorm -> sum -> Conv1d` under inductor
 
 Upstream: https://github.com/pytorch/pytorch/issues/181618
