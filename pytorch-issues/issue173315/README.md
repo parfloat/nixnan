@@ -79,9 +79,6 @@ README.md             this file
 
 ## Broader context
 
-This bundle is part of the curated PyTorch issue corpus published in
-[pytorch-issues/README.md](https://github.com/parfloat/nixnan/blob/pytorch-issues/pytorch-issues/README.md).
-The current issue artifacts live in
-[pytorch-issues/issue173315/README.md](https://github.com/parfloat/nixnan/blob/pytorch-issues/pytorch-issues/issue173315/README.md).
-Each issue directory includes the reproducer, captured NixNan trace/stdout,
-analysis, and a rerun script.
+This bundle is part of the curated PyTorch issue corpus. Each issue directory
+includes the reproducer, captured NixNan trace/stdout, analysis, and a rerun
+script.
