@@ -1,6 +1,6 @@
 # TLDR
 
-To reproduce your issue, do this:
+To reproduce your issues, do this:
 
 ```bash
 git clone https://github.com/parfloat/nixnan
@@ -11,4 +11,4 @@ cd issueIssueNumber
 ./usingNixNan/reproduce.sh
 ```
 
-Then look at `data/issueFeedback.md` and finally fill out `GoogleSurveyForm.md`.
+Then look at `data/issueFeedback.md` and finally fill `GoogleSurveyForm.md`.
