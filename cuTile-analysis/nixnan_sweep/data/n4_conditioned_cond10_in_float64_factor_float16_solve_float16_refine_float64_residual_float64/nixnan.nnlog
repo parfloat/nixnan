@@ -1,0 +1,136 @@
+#nixnan: ----------------------------------------------------------------------------------
+#nixnan: Initializing GPU context...
+#nixnan: Could not open kernel_whitelist.txt!
+#nixnan: Could not open kernel_blacklist.txt!
+#nixnan: Instrumenting all kernels
+#nixnan: running kernel [wmma_tensor_core_probe] ...
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-2,-2] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[1,1] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[1,1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-2,-2] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-3,-3] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[0,0] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-2,-2] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-3,-3] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[1,1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-2,-2] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[1,1] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[2,2] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[0,0] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[0,0] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[1,1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-3,-3] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-2,-2] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[1,1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[0,0] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-2,-2] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-3,-3] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-2,-2] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[1,1] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[0,0] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-2,-2] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[1,1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-3,-3] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-3,-3] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[0,0] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-2,-2] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[2,2] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-2,-2] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[1,1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[0,0] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[0,0] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-3,-3] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: running kernel [convert_to_f16_kernel_Kt1_A1f64_1i16t1_p16_A1f16_1i16t1_p16_Si32] ...
+#nixnan: running kernel [convert_to_f16_kernel_Kt1_A1f64_1t1_p16_A1f16_1t1_p16_Si32] ...
+#nixnan: #nixnan: warning: NaN immediate found in operand 1 of MUFU.RSQ R3, -QNAN  ;
+#nixnan: #nixnan: warning: NaN immediate found in operand 1 of MUFU.RSQ R3, -QNAN  ;
+#nixnan: running kernel [scale_column_kernel_Kt1_A1f16_1i16t1_p16_Si32_Si32_Si32] ...
+#nixnan: f32 bin has reached threshold: kernel=scale_column_kernel_Kt1_A1f16_1i16t1_p16_Si32_Si32_Si32 range=[-3,-3] count=1024
+#nixnan: running kernel [rank1_update_kernel_Kt1_A1f16_1i16t1_p16_Si32_Si32_Si32_Si32] ...
+#nixnan: f32 bin has reached threshold: kernel=rank1_update_kernel_Kt1_A1f16_1i16t1_p16_Si32_Si32_Si32_Si32 range=[-2,-2] count=1024
+#nixnan: f16 bin has reached threshold: kernel=rank1_update_kernel_Kt1_A1f16_1i16t1_p16_Si32_Si32_Si32_Si32 range=[-2,-2] count=1024
+#nixnan: f32 bin has reached threshold: kernel=scale_column_kernel_Kt1_A1f16_1i16t1_p16_Si32_Si32_Si32 range=[2,2] count=1024
+#nixnan: f32 bin has reached threshold: kernel=scale_column_kernel_Kt1_A1f16_1i16t1_p16_Si32_Si32_Si32 range=[-3,-3] count=1024
+#nixnan: f32 bin has reached threshold: kernel=rank1_update_kernel_Kt1_A1f16_1i16t1_p16_Si32_Si32_Si32_Si32 range=[-1,-1] count=1024
+#nixnan: f32 bin has reached threshold: kernel=rank1_update_kernel_Kt1_A1f16_1i16t1_p16_Si32_Si32_Si32_Si32 range=[1,1] count=1024
+#nixnan: f32 bin has reached threshold: kernel=scale_column_kernel_Kt1_A1f16_1i16t1_p16_Si32_Si32_Si32 range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=scale_column_kernel_Kt1_A1f16_1i16t1_p16_Si32_Si32_Si32 range=[-1,-1] count=1024
+#nixnan: running kernel [forward_subtract_kernel_Kt1_A1f16_1i16t1_p16_A1f16_1t1_p16_Si32_Si32_Si32] ...
+#nixnan: #nixnan: warning: NaN immediate found in operand 1 of MUFU.RSQ R3, -QNAN  ;
+#nixnan: #nixnan: warning: NaN immediate found in operand 1 of MUFU.RSQ R3, -QNAN  ;
+#nixnan: running kernel [scale_rhs_kernel_Kt1_A1f16_1i16t1_p16_A1f16_1t1_p16_Si32_Si32] ...
+#nixnan: running kernel [backward_subtract_kernel_Kt1_A1f16_1i16t1_p16_A1f16_1t1_p16_Si32_Si32_Si32] ...
+#nixnan: running kernel [convert_to_f64_kernel_Kt1_A1f16_1t1_p16_A1f64_1t1_p16_Si32] ...
+#nixnan: Finalizing GPU context...
+
+#nixnan: ------------ nixnan Report -----------
+
+#nixnan: --- FP16 Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- BF16 Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- FP32 Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- FP64 Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- FP16 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- BF16 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- FP32 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- FP64 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- FP exponent ranges --- 
+#nixnan: Exponent range for f16: [zero, 2]
+#nixnan: Exponent range for f32: [zero, 2]

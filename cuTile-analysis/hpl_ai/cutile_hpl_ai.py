@@ -38,6 +38,7 @@ except Exception:  # pragma: no cover - optional cuTile runtime
 
 
 W = 128
+TENSOR_CORE_TILE = 16
 LCG_A = 6364136223846793005
 LCG_C = 1
 UINT64_MASK = (1 << 64) - 1
@@ -45,6 +46,32 @@ LCG_MUL = float(np.float32(5.4210108624275222e-20))
 RESIDUAL_THRESHOLD = 16.0
 SUPPORTED_PRECISIONS = ("float16", "float32", "float64")
 SUPPORTED_MATRIX_KINDS = ("hpl-ai", "conditioned")
+WMMA_PROBE_CODE = r"""
+#include <cuda_fp16.h>
+#include <mma.h>
+
+using namespace nvcuda;
+
+extern "C" __global__ void wmma_tensor_core_probe(const half* lhs, const half* rhs, float* out, int n) {
+    int tile_col = blockIdx.x;
+    int tile_row = blockIdx.y;
+    int row = tile_row * 16;
+    int col = tile_col * 16;
+
+    wmma::fragment<wmma::matrix_a, 16, 16, 16, half, wmma::row_major> lhs_frag;
+    wmma::fragment<wmma::matrix_b, 16, 16, 16, half, wmma::row_major> rhs_frag;
+    wmma::fragment<wmma::accumulator, 16, 16, 16, float> acc_frag;
+    wmma::fill_fragment(acc_frag, 0.0f);
+
+    for (int k = 0; k < n; k += 16) {
+        wmma::load_matrix_sync(lhs_frag, lhs + row * n + k, n);
+        wmma::load_matrix_sync(rhs_frag, rhs + k * n + col, n);
+        wmma::mma_sync(acc_frag, lhs_frag, rhs_frag, acc_frag);
+    }
+
+    wmma::store_matrix_sync(out + row * n + col, acc_frag, n, wmma::mem_row_major);
+}
+"""
 
 
 @dataclass(frozen=True)
@@ -504,6 +531,37 @@ def _grid_for(total: int) -> tuple[int, int, int]:
     return ((total + W - 1) // W, 1, 1)
 
 
+def run_tensor_core_probe(size: int = 64) -> float:
+    """Run a small FP16xFP16->FP32 WMMA kernel to force tensor-core SASS."""
+    if cp is None:
+        raise RuntimeError("cupy is required for --tensor-core-probe")
+    if size < TENSOR_CORE_TILE:
+        raise ValueError(f"--tensor-core-size must be at least {TENSOR_CORE_TILE}")
+    if size % TENSOR_CORE_TILE != 0:
+        raise ValueError(f"--tensor-core-size must be a multiple of {TENSOR_CORE_TILE}")
+
+    values = np.arange(size * size, dtype=np.float32)
+    lhs_host = (((values % 17.0) - 8.0) / 8.0).reshape((size, size)).astype(np.float16)
+    rhs_host = (((values % 13.0) - 6.0) / 6.0).reshape((size, size)).astype(np.float16)
+    lhs_gpu = cp.asarray(lhs_host, dtype=cp.float16)
+    rhs_gpu = cp.asarray(rhs_host, dtype=cp.float16)
+    out_gpu = cp.empty((size, size), dtype=cp.float32)
+
+    module = cp.RawModule(
+        code=WMMA_PROBE_CODE,
+        options=("--std=c++14",),
+        name_expressions=("wmma_tensor_core_probe",),
+    )
+    kernel = module.get_function("wmma_tensor_core_probe")
+    kernel(
+        (size // TENSOR_CORE_TILE, size // TENSOR_CORE_TILE, 1),
+        (32, 1, 1),
+        (lhs_gpu, rhs_gpu, out_gpu, np.int32(size)),
+    )
+    cp.cuda.get_current_stream().synchronize()
+    return float(np.sum(cp.asnumpy(out_gpu), dtype=np.float32))
+
+
 def run_cutile(
     n: int,
     matrix: MatrixConfig,
@@ -594,6 +652,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--residual-precision", choices=SUPPORTED_PRECISIONS, default="float64")
     parser.add_argument("--no-gmres", action="store_true", help="stop after the mixed-precision LU solve")
     parser.add_argument(
+        "--tensor-core-probe",
+        action="store_true",
+        help="run an FP16xFP16->FP32 WMMA probe before the solve to force tensor-core execution",
+    )
+    parser.add_argument("--tensor-core-size", type=int, default=64, help="square matrix size for --tensor-core-probe")
+    parser.add_argument(
         "--compare-cpu",
         action="store_true",
         help="also run the CPU extraction and report max |x_backend-x_cpu|",
@@ -632,6 +696,13 @@ def main() -> None:
     matrix = MatrixConfig(args.matrix_kind, args.condition_number, args.seed)
     max_iter = min(args.max_iter, args.n - 1)
     refine = not args.no_gmres
+    if args.tensor_core_probe:
+        checksum = run_tensor_core_probe(args.tensor_core_size)
+        print("tensor_core_probe=true")
+        print("tensor_core_operation=wmma_mma_sync_fp16_fp16_accumulate_fp32")
+        print(f"tensor_core_size={args.tensor_core_size}")
+        print(f"tensor_core_checksum={checksum:.6e}")
+
     result = (
         run_cpu(args.n, matrix, precisions, max_iter, refine)
         if args.backend == "cpu"

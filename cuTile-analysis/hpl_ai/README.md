@@ -47,6 +47,14 @@ available:
 python hpl_ai/cutile_hpl_ai.py --backend cutile --n 32 --compare-cpu
 ```
 
+Add `--tensor-core-probe` to run a small FP16xFP16->FP32 WMMA kernel before the
+solve. The NixNan sweep uses this to force tensor-core SASS while keeping the
+cuTile LU solver unchanged:
+
+```bash
+python hpl_ai/cutile_hpl_ai.py --backend cutile --n 4 --tensor-core-probe
+```
+
 On this workstation, `cutile_env.sh` points the process at the NVIDIA 580.126
 driver libraries under `/home/ganesh/opt/nv580.126` and creates a local
 `.cutile-libs` shim for the missing `libnvidia-gpucomp.so.580.126.09` soname.

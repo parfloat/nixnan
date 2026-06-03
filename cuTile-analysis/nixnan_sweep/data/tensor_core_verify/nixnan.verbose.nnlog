@@ -1,0 +1,208 @@
+#nixnan: ----------------------------------------------------------------------------------
+#nixnan: Initializing GPU context...
+#nixnan: Could not open kernel_whitelist.txt!
+#nixnan: Could not open kernel_blacklist.txt!
+#nixnan: Instrumenting all kernels
+#nixnan: Inspecting function wmma_tensor_core_probe at address 0x77eebf365300
+#nixnan: Histogram instrumenting: HMMA.16816.F32 R20, R12.reuse, R26, R20 ;
+#nixnan: Instrumenting instruction HMMA.16816.F32 R20, R12.reuse, R26, R20 ;
+#nixnan: Instrumenting instruction with 5 registers
+#nixnan: Instrumenting operand 0. div0: 0, regs: 4, count: 4
+#nixnan: Instrumenting instruction with 13 registers
+#nixnan: Instrumenting operand 1. div0: 0, regs: 4
+#nixnan: Instrumenting operand 2. div0: 0, regs: 2
+#nixnan: Instrumenting operand 3. div0: 0, regs: 4
+#nixnan: Histogram instrumenting: HMMA.16816.F32 R8, R12, R24, R8 ;
+#nixnan: Instrumenting instruction HMMA.16816.F32 R8, R12, R24, R8 ;
+#nixnan: Instrumenting instruction with 5 registers
+#nixnan: Instrumenting operand 0. div0: 0, regs: 4, count: 4
+#nixnan: Instrumenting instruction with 13 registers
+#nixnan: Instrumenting operand 1. div0: 0, regs: 4
+#nixnan: Instrumenting operand 2. div0: 0, regs: 2
+#nixnan: Instrumenting operand 3. div0: 0, regs: 4
+#nixnan: Histogram instrumenting: HMMA.16816.F32 R20, R16.reuse, R12, R20 ;
+#nixnan: Instrumenting instruction HMMA.16816.F32 R20, R16.reuse, R12, R20 ;
+#nixnan: Instrumenting instruction with 5 registers
+#nixnan: Instrumenting operand 0. div0: 0, regs: 4, count: 4
+#nixnan: Instrumenting instruction with 13 registers
+#nixnan: Instrumenting operand 1. div0: 0, regs: 4
+#nixnan: Instrumenting operand 2. div0: 0, regs: 2
+#nixnan: Instrumenting operand 3. div0: 0, regs: 4
+#nixnan: Histogram instrumenting: HMMA.16816.F32 R16, R16, R24, R8 ;
+#nixnan: Instrumenting instruction HMMA.16816.F32 R16, R16, R24, R8 ;
+#nixnan: Instrumenting instruction with 5 registers
+#nixnan: Instrumenting operand 0. div0: 0, regs: 4, count: 4
+#nixnan: Instrumenting instruction with 13 registers
+#nixnan: Instrumenting operand 1. div0: 0, regs: 4
+#nixnan: Instrumenting operand 2. div0: 0, regs: 2
+#nixnan: Instrumenting operand 3. div0: 0, regs: 4
+#nixnan: Histogram instrumenting: HMMA.16816.F32 R20, R12.reuse, R28, R20 ;
+#nixnan: Instrumenting instruction HMMA.16816.F32 R20, R12.reuse, R28, R20 ;
+#nixnan: Instrumenting instruction with 5 registers
+#nixnan: Instrumenting operand 0. div0: 0, regs: 4, count: 4
+#nixnan: Instrumenting instruction with 13 registers
+#nixnan: Instrumenting operand 1. div0: 0, regs: 4
+#nixnan: Instrumenting operand 2. div0: 0, regs: 2
+#nixnan: Instrumenting operand 3. div0: 0, regs: 4
+#nixnan: Histogram instrumenting: HMMA.16816.F32 R16, R12, R24, R16 ;
+#nixnan: Instrumenting instruction HMMA.16816.F32 R16, R12, R24, R16 ;
+#nixnan: Instrumenting instruction with 5 registers
+#nixnan: Instrumenting operand 0. div0: 0, regs: 4, count: 4
+#nixnan: Instrumenting instruction with 13 registers
+#nixnan: Instrumenting operand 1. div0: 0, regs: 4
+#nixnan: Instrumenting operand 2. div0: 0, regs: 2
+#nixnan: Instrumenting operand 3. div0: 0, regs: 4
+#nixnan: Histogram instrumenting: HMMA.16816.F32 R20, R8.reuse, R14, R20 ;
+#nixnan: Instrumenting instruction HMMA.16816.F32 R20, R8.reuse, R14, R20 ;
+#nixnan: Instrumenting instruction with 5 registers
+#nixnan: Instrumenting operand 0. div0: 0, regs: 4, count: 4
+#nixnan: Instrumenting instruction with 13 registers
+#nixnan: Instrumenting operand 1. div0: 0, regs: 4
+#nixnan: Instrumenting operand 2. div0: 0, regs: 2
+#nixnan: Instrumenting operand 3. div0: 0, regs: 4
+#nixnan: Histogram instrumenting: HMMA.16816.F32 R8, R8, R12, R16 ;
+#nixnan: Instrumenting instruction HMMA.16816.F32 R8, R8, R12, R16 ;
+#nixnan: Instrumenting instruction with 5 registers
+#nixnan: Instrumenting operand 0. div0: 0, regs: 4, count: 4
+#nixnan: Instrumenting instruction with 13 registers
+#nixnan: Instrumenting operand 1. div0: 0, regs: 4
+#nixnan: Instrumenting operand 2. div0: 0, regs: 2
+#nixnan: Instrumenting operand 3. div0: 0, regs: 4
+#nixnan: Histogram instrumenting: HMMA.16816.F32 R20, R12.reuse, R32, R20 ;
+#nixnan: Instrumenting instruction HMMA.16816.F32 R20, R12.reuse, R32, R20 ;
+#nixnan: Instrumenting instruction with 5 registers
+#nixnan: Instrumenting operand 0. div0: 0, regs: 4, count: 4
+#nixnan: Instrumenting instruction with 13 registers
+#nixnan: Instrumenting operand 1. div0: 0, regs: 4
+#nixnan: Instrumenting operand 2. div0: 0, regs: 2
+#nixnan: Instrumenting operand 3. div0: 0, regs: 4
+#nixnan: Histogram instrumenting: HMMA.16816.F32 R8, R12, R30, R8 ;
+#nixnan: Instrumenting instruction HMMA.16816.F32 R8, R12, R30, R8 ;
+#nixnan: Instrumenting instruction with 5 registers
+#nixnan: Instrumenting operand 0. div0: 0, regs: 4, count: 4
+#nixnan: Instrumenting instruction with 13 registers
+#nixnan: Instrumenting operand 1. div0: 0, regs: 4
+#nixnan: Instrumenting operand 2. div0: 0, regs: 2
+#nixnan: Instrumenting operand 3. div0: 0, regs: 4
+#nixnan: Instrumenting instruction STG.E.64 [R2.64], R20 ;
+#nixnan: Instrumenting memory instruction: STG.E.64 of width 64
+#nixnan: Skipping memory instruction of unknown type: STG.E.64
+#nixnan: Instrumenting instruction STG.E.64 [R4.64], R22 ;
+#nixnan: Instrumenting memory instruction: STG.E.64 of width 64
+#nixnan: Skipping memory instruction of unknown type: STG.E.64
+#nixnan: Instrumenting instruction STG.E.64 [R2.64+0x20], R8 ;
+#nixnan: Instrumenting memory instruction: STG.E.64 of width 64
+#nixnan: Skipping memory instruction of unknown type: STG.E.64
+#nixnan: Instrumenting instruction STG.E.64 [R4.64+0x20], R10 ;
+#nixnan: Instrumenting memory instruction: STG.E.64 of width 64
+#nixnan: Skipping memory instruction of unknown type: STG.E.64
+#nixnan: running kernel [wmma_tensor_core_probe] ...
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[1,1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[1,1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[0,0] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-2,-2] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-3,-3] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[0,0] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-2,-2] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[0,0] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-3,-3] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-2,-2] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[1,1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[0,0] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-2,-2] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[2,2] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[1,1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[0,0] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-2,-2] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[0,0] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-3,-3] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[1,1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-2,-2] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[0,0] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[1,1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[0,0] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-3,-3] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[1,1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-2,-2] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-2,-2] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-2,-2] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[2,2] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-3,-3] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-3,-3] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[1,1] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[0,0] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-2,-2] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[1,1] count=1024
+#nixnan: f32 bin has reached threshold: kernel=wmma_tensor_core_probe range=[0,0] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-3,-3] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[0,0] count=1024
+#nixnan: f16 bin has reached threshold: kernel=wmma_tensor_core_probe range=[-1,-1] count=1024
+#nixnan: Finalizing GPU context...
+
+#nixnan: ------------ nixnan Report -----------
+
+#nixnan: --- FP16 Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- BF16 Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- FP32 Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- FP64 Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- FP16 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- BF16 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- FP32 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- FP64 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- FP exponent ranges --- 
+#nixnan: Exponent range for f16: [zero, 0]
+#nixnan: Exponent range for f32: [zero, 2]

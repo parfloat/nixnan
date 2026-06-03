@@ -1,0 +1,47 @@
+------------- NVBit (NVidia Binary Instrumentation Tool v1.8) Loaded --------------
+NVBit core environment variables (mostly for nvbit-devs):
+ACK_CTX_INIT_LIMITATION = 0 - if set, no warning will be printed for nvbit_at_ctx_init()
+            NVDISASM = nvdisasm - override default nvdisasm found in PATH
+            NOBANNER = 0 - if set, does not print this banner
+       NO_EAGER_LOAD = 1 - lazy module loading is now turned on by default. If you see deadlocks in your tool, set NO_EAGER_LOAD to 0
+---------------------------------------------------------------------------------
+         INSTR_BEGIN = 0 - Beginning of the instruction interval where to apply instrumentation
+           INSTR_END = 4294967295 - End of the instruction interval where to apply instrumentation
+        TOOL_VERBOSE = 0 - Enable verbosity inside the tool
+   ENABLE_FUN_DETAIL = 0 - Enable detailed function information for kernel
+     PRINT_ILL_INSTR = 1 - Print the instruction which caused the exception
+            SAMPLING = 0 - Instrument a repeat kernel every SAMPLING times
+           INSTR_MEM = 1 - Instrument memory instructions for NaN/Inf detection
+           HISTOGRAM = 1 - Enable FP exponent histogramming
+       BIN_SPEC_FILE = /home/ganesh/repos/parfloat-work/nixnan/cuTile-analysis/nixnan_sweep/data/bin_spec.json - Specification for which exponent ranges to report. If the file does not exist, a template specification will be created.
+For example:
+{
+    "count": 128,
+    "bf16": [],
+    "f16": [[0,5],[-4,-1]],
+    "f32": [],
+    "f64": []
+}
+will report every 128 occurrences of exponents in the ranges 0 to 5 and -4 to -1 for f16 numbers.
+             LOGFILE = /home/ganesh/repos/parfloat-work/nixnan/cuTile-analysis/nixnan_sweep/data/n4_conditioned_cond10_in_float64_factor_float32_solve_float32_refine_float64_residual_float64/nixnan.nnlog - Path to the optional log file. Default is to print to stderr. This is useful for the case when an instrumented program is capturing stderr.
+           LINE_INFO = 0 - Disable debug information for source code locations. Having this enabled may cause crashes, so set this to 0 if you encounter issues.
+WARNING: Do not call CUDA memory allocation in nvbit_at_ctx_init(). It will cause deadlocks. Do them in nvbit_tool_init(). If you encounter deadlocks, remove CUDA API calls to debug.
+tensor_core_probe=true
+tensor_core_operation=wmma_mma_sync_fp16_fp16_accumulate_fp32
+tensor_core_size=64
+tensor_core_checksum=-6.000488e+00
+backend=cutile+host-gmres
+n=4
+matrix_kind=conditioned
+condition_number=10.0
+input_precision=float64
+factor_precision=float32
+solve_precision=float32
+refinement_precision=float64
+residual_precision=float64
+elapsed_s=2.720975
+gmres_iterations=2
+scaled_residual=2.548726e-02
+passes_hpl_ai_threshold=true
+max_abs_diff_vs_cpu=0.000000e+00
+

@@ -2,3 +2,4 @@
 .venv-cutile/
 __pycache__/
 *.py[cod]
+!nixnan.so

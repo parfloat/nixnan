@@ -568,6 +568,79 @@ passes_hpl_ai_threshold=true
 max_abs_diff_vs_cpu=0.000000e+00
 ```
 
+## NixNan Tensor-Core Sweep
+
+The NixNan sweep lives in:
+
+- `link_nixnan.sh`
+- `run_nixnan_cutile_sweep.sh`
+- `nixnan_sweep/`
+
+`link_nixnan.sh` borrows the already-built NixNan from the parent checkout
+without reinstalling:
+
+```text
+borrowed-nixnan -> ../nvbit_release/tools/nixnan
+nixnan.so -> borrowed-nixnan/nixnan.so
+```
+
+`run_nixnan_cutile_sweep.sh` runs the cuTile solver under:
+
+- `LD_PRELOAD=./nixnan.so`
+- `SAMPLING=0`
+- `HISTOGRAM=1`
+- `INSTR_MEM=1`
+- `PRINT_ILL_INSTR=1`
+- `BIN_SPEC_FILE=nixnan_sweep/data/bin_spec.json`
+
+The histogram specification uses `count=1024`, matching the earlier
+`pytorch-issues/issueNNN/data` captures.
+
+The sweep exposes solver precision choices through `SOLVER_PRECISION_CONFIGS`.
+Each whitespace-separated tuple is:
+
+```text
+input,factor,solve,refinement,residual
+```
+
+The default sweep covers:
+
+```text
+float64,float32,float32,float64,float64
+float64,float16,float16,float64,float64
+```
+
+for both `hpl-ai` and `conditioned` matrices.
+
+### Tensor-Core Enforcement
+
+The cuTile LU extraction itself is scalar tile code. To guarantee tensor-core
+execution during each NixNan capture, `--tensor-core-probe` runs a small
+FP16xFP16->FP32 WMMA kernel using `wmma::mma_sync` before the solve.
+
+The sweep first runs a focused verbose verification and requires an HMMA
+instruction in:
+
+```text
+nixnan_sweep/data/tensor_core_verify/nixnan.verbose.nnlog
+```
+
+The recorded verification trace contains lines such as:
+
+```text
+#nixnan: Histogram instrumenting: HMMA.16816.F32 ...
+```
+
+The per-case `stdout.nnlog` files also record:
+
+```text
+tensor_core_operation=wmma_mma_sync_fp16_fp16_accumulate_fp32
+```
+
+The default sweep completed on the RTX 3090 with four successful cases, zero
+reported NaN/Inf/subnormal/division-by-zero operation exceptions, and all solver
+outputs passing the HPL-AI residual threshold.
+
 `run_cutile_sweep.sh` is a top-level bash runner for multiple configurations.
 It sources `cutile_env.sh` automatically when present.
 
