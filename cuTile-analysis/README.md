@@ -15,3 +15,8 @@ cuTile-analysis/
 ```
 
 Future analyses can add one subdirectory per kernel, benchmark, or issue.
+
+## Current Analyses
+
+- `hpl_ai/`: compact cuTile-style extraction of the ICL HPL-AI reference
+  implementation's mixed-precision no-pivot LU solve path.
