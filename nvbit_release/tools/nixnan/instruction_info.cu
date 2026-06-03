@@ -100,7 +100,7 @@ std::vector<reginsertion> get_regs(Instr *instr, size_t operand, size_t type, si
                 // This is an INF register, we don't need to do anything
                 error = "Infinite";
             }
-            nnout() << "#nixnan: warning: " << error << " immediate found in operand " << reg_info.operand << " of " << instr->getSass() << std::endl;
+            nnout() << "warning: " << error << " immediate found in operand " << reg_info.operand << " of " << instr->getSass() << std::endl;
             break;
         }
         default: {
