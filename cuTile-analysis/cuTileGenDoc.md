@@ -13,6 +13,8 @@ The port lives in:
 
 - `hpl_ai/cutile_hpl_ai.py`
 - `run_cutile_sweep.sh`
+- `setup_cutile_venv.sh`
+- `cutile_env.sh`
 
 ## Porting Scope
 
@@ -517,7 +519,57 @@ difference versus the CPU oracle.
 
 ## Sweep Script
 
+## Runtime Environment
+
+The machine has an RTX 3090 and a loaded NVIDIA 580.126.09 kernel module, but
+the default system user-space NVIDIA libraries are 580.159.03. That mismatch
+breaks `nvidia-smi` and causes CuPy/cuTile startup failures unless the process
+uses the matching 580.126 user-space libraries.
+
+The analysis includes a local environment setup:
+
+```bash
+./setup_cutile_venv.sh
+source ./cutile_env.sh
+```
+
+`setup_cutile_venv.sh` creates `.venv-cutile` with:
+
+- `cuda-tile[tileiras]==1.3.0`
+- `cupy-cuda13x==14.0.1`
+- `numpy<2.3`
+
+`cutile_env.sh` exports:
+
+- `PYTHON_BIN=.venv-cutile/bin/python`
+- `LD_LIBRARY_PATH` with `.cutile-libs`, `/home/ganesh/opt/nv580.126`, and
+  CUDA 13.2 toolkit libraries first
+
+It also creates `.cutile-libs` symlinks for the matching `libcuda`,
+`libnvidia-ml`, and `libnvidia-ptxjitcompiler` libraries. The local 580.126
+library tree is missing `libnvidia-gpucomp.so.580.126.09`, so the script maps
+that soname to the available system `libnvidia-gpucomp.so.580.159.03`. This was
+enough for cuTile kernel launch on the RTX 3090 in this workspace.
+
+With the environment sourced, this command succeeded:
+
+```bash
+python hpl_ai/cutile_hpl_ai.py --backend cutile --n 8 --compare-cpu
+```
+
+and reported:
+
+```text
+backend=cutile+host-gmres
+n=8
+gmres_iterations=2
+scaled_residual=3.539529e-02
+passes_hpl_ai_threshold=true
+max_abs_diff_vs_cpu=0.000000e+00
+```
+
 `run_cutile_sweep.sh` is a top-level bash runner for multiple configurations.
+It sources `cutile_env.sh` automatically when present.
 
 Default behavior targets cuTile:
 
@@ -568,6 +620,8 @@ BACKEND=cutile MATRIX_SIZES="32 64" MATRIX_KINDS="conditioned" \
 The following checks were run in this workspace:
 
 ```bash
+source ./cutile_env.sh
+
 python -m py_compile hpl_ai/cutile_hpl_ai.py
 
 python hpl_ai/cutile_hpl_ai.py --backend cpu --n 16 \
@@ -582,11 +636,18 @@ python hpl_ai/cutile_hpl_ai.py --backend cpu --n 16 \
 
 BACKEND=cpu MATRIX_SIZES="4" MATRIX_KINDS="hpl-ai conditioned" \
   CONDITION_NUMBERS="10" ./run_cutile_sweep.sh
+
+python hpl_ai/cutile_hpl_ai.py --backend cutile --n 8 --compare-cpu
+
+BACKEND=cutile MATRIX_SIZES="4" MATRIX_KINDS="hpl-ai" \
+  CONDITION_NUMBERS="10" COMPARE_CPU=1 ./run_cutile_sweep.sh
 ```
 
-The cuTile module imports under the local `Romp-cuTile` virtual environment,
-but this host currently reports no CUDA-capable device, so GPU execution was
-not completed here.
+The cuTile GPU checks ran on:
+
+```text
+NVIDIA GeForce RTX 3090
+```
 
 ## Known Limitations
 

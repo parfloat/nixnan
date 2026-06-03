@@ -3,6 +3,11 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+if [[ -f "${ROOT_DIR}/cutile_env.sh" ]]; then
+  # shellcheck source=/dev/null
+  source "${ROOT_DIR}/cutile_env.sh"
+fi
+
 PYTHON_BIN="${PYTHON_BIN:-python}"
 BACKEND="${BACKEND:-cutile}"
 MATRIX_SIZES="${MATRIX_SIZES:-16 32 64}"

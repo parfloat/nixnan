@@ -27,6 +27,13 @@ The full porting notes are in `../cuTileGenDoc.md`.
 
 ## Run
 
+Prepare the local cuTile environment:
+
+```bash
+./setup_cutile_venv.sh
+source ./cutile_env.sh
+```
+
 CPU reference path:
 
 ```bash
@@ -39,6 +46,12 @@ available:
 ```bash
 python hpl_ai/cutile_hpl_ai.py --backend cutile --n 32 --compare-cpu
 ```
+
+On this workstation, `cutile_env.sh` points the process at the NVIDIA 580.126
+driver libraries under `/home/ganesh/opt/nv580.126` and creates a local
+`.cutile-libs` shim for the missing `libnvidia-gpucomp.so.580.126.09` soname.
+This avoids the system-wide 580.159 user-space library mismatch with the loaded
+580.126 kernel module.
 
 Use `--no-gmres` to stop after the extracted mixed-precision LU solve.
 

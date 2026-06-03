@@ -20,3 +20,16 @@ Future analyses can add one subdirectory per kernel, benchmark, or issue.
 
 - `hpl_ai/`: compact cuTile-style extraction of the ICL HPL-AI reference
   implementation's mixed-precision no-pivot LU solve path.
+
+## cuTile Runtime
+
+For the local cuTile GPU environment, run:
+
+```bash
+./setup_cutile_venv.sh
+source ./cutile_env.sh
+```
+
+`cutile_env.sh` points Python and the dynamic linker at `.venv-cutile`, the
+matching NVIDIA 580.126 user-space libraries for this workstation, and the
+local `.cutile-libs` shim used by cuTile kernel launch.
