@@ -1,0 +1,602 @@
+#nixnan: ----------------------------------------------------------------------------------
+#nixnan: Initializing GPU context...
+#nixnan: Could not open kernel_whitelist.txt!
+#nixnan: Could not open kernel_blacklist.txt!
+#nixnan: Instrumenting all kernels
+#nixnan: #nixnan: warning: Infinite immediate found in operand 3 of @P1 FFMA R33, R29, R30, +INF  ;
+#nixnan: #nixnan: warning: Infinite immediate found in operand 3 of @P1 FFMA R33, R29, R30, +INF  ;
+#nixnan: #nixnan: warning: Infinite immediate found in operand 3 of @P1 FFMA R30, R20, R19, +INF  ;
+#nixnan: #nixnan: warning: Infinite immediate found in operand 3 of @P1 FFMA R30, R20, R19, +INF  ;
+#nixnan: running kernel [void at::native::] ...
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=void at::native:: range=[-126,127] count=128
+#nixnan: running kernel [void ] ...
+#nixnan: running kernel [void at::native::elementwise_kernel] ...
+#nixnan: running kernel [void at::native::unrolled_elementwise_kernel] ...
+#nixnan: running kernel [void at::native::vectorized_elementwise_kernel] ...
+#nixnan: running kernel [exp_kernel_vectorized2_kernel] ...
+#nixnan: f32 bin has reached threshold: kernel=exp_kernel_vectorized2_kernel range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=exp_kernel_vectorized2_kernel range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=exp_kernel_vectorized2_kernel range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=exp_kernel_vectorized2_kernel range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=exp_kernel_vectorized2_kernel range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=exp_kernel_vectorized2_kernel range=[-126,127] count=128
+#nixnan: running kernel [fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2] ...
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FMUL R17, R18, R19.reuse ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FMUL R19, R16.reuse, R19 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: error [subnormal] detected in operand 0 of instruction FMUL R19, R16.reuse, R19 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FMUL R16, R16, R15.reuse ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: error [subnormal] detected in operand 0 of instruction FMUL R16, R16, R15.reuse ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FMUL R18, R18, R15 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FMUL R15, R11, R20.reuse ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FMUL R15, R11, R20.reuse ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 0 of instruction FMUL R15, R11, R20.reuse ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FMUL R20, R13, R20 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FMUL R11, R11, R14.reuse ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 0 of instruction FMUL R11, R11, R14.reuse ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FMUL R13, R13, R14 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FADD R14, RZ, R15 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: error [subnormal] detected in operand 0 of instruction FADD R14, RZ, R15 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FADD R11, RZ, R11 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: error [subnormal] detected in operand 0 of instruction FADD R11, RZ, R11 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 1 of instruction FADD R14, R19, R14 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FADD R14, R19, R14 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: error [subnormal] detected in operand 0 of instruction FADD R14, R19, R14 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 1 of instruction FADD R11, R16, R11 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: error [subnormal] detected in operand 2 of instruction FADD R11, R16, R11 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 0 of instruction FADD R11, R16, R11 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FADD R14, RZ, R14 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: error [subnormal] detected in operand 0 of instruction FADD R14, RZ, R14 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FADD R16, RZ, R11 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 0 of instruction FADD R16, RZ, R11 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FADD R17, R17, R16 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 0 of instruction FADD R17, R17, R16 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: error [subnormal] detected in operand 1 of instruction FADD R13, R14, -R13 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 0 of instruction FADD R13, R14, -R13 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FMUL R15, R4, -R17.reuse ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FMUL R17, R2, R17 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 0 of instruction FMUL R17, R2, R17 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FFMA R2, R2, R13.reuse, R15 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 0 of instruction FFMA R2, R2, R13.reuse, R15 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FFMA R20, R4, R13, R17 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 3 of instruction FFMA R20, R4, R13, R17 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 0 of instruction FFMA R20, R4, R13, R17 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FMUL R15, R8.reuse, R12 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 0 of instruction FMUL R15, R8.reuse, R12 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: error [subnormal#nixnan: 2 of instruction FMUL R16, R8, R14 ; in function Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2fft_kern-126,1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 0 of instruction FMUL R16, R8, R14 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FMUL R12, R13.reuse, R12 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FMUL R8, R10.reuse, R19 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 0 of instruction FMUL R8, R10.reuse, R19 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FMUL R10, R10, R17.reuse ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 0 of instruction FMUL R10, R10, R17.reuse ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FMUL R13, R13, R14 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FMUL R17, R11.reuse, R17 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FMUL R19, R11, R19 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FADD R11, RZ, R16 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 0 of instruction FADD R11, RZ, R16 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FADD R15, RZ, R15 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: error [subnormal] detected in operand 0 of instruction FADD R15, RZ, R15 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 1 of instruction FADD R8, R8, R11 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: error [subnormal] detected in operand 2 of instruction FADD R8, R8, R11 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 0 of instruction FADD R8, R8, R11 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FADD R11, RZ, R8 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 0 of instruction FADD R11, RZ, R8 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 1 of instruction FADD R10, R10, R15 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: error [subnormal] detected in operand 2 of instruction FADD R10, R10, R15 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 0 of instruction FADD R10, R10, R15 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FADD R13, R12, R11 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 0 of instruction FADD R13, R12, R11 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FADD R10, RZ, R10 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 0 of instruction FADD R10, RZ, R10 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FMUL R6, R4, -R13.reuse ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FMUL R13, R3.reuse, R13 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 0 of instruction FMUL R13, R3.reuse, R13 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 0 of instruction FMUL R13, R3.reuse, R13 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 1 of instruction FADD R10, R10, -R11 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: error [subnormal] detected in operand 0 of instruction FADD R10, R10, -R11 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FFMA R6, R3, R10.reuse, R6 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FFMA R6, R3, R10.reuse, R6 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 0 of instruction FFMA R6, R3, R10.reuse, R6 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FFMA R14, R4, R10, R13 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 3 of instruction FFMA R14, R4, R10, R13 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 0 of instruction FFMA R14, R4, R10, R13 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FMUL R9, R7, R6 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 0 of instruction FMUL R9, R7, R6 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FMUL R6, R10.reuse, R6 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FMUL R10, R10, R11.reuse ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FMUL R0, R5, R12.reuse ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: error [subnormal] detected in operand 0 of instruction FMUL R0, R5, R12.reuse ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FMUL R12, R8.reuse, R12 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FMUL R8, R8, R14.reuse ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FADD R9, RZ, R9 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 0 of instruction FADD R9, RZ, R9 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+ bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FMUL R11, R7, R11 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 0 of instruction FMUL R11, R7, R11 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FMUL R14, R5, R14 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 0 of instruction FMUL R14, R5, R14 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 1 of instruction FADD R0, R0, R9 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: error [subnormal] detected in operand 2 of instruction FADD R0, R0, R9 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 0 of instruction FADD R0, R0, R9 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FADD R11, RZ, R11 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: error [subnormal] detected in operand 0 of instruction FADD R11, RZ, R11 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 2 of instruction FADD R0, RZ, R0 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 0 of instruction FADD R0, RZ, R0 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 1 of instruction FADD R11, R14, R11 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: error [subnormal] detected in operand 2 of instruction FADD R11, R14, R11 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: error [subnormal] detected in operand 0 of instruction FADD R11, R14, R11 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: error [subnormal] detected in operand 1 of instruction FADD R5, R0, -R5 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: error [subnormal] detected in operand 0 of instruction FADD R5, R0, -R5 ; in function fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 of type f32
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: f32 bin has reached threshold: kernel=fft_kernel_Kt1_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_A3f32_1v4_3l0_4t1_p16_I8_I2_I2_I2_I2_I2 range=[-126,127] count=128
+#nixnan: Finalizing GPU context...
+
+#nixnan: ------------ nixnan Report -----------
+
+#nixnan: --- FP16 Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- BF16 Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- FP32 Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:            102 (306 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- FP64 Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- FP16 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- BF16 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- FP32 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- FP64 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- FP exponent ranges --- 
+#nixnan: Exponent range for f32: [zero, 31]

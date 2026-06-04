@@ -1,0 +1,8 @@
+# Raw NixNan trace files exceed GitHub's 100MB single-file limit for the
+# heavy samples below. We keep findings.md + stdout.nnlog + run.env for them.
+AttentionFMHA/data/nixnan.nnlog
+BatchMatMul/data/nixnan.nnlog
+LayerNorm/data/nixnan.nnlog
+MatMul/data/nixnan.nnlog
+MoE/data/nixnan.nnlog
+VectorAddition/data/nixnan.nnlog

@@ -1,0 +1,77 @@
+------------- NVBit (NVidia Binary Instrumentation Tool v1.8) Loaded --------------
+NVBit core environment variables (mostly for nvbit-devs):
+ACK_CTX_INIT_LIMITATION = 0 - if set, no warning will be printed for nvbit_at_ctx_init()
+            NVDISASM = nvdisasm - override default nvdisasm found in PATH
+            NOBANNER = 0 - if set, does not print this banner
+       NO_EAGER_LOAD = 1 - lazy module loading is now turned on by default. If you see deadlocks in your tool, set NO_EAGER_LOAD to 0
+---------------------------------------------------------------------------------
+         INSTR_BEGIN = 0 - Beginning of the instruction interval where to apply instrumentation
+           INSTR_END = 4294967295 - End of the instruction interval where to apply instrumentation
+        TOOL_VERBOSE = 0 - Enable verbosity inside the tool
+   ENABLE_FUN_DETAIL = 0 - Enable detailed function information for kernel
+     PRINT_ILL_INSTR = 1 - Print the instruction which caused the exception
+            SAMPLING = 500 - Instrument a repeat kernel every SAMPLING times
+           INSTR_MEM = 1 - Instrument memory instructions for NaN/Inf detection
+           HISTOGRAM = 1 - Enable FP exponent histogramming
+       BIN_SPEC_FILE = /home/ganesh/repos/parfloat-work/nixnan/cutile-python-samples/nixnan_samples/bin_spec.json - Specification for which exponent ranges to report. If the file does not exist, a template specification will be created.
+For example:
+{
+    "count": 128,
+    "bf16": [],
+    "f16": [[0,5],[-4,-1]],
+    "f32": [],
+    "f64": []
+}
+will report every 128 occurrences of exponents in the ranges 0 to 5 and -4 to -1 for f16 numbers.
+             LOGFILE = /home/ganesh/repos/parfloat-work/nixnan/cutile-python-samples/nixnan_samples/AttentionFMHA/data/nixnan.nnlog - Path to the optional log file. Default is to print to stderr. This is useful for the case when an instrumented program is capturing stderr.
+           LINE_INFO = 0 - Disable debug information for source code locations. Having this enabled may cause crashes, so set this to 0 if you encounter issues.
+WARNING: Do not call CUDA memory allocation in nvbit_at_ctx_init(). It will cause deadlocks. Do them in nvbit_tool_init(). If you encounter deadlocks, remove CUDA API calls to debug.
+--- Running cuTile Fused Multi-Head Attention (FMHA) Sample ---
+  Configuration:
+  Batch Size: 2
+  Number of Heads: 8
+  Query Sequence Length: 128
+  KV Sequence Length: 128
+  Head Dimension (D_k): 64
+  Value Dimension (D_v): 64
+  Data Type: torch.float16
+Input Q shape: torch.Size([2, 8, 128, 64])
+Input K shape: torch.Size([2, 8, 128, 64])
+Input V shape: torch.Size([2, 8, 128, 64])
+
+--- Test 1: Non-Causal Attention ---
+cuTile FMHA Output shape (Non-Causal):torch.Size([2, 8, 128, 64]),
+        dtype:torch.float16
+Correctness check disabled
+
+--- Test 2: Causal Attention ---
+cuTile FMHA Output shape (Causal): torch.Size([2, 8, 128, 64]),
+            dtype: torch.float16
+Correctness check disabled
+
+--- Test 3: Causal Attention with autotuning and performance benchmarking ---
+New Configuration:
+Input Q shape: torch.Size([8, 16, 1024, 64])
+Input K shape: torch.Size([8, 16, 1024, 64])
+Input V shape: torch.Size([8, 16, 1024, 64])
+6 succeeded, 3 failed
+* namespace(TILE_M=64, TILE_N=64, num_ctas=1, occupancy=4)  :  306.6±1.7 us (20 samples)
+  namespace(TILE_M=64, TILE_N=32, num_ctas=1, occupancy=2)  :  320.5±0.5 us (20 samples)
+  namespace(TILE_M=128, TILE_N=128, num_ctas=1, occupancy=2):  328.4±2.0 us (20 samples)
+  namespace(TILE_M=128, TILE_N=128, num_ctas=1, occupancy=1):  476.9±1.2 us (20 samples)
+  namespace(TILE_M=32, TILE_N=32, num_ctas=1, occupancy=1)  :  789.0±0.3 us (20 samples)
+  namespace(TILE_M=256, TILE_N=128, num_ctas=1, occupancy=2): 4974.4±4.3 us (20 samples)
+  3 failed:
+    namespace(TILE_M=128, TILE_N=128, num_ctas=2, occupancy=2): TileCompilerExecutionError: Return code 3
+    namespace(TILE_M=64, TILE_N=64, num_ctas=2, occupancy=1): TileCompilerExecutionError: Return code 3
+    namespace(TILE_M=256, TILE_N=32, num_ctas=2, occupancy=2): TileCompilerExecutionError: Return code 3
+cuTile FMHA Output shape (Causal): torch.Size([8, 16, 1024, 64]),
+            dtype: torch.float16
+Correctness check disabled
+Benchmark results:
+  cuTile FMHA with tuned parameters: 2.61216 ms
+  torch FMHA: 2.61338 ms
+Speedup with autotuned parameters: 1.000x
+
+--- cuTile Fused Multi-Head Attention (FMHA) Sample execution complete ---
+

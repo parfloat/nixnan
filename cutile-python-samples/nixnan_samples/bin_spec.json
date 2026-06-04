@@ -1,0 +1,8 @@
+{
+  "_comment": "Per-binade exponent histogram for cuTile Python sample runs. count=128. NaN and +/-Inf are reported by NixNan exception summaries, not normal exponent bins.",
+  "count": 128,
+  "bf16": [[-126, 127]],
+  "f16": [[-14, 15]],
+  "f32": [[-126, 127]],
+  "f64": [[-1022, 1023]]
+}
