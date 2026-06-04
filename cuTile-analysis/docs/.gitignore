@@ -6,3 +6,4 @@ build/
 *.out
 *.toc
 *.pdf
+!cutile_hpl_ai_porting_report.pdf
