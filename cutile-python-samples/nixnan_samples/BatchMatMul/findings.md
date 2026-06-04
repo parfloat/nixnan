@@ -1,14 +1,14 @@
 # BatchMatMul — NixNan findings
 
 - **Sample:** `samples/BatchMatMul.py`
-- **SAMPLING:** `10`  (0 = no sampling / instrument every launch; N = every Nth repeat of a kernel name)
+- **SAMPLING:** `0`  (0 = no sampling / instrument every launch; N = every Nth repeat of a kernel name)
 - **Histogram bin threshold (COUNT):** `128`
 - **exit_code:** `0`
-- **raw `nixnan.nnlog` size:** 268,877,976 bytes
+- **raw `nixnan.nnlog` size:** 310,546,081 bytes
 
 ## TL;DR
 
-344 FP16 subnormal sites (3,912 repeats) — expected tail of FP16 matmul accumulation; nothing else fires. No NaN/Inf/Div-by-zero.
+FP16 matmul tail: 456 distinct subnormal sites (4,472 repeats) under full instrumentation. Nothing else fires — no NaN, no Inf, no Div-by-zero.
 
 ## NixNan exception / exponent-range report (tail of `nixnan.nnlog`)
 
@@ -19,7 +19,7 @@
 #nixnan: NaN:                    0 (0 repeats)
 #nixnan: Infinity:               0 (0 repeats)
 #nixnan: -Infinity:              0 (0 repeats)
-#nixnan: Subnormal:            344 (3912 repeats)
+#nixnan: Subnormal:            456 (4472 repeats)
 #nixnan: Division by 0:          0 (0 repeats)
 
 #nixnan: --- BF16 Operations ---

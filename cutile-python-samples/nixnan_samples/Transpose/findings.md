@@ -1,10 +1,10 @@
 # Transpose — NixNan findings
 
 - **Sample:** `samples/Transpose.py`
-- **SAMPLING:** `5`  (0 = no sampling / instrument every launch; N = every Nth repeat of a kernel name)
+- **SAMPLING:** `0`  (0 = no sampling / instrument every launch; N = every Nth repeat of a kernel name)
 - **Histogram bin threshold (COUNT):** `128`
 - **exit_code:** `0`
-- **raw `nixnan.nnlog` size:** 26,945,553 bytes
+- **raw `nixnan.nnlog` size:** 68,547,801 bytes
 
 ## TL;DR
 

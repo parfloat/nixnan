@@ -1,7 +1,7 @@
 # AllGatherMatmul — NixNan findings
 
 - **Sample:** `samples/AllGatherMatmul.py`
-- **SAMPLING:** `10`  (0 = no sampling / instrument every launch; N = every Nth repeat of a kernel name)
+- **SAMPLING:** `0`  (0 = no sampling / instrument every launch; N = every Nth repeat of a kernel name)
 - **Histogram bin threshold (COUNT):** `128`
 - **exit_code:** `0`
 - **raw `nixnan.nnlog` size:** 92 bytes
