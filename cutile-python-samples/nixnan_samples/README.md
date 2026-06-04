@@ -39,6 +39,7 @@ and `run.env` are committed — see `.gitignore` in this directory.
 | [AttentionFMHA](AttentionFMHA/findings.md) | 500 | 0 | 11.7 GB | **no** (gist only) |
 | [BatchMatMul](BatchMatMul/findings.md) | 10 | 0 | 257 MB | **no** (gist only) |
 | [FFT](FFT/findings.md) | 0 (full) | 0 | 101 KB | yes |
+| [FFT_correctness](FFT_correctness/findings.md) | 0 (full) | 0 | 132 KB | yes — **catches the div-by-zero** |
 | [LayerNorm](LayerNorm/findings.md) | 5 | 0 | 734 MB | **no** (gist only) |
 | [MatMul](MatMul/findings.md) | 10 | 0 | 103 MB | **no** (gist only) |
 | [MoE](MoE/findings.md) | 10 | 0 | 1.9 GB | **no** (gist only) |
@@ -78,10 +79,15 @@ Numbers are `distinct sites (total repeats)`.
    `-Inf` after `exp2` cancellation or accumulator underflow), but
    worth verifying that the `-Inf` is *designed* sentinel behavior
    and not arithmetic underflow.
-2. **FFT** did not surface a divide-by-zero in this configuration
-   (`SAMPLING=0`, no `--correctness-check`). The previously reported
-   div-by-zero may live behind the correctness path or a different
-   input config; rerun with `RUN_CORRECTNESS=1` to chase it.
+2. **FFT** did not surface a divide-by-zero in the no-correctness run
+   (`SAMPLING=0`, no `--correctness-check`). Re-running with
+   `--correctness-check` (see [`FFT_correctness/findings.md`](FFT_correctness/findings.md))
+   **does** surface 1 FP32 div-by-zero + 1 FP32 +Inf — both pointing at
+   the same `MUFU.RSQ R5, R0` inside PyTorch's
+   `abs_kernel_vectorized2_kernel`, fired by `torch.testing.assert_close`
+   on a zero-magnitude complex element. The cuTile FFT kernel itself is
+   clean; the exception is a harmless intermediate `rsqrt(0)` in
+   PyTorch's `abs(complex<float>)` SASS that is masked by a select.
 3. **VA_ovflo_nixnan** is the expected positive control — confirms
    the toolchain is correctly detecting `+Inf` in FP16.
 4. Subnormal counts on the FP16 matmul samples (BatchMatMul, MatMul,
