@@ -9,6 +9,7 @@ __pycache__
 *.mlir
 !/test/mlir/**/*.mlir
 env
+.venv-cutile
 deps
 *.nsys-rep
 *.so
