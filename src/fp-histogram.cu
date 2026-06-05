@@ -69,7 +69,12 @@ For example:
     "f32": [],
     "f64": []
 }
-will report every 128 occurrences of exponents in the ranges 0 to 5 and -4 to -1 for f16 numbers.)");
+will report every 128 occurrences of exponents in the ranges 0 to 5 and -4 to -1 for f16 numbers.
+
+If `count=-N`, where `N` is negative, then each bucket will begin with a size of
+8. When a bucket reaches the count threshold, it will double the threshold and
+report. This doubling will continue until one bucket has been doubled N times,
+then all buckets are reset to 8.)");
     if (bin_spec_file != "") {
         histogram_enabled = true;
         std::fstream bin_spec_ifs(bin_spec_file);
@@ -115,7 +120,7 @@ int get_exp_bias(uint32_t type) {
     return (1 << (exp_bits - 1)) - 1;
 }
 
-BinCounter bin_from_json(const nlohmann::json& j, unsigned char fmt) {
+BinCounter bin_from_json(const nlohmann::json& j, unsigned char fmt, long long int count) {
     int bias = get_exp_bias(fmt);
     if (j.type() != nlohmann::json::value_t::array ||
         j.size() != 2) {
@@ -131,7 +136,11 @@ BinCounter bin_from_json(const nlohmann::json& j, unsigned char fmt) {
                 << "] for format " << type_to_string.at(fmt) << "\nExiting now.\n";
         exit(1);
     }
-    return BinCounter(lower + bias, upper+bias);
+    if (count > 0) {
+        return BinCounter(lower + bias, upper+bias, count);
+    } else {
+        return BinCounter(lower + bias, upper+bias, 8, 0, -count);
+    }
 }
 
 using json = nlohmann::json;
@@ -159,10 +168,15 @@ void process_bin_spec() {
             exit(1);
         }
     }
-    count_threshold = bin_spec_json["count"].get<unsigned long long int>();
+    count_threshold = bin_spec_json["count"].get<long long int>();
 
-    if (count_threshold <= 0) {
+    if (count_threshold == 0) {
         nnout() << "Invalid count threshold of " << count_threshold << " in bin specification file " << bin_spec_file << "\nExiting now.\n";
+        exit(1);
+    }
+
+    if (count_threshold < 0 && -count_threshold > 60) {
+        nnout() << "Count threshold of " << count_threshold << " in bin specification file " << bin_spec_file << " is too low. With a threshold less than -60, the threshold will be doubled more than 60 times, which could lead to overflow. Exiting now.\n";
         exit(1);
     }
 
@@ -174,7 +188,7 @@ void process_bin_spec() {
         std::vector<BinCounter> h_cnts;
         if (bin_spec_json.find(fmt_str) != bin_spec_json.end()) {
             for (const auto& bin_json : bin_spec_json[fmt_str]) {
-                h_cnts.push_back(bin_from_json(bin_json, fmt));
+                h_cnts.push_back(bin_from_json(bin_json, fmt, count_threshold));
             }
         }
         BinCounter* d_cnts;
@@ -242,7 +256,6 @@ if (histogram_enabled) {
     nvbit_insert_call(instr, "nixnan_fp_histogram_counter", IPOINT_AFTER);
     nvbit_add_call_arg_guard_pred_val(instr);
     nvbit_add_call_arg_const_val64(instr, tobits64(device_bins), false);
-    nvbit_add_call_arg_const_val64(instr, tobits64(count_threshold), false);
     nvbit_add_call_arg_const_val64(instr, tobits64(device_histogram), false);
     nvbit_add_call_arg_const_val64(instr, tobits64(&channel_dev), false);
     nvbit_add_call_arg_const_val32(instr, tobits32(kernel_to_id[kname]), false); // kerid
@@ -261,7 +274,6 @@ if (histogram_enabled) {
     nvbit_insert_call(instr, "nixnan_fp_histogram_counter", IPOINT_BEFORE);
     nvbit_add_call_arg_guard_pred_val(instr);
     nvbit_add_call_arg_const_val64(instr, tobits64(device_bins), false);
-    nvbit_add_call_arg_const_val64(instr, tobits64(count_threshold), false);
     nvbit_add_call_arg_const_val64(instr, tobits64(device_histogram), false);
     nvbit_add_call_arg_const_val64(instr, tobits64(&channel_dev), false);
     nvbit_add_call_arg_const_val32(instr, tobits32(kernel_to_id[kname]), false); // kerid
