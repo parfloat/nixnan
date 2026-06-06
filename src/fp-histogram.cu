@@ -14,7 +14,7 @@ namespace fp_histogram {
 static unsigned long long int* device_histogram = nullptr;
 static const size_t num_entries = 4 * (1 << FP64_EXP_BITS);
 static BinArray* device_bins = nullptr;
-static unsigned long long int count_threshold = 0;
+static long long int count_threshold = 0;
 
 static std::atomic<bool> recv_thread_running;
 static std::atomic<bool> recv_thread_receiving;
@@ -175,7 +175,7 @@ void process_bin_spec() {
         exit(1);
     }
 
-    if (-count_threshold > 60) {
+    if (count_threshold < -60) {
         nnout() << "Count threshold of " << count_threshold << " in bin specification file " << bin_spec_file << " is too low. With a threshold less than -60, the threshold will be doubled more than 60 times, which could lead to overflow. Exiting now.\n";
         exit(1);
     }
