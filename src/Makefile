@@ -47,6 +47,7 @@ OBJECTS:=$(addprefix $(OBJECT_DIR)/,$(OBJECTS))
 all: $(NVBIT_TOOL)
 
 $(NVBIT_TOOL): $(OBJECTS) $(NVBIT_PATH)/libnvbit.a
+	echo $(OBJECTS)
 	$(NVCC) -arch=$(ARCH) -O3 $(OBJECTS) $(LIBS) $(NVCC_PATH) -lcuda -lcudart_static -shared -o $@
 
 $(OBJECT_DIR):
@@ -65,13 +66,13 @@ nlohmann/json.hpp:
 	mkdir -p nlohmann
 	wget https://github.com/nlohmann/json/releases/download/v$(JSON_VERSION)/json.hpp -O nlohmann/json.hpp
 
-inject_funs.o: inject_funs.cu
+$(OBJECT_DIR)/inject_funs.o: inject_funs.cu
 	$(NVCC) $(INCLUDES) -maxrregcount=24 -Xptxas -astoolspatch --keep-device-functions -arch=$(ARCH) -Xcompiler -Wall -Xcompiler -fPIC -c $< -o $@
 
-memcheck.o: memcheck.cu
+$(OBJECT_DIR)/memcheck.o: memcheck.cu
 	$(NVCC) $(INCLUDES) -maxrregcount=24 -Xptxas -astoolspatch --keep-device-functions -arch=$(ARCH) -Xcompiler -Wall -Xcompiler -fPIC -c $< -o $@
 
-fp-fun.o: fp-fun.cu
+$(OBJECT_DIR)/fp-fun.o: fp-fun.cu
 	$(NVCC) $(INCLUDES) -maxrregcount=24 -Xptxas -astoolspatch --keep-device-functions -arch=$(ARCH) -Xcompiler -Wall -Xcompiler -fPIC -c $< -o $@
 
 test: SUBDIRS_TEST
