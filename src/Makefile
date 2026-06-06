@@ -47,7 +47,6 @@ OBJECTS:=$(addprefix $(OBJECT_DIR)/,$(OBJECTS))
 all: $(NVBIT_TOOL)
 
 $(NVBIT_TOOL): $(OBJECTS) $(NVBIT_PATH)/libnvbit.a
-	echo $(OBJECTS)
 	$(NVCC) -arch=$(ARCH) -O3 $(OBJECTS) $(LIBS) $(NVCC_PATH) -lcuda -lcudart_static -shared -o $@
 
 $(OBJECT_DIR):
