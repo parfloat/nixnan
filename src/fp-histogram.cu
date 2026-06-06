@@ -175,7 +175,7 @@ void process_bin_spec() {
         exit(1);
     }
 
-    if (count_threshold < 0 && -count_threshold > 60) {
+    if (-count_threshold > 60) {
         nnout() << "Count threshold of " << count_threshold << " in bin specification file " << bin_spec_file << " is too low. With a threshold less than -60, the threshold will be doubled more than 60 times, which could lead to overflow. Exiting now.\n";
         exit(1);
     }
