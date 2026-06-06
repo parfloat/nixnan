@@ -139,7 +139,7 @@ BinCounter bin_from_json(const nlohmann::json& j, unsigned char fmt, long long i
     if (count > 0) {
         return BinCounter(lower + bias, upper+bias, count);
     } else {
-        return BinCounter(lower + bias, upper+bias, 8, 0, -count);
+        return BinCounter(lower + bias, upper+bias, 8, -count);
     }
 }
 

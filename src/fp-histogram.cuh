@@ -26,12 +26,11 @@ class BinCounter {
     unsigned long long int count;
     unsigned long long int threshold;
     unsigned int times_doubled;
-    unsigned int doubling_limit;
+    const unsigned int doubling_limit;
     BinCounter(int lower, int upper, unsigned long long int threshold,
-               unsigned int times_doubled = 0,
                unsigned int doubling_limit = 0) :
                    lower(lower), upper(upper), count(0),
-                   threshold(threshold), times_doubled(times_doubled),
+                   threshold(threshold), times_doubled(0),
                    doubling_limit(doubling_limit) {}
     BinCounter() : lower(0), upper(0), count(0), threshold(0), times_doubled(0),
                    doubling_limit(0) {}

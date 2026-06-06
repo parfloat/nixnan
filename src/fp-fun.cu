@@ -33,11 +33,13 @@ void record(unsigned long long int* histogram, BinArray* bins,
                     exp_info ei(threshold, format, bin.lower, bin.upper, kerid, skip);
                     channel_dev->push((void*)&ei, sizeof(ei));
                 }
-                if (bin.times_doubled == bin.doubling_limit) {
-                    reset_bin_thresholds(bins);
-                } else {
-                    bin.threshold *= 2;
-                    bin.times_doubled++;
+                if (bin.doubling_limit != 0) {
+                    if (bin.times_doubled == bin.doubling_limit) {
+                        reset_bin_thresholds(bins);
+                    } else {
+                        bin.threshold *= 2;
+                        bin.times_doubled++;
+                    }
                 }
             }
             break;
