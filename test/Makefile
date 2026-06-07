@@ -1,6 +1,6 @@
 # Compiler and flags
 NVCC = nvcc
-NVCCFLAGS = -lineinfo -arch=sm_86
+NVCCFLAGS = -lineinfo -arch=native
 
 # Find all .cu source files in immediate subdirectories
 SOURCES = $(wildcard */*.cu)

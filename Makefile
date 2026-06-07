@@ -23,7 +23,7 @@ $(GPUFPX_home)/detector/detector.so: $(GPUFPX_home)/detector/detector.cu $(nvbit
 nixnan.so: src/nixnan.so
 	ln -sf src/nixnan.so nixnan.so
 
-src/nixnan.so: src/nixnan.cu $(nvbit_tar)
+src/nixnan.so: src/*.cu src/*.cuh src/*.hh src/*.cc src/Makefile $(nvbit_tar)
 	cd src; \
 	$(MAKE)
 
@@ -33,3 +33,4 @@ $(nvbit_tar):
 	cp -R nvbit_release_x86_64/* nvbit_release
 clean:
 	rm nvbit-Linux-x86_64-$(nvbit_version).tar.bz2
+	rm -rf nvbit_release
