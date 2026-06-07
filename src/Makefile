@@ -6,7 +6,7 @@ JSON_VERSION=3.12.0
 NVBIT_TOOL=nixnan.so
 
 NVCC=nvcc -ccbin=$(CXX) -D_FORCE_INLINES -std=c++17 -g -t 0
-ARCH=sm_86
+ARCH=native
 TEST_FLAGS=--generate-line-info
 OPT_FLAGS=-O0
 
