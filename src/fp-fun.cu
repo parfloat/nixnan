@@ -9,8 +9,9 @@ using namespace nixnan::fp_histogram;
 __device__
 void reset_bin_thresholds(BinArray* bins) {
     for (int fmt = 0; fmt < NUM_FORMATS; fmt++) {
+        unsigned long long int default_threshold = bins[fmt].default_threshold;
         for (size_t i = 0; i < bins[fmt].num_bins; i++) {
-            bins[fmt].bins[i].threshold = 8;
+            bins[fmt].bins[i].threshold = default_threshold;
             bins[fmt].bins[i].times_doubled = 0;
         }
     }

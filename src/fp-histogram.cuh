@@ -47,6 +47,7 @@ class BinCounter {
 struct BinArray {
     BinCounter* bins;
     size_t num_bins;
+    unsigned long long int default_threshold;
 };
 
 __inline__ __host__ __device__
