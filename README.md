@@ -1,30 +1,3 @@
-# FP Histogram
-Adds the ability for the histogram binning to double the threshold when the 
-current threshold is met. Additionally, specify a limit for how many doublings
-are allowed before all bin thresholds are reset.
-
-Specification for which exponent ranges to report. If the file does not exist, a template specification will be created.
-For example:
-{
-    "count": 128,
-    "doublings": 0,
-    "bf16": [],
-    "f16": [[0,5],[-4,-1]],
-    "f32": [],
-    "f64": []
-}
-will report every 128 occurrences of exponents in the ranges 0 to 5 and -4 to -1 for f16 numbers.
-
-## Cyclic Histogram Reset
-If `doublings=N`, where `N` is positive, then each bucket will begin with a
-size of `count`. When a bucket reaches the count threshold, it will double the
-threshold and report. This doubling will continue until one bucket has been
-doubled N times, then all buckets are reset to `count`.
-
-For example if `count=16` and `doublings=3`, then a histogram fill will be
-reported at 16 hits, then 32 hits and finally 64 hits. At this point,
-the thresholds for all histogram bins will be reset.
-
 # News
 Updated NVBit to 1.8: This may cause GPU functions to not be instrumented on CUDA versions below 13. If you encounter an issue, use an older version of Nixnan or upgrade CUDA to version 13+.
 
@@ -159,6 +132,7 @@ For example:
 ```json
 {
     "count": 128,
+    "doublings": 0
     "bf16": [],
     "f16": [[0,5],[-4,-1]],
     "f32": [],
@@ -179,3 +153,30 @@ $ BIN_SPEC_FILE=./spec.json HISTOGRAM=1 LD_PRELOAD=nixnan.so half-matmul
 ```
 This shows that the threshold was reached twice in the [0,5] range and once in 
 the [-4,-1] range.
+
+<!-- # FP Histogram
+Adds the ability for the histogram binning to double the threshold when the 
+current threshold is met. Additionally, specify a limit for how many doublings
+are allowed before all bin thresholds are reset.
+
+Specification for which exponent ranges to report. If the file does not exist, a template specification will be created.
+For example:
+{
+    "count": 128,
+    "doublings": 0,
+    "bf16": [],
+    "f16": [[0,5],[-4,-1]],
+    "f32": [],
+    "f64": []
+}
+will report every 128 occurrences of exponents in the ranges 0 to 5 and -4 to -1 for f16 numbers. -->
+
+## Cyclic Histogram Reset
+If `doublings=N`, where `N` is positive, then each bucket will begin with a
+size of `count`. When a bucket reaches the count threshold, it will double the
+threshold and report. This doubling will continue until one bucket has been
+doubled N times, then all buckets are reset to `count`.
+
+For example if `count=16` and `doublings=3`, then a histogram fill will be
+reported at 16 hits, then 32 hits and finally 64 hits. At this point,
+the thresholds for all histogram bins will be reset.
