@@ -15,7 +15,7 @@ For example:
 }
 will report every 128 occurrences of exponents in the ranges 0 to 5 and -4 to -1 for f16 numbers.
 
-If `doublings=-N`, where `N` is positive, then each bucket will begin with a
+If `doublings=N`, where `N` is positive, then each bucket will begin with a
 size of `count`. When a bucket reaches the count threshold, it will double the
 threshold and report. This doubling will continue until one bucket has been
 doubled N times, then all buckets are reset to `count`.
