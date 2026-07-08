@@ -74,6 +74,9 @@ $(OBJECT_DIR)/memcheck.o: memcheck.cu
 $(OBJECT_DIR)/fp-fun.o: fp-fun.cu
 	$(NVCC) $(INCLUDES) -maxrregcount=24 -Xptxas -astoolspatch --keep-device-functions -arch=$(ARCH) -Xcompiler -Wall -Xcompiler -fPIC -c $< -o $@
 
+$(OBJECT_DIR)/cufuzz_inject_funcs.o: cufuzz_inject_funcs.cu
+	$(NVCC) $(INCLUDES) -maxrregcount=24 -Xptxas -astoolspatch --keep-device-functions -arch=$(ARCH) -Xcompiler -Wall -Xcompiler -fPIC -c $< -o $@
+
 test: SUBDIRS_TEST
 
 SUBDIRS_TEST: $(SUBDIRS)

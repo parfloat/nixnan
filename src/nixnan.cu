@@ -73,6 +73,15 @@ std::unordered_set<CUfunction> instrumented_functions;
 
 bool skip_flag = false;
 
+namespace cufuzz {
+  void nvbit_at_init();
+  void nvbit_at_cuda_event(CUcontext ctx, int is_exit, nvbit_api_cuda_t cbid,
+                           const char *name, void *params, CUresult *pStatus);
+  void nvbit_tool_init(CUcontext ctx);
+  void nvbit_at_ctx_term(CUcontext ctx);
+  void nvbit_at_term();
+}
+
 void nvbit_at_init() {
   // Disable warning about using CUDA API calls in nvbit_at_init.
   setenv("ACK_CTX_INIT_LIMITATION", "1", 1);
@@ -108,6 +117,7 @@ void nvbit_at_init() {
   }
   std::string pad(82, '-');
   nnout() << pad << '\n';
+  cufuzz::nvbit_at_init();
 }
 
 void instrument_function(CUcontext ctx, CUfunction func) {
@@ -274,6 +284,7 @@ void recv_thread_fun(std::shared_ptr<nixnan::recorder> recorder, ChannelHost cha
 
 void nvbit_at_cuda_event(CUcontext ctx, int is_exit, nvbit_api_cuda_t cbid,
   const char *name, void *params, CUresult *pStatus) {
+  cufuzz::nvbit_at_cuda_event(ctx, is_exit, cbid, name, params, pStatus);
   if (skip_flag)
     return;
 
@@ -351,6 +362,7 @@ void nvbit_at_cuda_event(CUcontext ctx, int is_exit, nvbit_api_cuda_t cbid,
 }
 
 void nvbit_tool_init(CUcontext ctx) {
+  cufuzz::nvbit_tool_init(ctx);
   std::string k_whitelist_name = "kernel_whitelist.txt";
   std::string k_blacklist_name = "kernel_blacklist.txt";
 
@@ -374,6 +386,7 @@ void nvbit_tool_init(CUcontext ctx) {
 }
 
 void nvbit_at_ctx_term(CUcontext ctx) {
+  cufuzz::nvbit_at_ctx_term(ctx);
   if (recv_thread_started) {
     recv_thread_started = false;
     recv_thread.join();
@@ -424,7 +437,7 @@ void nvbit_at_ctx_term(CUcontext ctx) {
       }
   }
   nnout() << "Finalizing GPU context...\n\n";
-
+  cufuzz::nvbit_at_term();
   nnout() << "------------ nixnan Report -----------\n\n";
   
   auto print_type_exceptions = [&](const std::string& type_name, uint32_t type_id, bool is_mem) {
