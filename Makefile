@@ -10,7 +10,7 @@ GPUFPX_home=$(nvbit_tool)/GPU-FPX
 
 analyzer: $(GPUFPX_home)/analyzer/analyzer.so
 detector: $(GPUFPX_home)/detector/detector.so
-nixnan: $(nvbit_tool)/nixnan/nixnan.so
+nixnan: src/nixnan.so
 
 $(GPUFPX_home)/analyzer/analyzer.so: $(GPUFPX_home)/analyzer/analyzer.cu $(nvbit_tar)
 	cd $(GPUFPX_home)/analyzer; \
@@ -19,11 +19,12 @@ $(GPUFPX_home)/analyzer/analyzer.so: $(GPUFPX_home)/analyzer/analyzer.cu $(nvbit
 $(GPUFPX_home)/detector/detector.so: $(GPUFPX_home)/detector/detector.cu $(nvbit_tar)
 	cd $(GPUFPX_home)/detector; \
 	$(MAKE)
-nixnan.so: $(nvbit_tool)/nixnan/nixnan.so
-	ln -sf $(nvbit_tool)/nixnan/nixnan.so nixnan.so
 
-$(nvbit_tool)/nixnan/nixnan.so: $(nvbit_tool)/nixnan/nixnan.cu $(nvbit_tar)
-	cd $(nvbit_tool)/nixnan; \
+nixnan.so: src/nixnan.so
+	ln -sf src/nixnan.so nixnan.so
+
+src/nixnan.so: src/*.cu src/*.cuh src/*.hh src/*.cc src/Makefile $(nvbit_tar)
+	cd src; \
 	$(MAKE)
 
 $(nvbit_tar):
@@ -32,3 +33,4 @@ $(nvbit_tar):
 	cp -R nvbit_release_x86_64/* nvbit_release
 clean:
 	rm nvbit-Linux-x86_64-$(nvbit_version).tar.bz2
+	rm -rf nvbit_release

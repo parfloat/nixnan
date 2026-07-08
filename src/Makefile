@@ -3,10 +3,10 @@ current_dir := $(notdir $(patsubst %/,%,$(dir $(mkfile_path))))
 
 JSON_VERSION=3.12.0
 
-NVBIT_TOOL=$(current_dir).so
+NVBIT_TOOL=nixnan.so
 
 NVCC=nvcc -ccbin=$(CXX) -D_FORCE_INLINES -std=c++17 -g -t 0
-ARCH=sm_86
+ARCH=native
 TEST_FLAGS=--generate-line-info
 OPT_FLAGS=-O0
 
@@ -24,16 +24,18 @@ ifeq ($(NVCC_VER_CHECK),0)
 $(error ERROR: nvcc version >= $(NVCC_VER_REQ) required to compile an nvbit tool! Instrumented applications can still use lower versions of nvcc.)
 endif
 
-NVBIT_PATH=../../core
-UTILITY=../
-INCLUDES=-I$(NVBIT_PATH) -I$(UTILITY)
+NVBIT_PATH=../nvbit_release/core
+
+INCLUDES=-I$(NVBIT_PATH)
 
 LIBS=-L$(NVBIT_PATH) -lnvbit
 NVCC_PATH=-L $(subst bin/nvcc,lib64,$(shell which nvcc | tr -s /))
 
 SOURCES=$(wildcard *.cu) $(wildcard *.cc)
+OBJECT_DIR=build
 OBJECTS=$(SOURCES:.cu=.o)
 OBJECTS:=$(OBJECTS:.cc=.o)
+OBJECTS:=$(addprefix $(OBJECT_DIR)/,$(OBJECTS))
 #ARCH?=35
 #ARCH?=70
 
@@ -47,10 +49,13 @@ all: $(NVBIT_TOOL)
 $(NVBIT_TOOL): $(OBJECTS) $(NVBIT_PATH)/libnvbit.a
 	$(NVCC) -arch=$(ARCH) -O3 $(OBJECTS) $(LIBS) $(NVCC_PATH) -lcuda -lcudart_static -shared -o $@
 
-%.o: %.cu nlohmann/json.hpp instructions.h
+$(OBJECT_DIR):
+	mkdir -p $(OBJECT_DIR)
+
+$(OBJECT_DIR)/%.o: %.cu nlohmann/json.hpp instructions.h $(OBJECT_DIR)
 	$(NVCC) -dc -c $(INCLUDES) -Xptxas -cloning=no -Xcompiler -Wall -arch=$(ARCH) -O3 -Xcompiler -fPIC $< -o $@
 
-%.o: %.cc
+$(OBJECT_DIR)/%.o: %.cc $(OBJECT_DIR)
 	$(CXX) -std=c++17 -c $(INCLUDES) -Wall -O3 -fPIC $< -o $@
 
 instructions.h: instructions.json
@@ -60,13 +65,13 @@ nlohmann/json.hpp:
 	mkdir -p nlohmann
 	wget https://github.com/nlohmann/json/releases/download/v$(JSON_VERSION)/json.hpp -O nlohmann/json.hpp
 
-inject_funs.o: inject_funs.cu
+$(OBJECT_DIR)/inject_funs.o: inject_funs.cu
 	$(NVCC) $(INCLUDES) -maxrregcount=24 -Xptxas -astoolspatch --keep-device-functions -arch=$(ARCH) -Xcompiler -Wall -Xcompiler -fPIC -c $< -o $@
 
-memcheck.o: memcheck.cu
+$(OBJECT_DIR)/memcheck.o: memcheck.cu
 	$(NVCC) $(INCLUDES) -maxrregcount=24 -Xptxas -astoolspatch --keep-device-functions -arch=$(ARCH) -Xcompiler -Wall -Xcompiler -fPIC -c $< -o $@
 
-fp-fun.o: fp-fun.cu
+$(OBJECT_DIR)/fp-fun.o: fp-fun.cu
 	$(NVCC) $(INCLUDES) -maxrregcount=24 -Xptxas -astoolspatch --keep-device-functions -arch=$(ARCH) -Xcompiler -Wall -Xcompiler -fPIC -c $< -o $@
 
 test: SUBDIRS_TEST
@@ -82,6 +87,7 @@ SUBDIRS_TEST: $(SUBDIRS)
 clean:
 	rm -f *.so *.o instructions.h
 	rm -rf nlohmann
+	rm -rf $(OBJECT_DIR)
 
 clean_test: 
 	for dir in $(SUBDIRS); do \
