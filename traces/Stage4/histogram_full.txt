@@ -1,0 +1,250 @@
+------------- NVBit (NVidia Binary Instrumentation Tool v1.8) Loaded --------------
+NVBit core environment variables (mostly for nvbit-devs):
+ACK_CTX_INIT_LIMITATION = 0 - if set, no warning will be printed for nvbit_at_ctx_init()
+            NVDISASM = nvdisasm - override default nvdisasm found in PATH
+            NOBANNER = 0 - if set, does not print this banner
+       NO_EAGER_LOAD = 1 - lazy module loading is now turned on by default. If you see deadlocks in your tool, set NO_EAGER_LOAD to 0
+---------------------------------------------------------------------------------
+         INSTR_BEGIN = 0 - Beginning of the instruction interval where to apply instrumentation
+           INSTR_END = 4294967295 - End of the instruction interval where to apply instrumentation
+        TOOL_VERBOSE = 0 - Enable verbosity inside the tool
+   ENABLE_FUN_DETAIL = 0 - Enable detailed function information for kernel
+     PRINT_ILL_INSTR = 0 - Print the instruction which caused the exception
+            SAMPLING = 0 - Instrument a repeat kernel every SAMPLING times
+           INSTR_MEM = 0 - Instrument memory instructions for NaN/Inf detection
+           HISTOGRAM = 1 - Enable FP exponent histogramming
+       BIN_SPEC_FILE =  - Specification for which exponent ranges to report. If the file does not exist, a template specification will be created.
+For example:
+{
+    "count": 128,
+    "doublings": 0,
+    "bf16": [],
+    "f16": [[0,5],[-4,-1]],
+    "f32": [],
+    "f64": []
+}
+will report every 128 occurrences of exponents in the ranges 0 to 5 and -4 to -1 for f16 numbers.
+
+If `doublings=-N`, where `N` is positive, then each bucket will begin with a
+size of `count`. When a bucket reaches the count threshold, it will double the
+threshold and report. This doubling will continue until one bucket has been
+doubled N times, then all buckets are reset to `count`.
+             LOGFILE =  - Path to the optional log file. Default is to print to stderr. This is useful for the case when an instrumented program is capturing stderr.
+           LINE_INFO = 1 - Disable debug information for source code locations. Having this enabled may cause crashes, so set this to 0 if you encounter issues.
+#nixnan: ----------------------------------------------------------------------------------
+WARNING: Do not call CUDA memory allocation in nvbit_at_ctx_init(). It will cause deadlocks. Do them in nvbit_tool_init(). If you encounter deadlocks, remove CUDA API calls to debug.
+r = 0.1000 (diffusion number, stable if <= 0.5)
+lambda*dt = 0.0500 (reaction growth per step ~ 1.0500 x)
+
+===== FP16 : reaction-diffusion FTCS (N=101, M=2500, dt=1e-03) =====
+#nixnan: Initializing GPU context...
+#nixnan: Could not open kernel_whitelist.txt!
+#nixnan: Could not open kernel_blacklist.txt!
+#nixnan: Instrumenting all kernels
+#nixnan: running kernel [rd_step_fp16] ...
+  step   100 (t=0.100)  max=1.3088e+02
+  step   200 (t=0.200)  max=1.7184e+04
+#nixnan: error [infinity] detected in operand 0 of instruction HADD2 R0, R0.H0_H0, R7.H0_H0 ; in function rd_step_fp16 of type f16
+#nixnan: error [infinity] detected in operand 0 of instruction HFMA2 R0, R9.H0_H0, -2, -2, R0.H0_H0 ; in function rd_step_fp16 of type f16
+#nixnan: error [infinity] detected in operand 1 of instruction HFMA2 R0, R0.H0_H0, c[0x0] [0x170].H0_H0, R9.H0_H0 ; in function rd_step_fp16 of type f16
+#nixnan: error [infinity] detected in operand 0 of instruction HFMA2 R0, R0.H0_H0, c[0x0] [0x170].H0_H0, R9.H0_H0 ; in function rd_step_fp16 of type f16
+#nixnan: error [infinity] detected in operand 3 of instruction HFMA2 R0, R9.H0_H0, c[0x0] [0x170].H1_H1, R0.H0_H0 ; in function rd_step_fp16 of type f16
+#nixnan: error [infinity] detected in operand 0 of instruction HFMA2 R0, R9.H0_H0, c[0x0] [0x170].H1_H1, R0.H0_H0 ; in function rd_step_fp16 of type f16
+#nixnan: error [infinity] detected in operand 1 of instruction HADD2 R0, R0.H0_H0, R7.H0_H0 ; in function rd_step_fp16 of type f16
+#nixnan: error [infinity] detected in operand 2 of instruction HADD2 R0, R0.H0_H0, R7.H0_H0 ; in function rd_step_fp16 of type f16
+#nixnan: error [infinity] detected in operand 1 of instruction HFMA2 R0, R9.H0_H0, -2, -2, R0.H0_H0 ; in function rd_step_fp16 of type f16
+#nixnan: error [NaN,infinity] detected in operand 0 of instruction HFMA2 R0, R9.H0_H0, -2, -2, R0.H0_H0 ; in function rd_step_fp16 of type f16
+#nixnan: error [NaN,infinity] detected in operand 1 of instruction HFMA2 R0, R0.H0_H0, c[0x0] [0x170].H0_H0, R9.H0_H0 ; in function rd_step_fp16 of type f16
+#nixnan: error [infinity] detected in operand 3 of instruction HFMA2 R0, R0.H0_H0, c[0x0] [0x170].H0_H0, R9.H0_H0 ; in function rd_step_fp16 of type f16
+#nixnan: error [NaN,infinity] detected in operand 0 of instruction HFMA2 R0, R0.H0_H0, c[0x0] [0x170].H0_H0, R9.H0_H0 ; in function rd_step_fp16 of type f16
+#nixnan: error [infinity] detected in operand 1 of instruction HFMA2 R0, R9.H0_H0, c[0x0] [0x170].H1_H1, R0.H0_H0 ; in function rd_step_fp16 of type f16
+#nixnan: error [NaN,infinity] detected in operand 3 of instruction HFMA2 R0, R9.H0_H0, c[0x0] [0x170].H1_H1, R0.H0_H0 ; in function rd_step_fp16 of type f16
+#nixnan: error [NaN,infinity] detected in operand 0 of instruction HFMA2 R0, R9.H0_H0, c[0x0] [0x170].H1_H1, R0.H0_H0 ; in function rd_step_fp16 of type f16
+#nixnan: error [NaN,infinity] detected in operand 1 of instruction HADD2 R0, R0.H0_H0, R7.H0_H0 ; in function rd_step_fp16 of type f16
+#nixnan: error [NaN,infinity] detected in operand 2 of instruction HADD2 R0, R0.H0_H0, R7.H0_H0 ; in function rd_step_fp16 of type f16
+#nixnan: error [NaN,infinity] detected in operand 0 of instruction HADD2 R0, R0.H0_H0, R7.H0_H0 ; in function rd_step_fp16 of type f16
+#nixnan: error [NaN,infinity] detected in operand 1 of instruction HFMA2 R0, R9.H0_H0, -2, -2, R0.H0_H0 ; in function rd_step_fp16 of type f16
+#nixnan: error [NaN,infinity] detected in operand 3 of instruction HFMA2 R0, R0.H0_H0, c[0x0] [0x170].H0_H0, R9.H0_H0 ; in function rd_step_fp16 of type f16
+#nixnan: error [NaN,infinity] detected in operand 1 of instruction HFMA2 R0, R9.H0_H0, c[0x0] [0x170].H1_H1, R0.H0_H0 ; in function rd_step_fp16 of type f16
+#nixnan: error [NaN] detected in operand 0 of instruction HFMA2 R0, R9.H0_H0, -2, -2, R0.H0_H0 ; in function rd_step_fp16 of type f16
+#nixnan: error [NaN] detected in operand 1 of instruction HFMA2 R0, R0.H0_H0, c[0x0] [0x170].H0_H0, R9.H0_H0 ; in function rd_step_fp16 of type f16
+#nixnan: error [NaN] detected in operand 0 of instruction HFMA2 R0, R0.H0_H0, c[0x0] [0x170].H0_H0, R9.H0_H0 ; in function rd_step_fp16 of type f16
+#nixnan: error [NaN] detected in operand 3 of instruction HFMA2 R0, R9.H0_H0, c[0x0] [0x170].H1_H1, R0.H0_H0 ; in function rd_step_fp16 of type f16
+#nixnan: error [NaN] detected in operand 0 of instruction HFMA2 R0, R9.H0_H0, c[0x0] [0x170].H1_H1, R0.H0_H0 ; in function rd_step_fp16 of type f16
+#nixnan: error [NaN] detected in operand 1 of instruction HADD2 R0, R0.H0_H0, R7.H0_H0 ; in function rd_step_fp16 of type f16
+#nixnan: error [NaN] detected in operand 0 of instruction HADD2 R0, R0.H0_H0, R7.H0_H0 ; in function rd_step_fp16 of type f16
+#nixnan: error [NaN] detected in operand 1 of instruction HFMA2 R0, R9.H0_H0, -2, -2, R0.H0_H0 ; in function rd_step_fp16 of type f16
+#nixnan: error [NaN] detected in operand 3 of instruction HFMA2 R0, R0.H0_H0, c[0x0] [0x170].H0_H0, R9.H0_H0 ; in function rd_step_fp16 of type f16
+#nixnan: error [NaN] detected in operand 1 of instruction HFMA2 R0, R9.H0_H0, c[0x0] [0x170].H1_H1, R0.H0_H0 ; in function rd_step_fp16 of type f16
+#nixnan: error [NaN] detected in operand 2 of instruction HADD2 R0, R0.H0_H0, R7.H0_H0 ; in function rd_step_fp16 of type f16
+  step   300 (t=0.300)  max=0.0000e+00   <-- non-finite present
+  step   400 (t=0.400)  max=0.0000e+00   <-- non-finite present
+  step   500 (t=0.500)  max=0.0000e+00   <-- non-finite present
+  step   600 (t=0.600)  max=0.0000e+00   <-- non-finite present
+  step   700 (t=0.700)  max=0.0000e+00   <-- non-finite present
+  step   800 (t=0.800)  max=0.0000e+00   <-- non-finite present
+  step   900 (t=0.900)  max=0.0000e+00   <-- non-finite present
+  step  1000 (t=1.000)  max=0.0000e+00   <-- non-finite present
+  step  1100 (t=1.100)  max=0.0000e+00   <-- non-finite present
+  step  1200 (t=1.200)  max=0.0000e+00   <-- non-finite present
+  step  1300 (t=1.300)  max=0.0000e+00   <-- non-finite present
+  step  1400 (t=1.400)  max=0.0000e+00   <-- non-finite present
+  step  1500 (t=1.500)  max=0.0000e+00   <-- non-finite present
+  step  1600 (t=1.600)  max=0.0000e+00   <-- non-finite present
+  step  1700 (t=1.700)  max=0.0000e+00   <-- non-finite present
+  step  1800 (t=1.800)  max=0.0000e+00   <-- non-finite present
+  step  1900 (t=1.900)  max=0.0000e+00   <-- non-finite present
+  step  2000 (t=2.000)  max=0.0000e+00   <-- non-finite present
+  step  2100 (t=2.100)  max=0.0000e+00   <-- non-finite present
+  step  2200 (t=2.200)  max=0.0000e+00   <-- non-finite present
+  step  2300 (t=2.300)  max=0.0000e+00   <-- non-finite present
+  step  2400 (t=2.400)  max=0.0000e+00   <-- non-finite present
+  step  2500 (t=2.500)  max=0.0000e+00   <-- non-finite present
+  first non-finite at step 300 (t=0.300)
+
+===== BF16 : reaction-diffusion FTCS (N=101, M=2500, dt=1e-03) =====
+#nixnan: running kernel [rd_step_bf16] ...
+  step   100 (t=0.100)  max=1.3100e+02
+  step   200 (t=0.200)  max=1.7280e+04
+  step   300 (t=0.300)  max=2.2774e+06
+  step   400 (t=0.400)  max=2.9989e+08
+  step   500 (t=0.500)  max=3.9728e+10
+  step   600 (t=0.600)  max=5.2227e+12
+  step   700 (t=0.700)  max=6.8610e+14
+  step   800 (t=0.800)  max=9.0635e+16
+  step   900 (t=0.900)  max=1.1962e+19
+  step  1000 (t=1.000)  max=1.5772e+21
+  step  1100 (t=1.100)  max=2.0778e+23
+  step  1200 (t=1.200)  max=2.7352e+25
+  step  1300 (t=1.300)  max=3.5978e+27
+  step  1400 (t=1.400)  max=4.7537e+29
+  step  1500 (t=1.500)  max=6.2749e+31
+  step  1600 (t=1.600)  max=8.2752e+33
+  step  1700 (t=1.700)  max=1.0904e+36
+  step  1800 (t=1.800)  max=1.4289e+38
+#nixnan: error [infinity] detected in operand 0 of instruction HFMA2.BF16_V2 R0, R0.H0_H0, 1, 1, R7.H0_H0 ; in function rd_step_bf16 of type bf16
+#nixnan: error [infinity] detected in operand 0 of instruction HFMA2.BF16_V2 R5, R6.H0_H0, 2, 2, -RZ.H0_H0 ; in function rd_step_bf16 of type bf16
+#nixnan: error [infinity] detected in operand 1 of instruction HFMA2.BF16_V2 R0, R5.H0_H0, -1, -1, R0.H0_H0 ; in function rd_step_bf16 of type bf16
+#nixnan: error [NaN] detected in operand 0 of instruction HFMA2.BF16_V2 R0, R5.H0_H0, -1, -1, R0.H0_H0 ; in function rd_step_bf16 of type bf16
+#nixnan: error [NaN] detected in operand 1 of instruction HFMA2.BF16_V2 R0, R0, c[0x0] [0x170], -RZ.H0_H0 ; in function rd_step_bf16 of type bf16
+#nixnan: error [NaN] detected in operand 0 of instruction HFMA2.BF16_V2 R0, R0, c[0x0] [0x170], -RZ.H0_H0 ; in function rd_step_bf16 of type bf16
+#nixnan: error [NaN] detected in operand 0 of instruction HFMA2.BF16_V2 R6, R6.H0_H0, 1, 1, R0.H0_H0 ; in function rd_step_bf16 of type bf16
+#nixnan: error [NaN] detected in operand 1 of instruction HFMA2.BF16_V2 R6, R6.H0_H0, 1, 1, R0.H1_H1 ; in function rd_step_bf16 of type bf16
+#nixnan: error [NaN] detected in operand 0 of instruction HFMA2.BF16_V2 R6, R6.H0_H0, 1, 1, R0.H1_H1 ; in function rd_step_bf16 of type bf16
+#nixnan: error [NaN] detected in operand 1 of instruction HFMA2.BF16_V2 R0, R0.H0_H0, 1, 1, R7.H0_H0 ; in function rd_step_bf16 of type bf16
+#nixnan: error [NaN,infinity] detected in operand 0 of instruction HFMA2.BF16_V2 R0, R0.H0_H0, 1, 1, R7.H0_H0 ; in function rd_step_bf16 of type bf16
+#nixnan: error [NaN] detected in operand 1 of instruction HFMA2.BF16_V2 R5, R6.H0_H0, 2, 2, -RZ.H0_H0 ; in function rd_step_bf16 of type bf16
+#nixnan: error [NaN,infinity] detected in operand 0 of instruction HFMA2.BF16_V2 R5, R6.H0_H0, 2, 2, -RZ.H0_H0 ; in function rd_step_bf16 of type bf16
+#nixnan: error [NaN,infinity] detected in operand 1 of instruction HFMA2.BF16_V2 R0, R5.H0_H0, -1, -1, R0.H0_H0 ; in function rd_step_bf16 of type bf16
+#nixnan: error [NaN] detected in operand 1 of instruction HFMA2.BF16_V2 R6, R6.H0_H0, 1, 1, R0.H0_H0 ; in function rd_step_bf16 of type bf16
+#nixnan: error [NaN] detected in operand 0 of instruction HFMA2.BF16_V2 R0, R0.H0_H0, 1, 1, R7.H0_H0 ; in function rd_step_bf16 of type bf16
+#nixnan: error [NaN] detected in operand 0 of instruction HFMA2.BF16_V2 R5, R6.H0_H0, 2, 2, -RZ.H0_H0 ; in function rd_step_bf16 of type bf16
+#nixnan: error [NaN] detected in operand 1 of instruction HFMA2.BF16_V2 R0, R5.H0_H0, -1, -1, R0.H0_H0 ; in function rd_step_bf16 of type bf16
+  step  1900 (t=1.900)  max=0.0000e+00   <-- non-finite present
+  step  2000 (t=2.000)  max=0.0000e+00   <-- non-finite present
+  step  2100 (t=2.100)  max=0.0000e+00   <-- non-finite present
+  step  2200 (t=2.200)  max=0.0000e+00   <-- non-finite present
+  step  2300 (t=2.300)  max=0.0000e+00   <-- non-finite present
+  step  2400 (t=2.400)  max=0.0000e+00   <-- non-finite present
+  step  2500 (t=2.500)  max=0.0000e+00   <-- non-finite present
+  first non-finite at step 1900 (t=1.900)
+
+===== FP32 : reaction-diffusion FTCS (N=101, M=2500, dt=1e-03) =====
+#nixnan: running kernel [rd_step_fp32] ...
+  step   100 (t=0.100)  max=1.3027e+02
+  step   200 (t=0.200)  max=1.6971e+04
+  step   300 (t=0.300)  max=2.2108e+06
+  step   400 (t=0.400)  max=2.8800e+08
+  step   500 (t=0.500)  max=3.7518e+10
+  step   600 (t=0.600)  max=4.8875e+12
+  step   700 (t=0.700)  max=6.3670e+14
+  step   800 (t=0.800)  max=8.2944e+16
+  step   900 (t=0.900)  max=1.0805e+19
+  step  1000 (t=1.000)  max=1.4076e+21
+  step  1100 (t=1.100)  max=1.8337e+23
+  step  1200 (t=1.200)  max=2.3888e+25
+  step  1300 (t=1.300)  max=3.1119e+27
+  step  1400 (t=1.400)  max=4.0539e+29
+  step  1500 (t=1.500)  max=5.2810e+31
+  step  1600 (t=1.600)  max=6.8797e+33
+  step  1700 (t=1.700)  max=8.9622e+35
+  step  1800 (t=1.800)  max=1.1675e+38
+#nixnan: error [infinity] detected in operand 0 of instruction FADD R0, R0, R7 ; in function rd_step_fp32 of type f32
+#nixnan: error [infinity] detected in operand 0 of instruction FADD R7, R6, R6 ; in function rd_step_fp32 of type f32
+#nixnan: error [infinity] detected in operand 1 of instruction FADD R7, R0, -R7 ; in function rd_step_fp32 of type f32
+#nixnan: error [infinity] detected in operand 2 of instruction FADD R7, R0, -R7 ; in function rd_step_fp32 of type f32
+#nixnan: error [NaN] detected in operand 0 of instruction FADD R7, R0, -R7 ; in function rd_step_fp32 of type f32
+#nixnan: error [NaN] detected in operand 1 of instruction FFMA R7, R7, c[0x0][0x170], R6 ; in function rd_step_fp32 of type f32
+#nixnan: error [NaN] detected in operand 0 of instruction FFMA R7, R7, c[0x0][0x170], R6 ; in function rd_step_fp32 of type f32
+#nixnan: error [NaN] detected in operand 3 of instruction FFMA R7, R6, c[0x0][0x174], R7 ; in function rd_step_fp32 of type f32
+#nixnan: error [NaN] detected in operand 0 of instruction FFMA R7, R6, c[0x0][0x174], R7 ; in function rd_step_fp32 of type f32
+#nixnan: error [NaN] detected in operand 1 of instruction STG.E [R2.64], R7 ; in function rd_step_fp32 of type f32
+#nixnan: error [NaN] detected in operand 1 of instruction FADD R0, R0, R7 ; in function rd_step_fp32 of type f32
+#nixnan: error [NaN] detected in operand 2 of instruction FADD R0, R0, R7 ; in function rd_step_fp32 of type f32
+#nixnan: error [NaN,infinity] detected in operand 0 of instruction FADD R0, R0, R7 ; in function rd_step_fp32 of type f32
+#nixnan: error [NaN] detected in operand 1 of instruction FADD R7, R6, R6 ; in function rd_step_fp32 of type f32
+#nixnan: error [NaN] detected in operand 2 of instruction FADD R7, R6, R6 ; in function rd_step_fp32 of type f32
+#nixnan: error [NaN,infinity] detected in operand 0 of instruction FADD R7, R6, R6 ; in function rd_step_fp32 of type f32
+#nixnan: error [NaN,infinity] detected in operand 1 of instruction FADD R7, R0, -R7 ; in function rd_step_fp32 of type f32
+#nixnan: error [NaN,infinity] detected in operand 2 of instruction FADD R7, R0, -R7 ; in function rd_step_fp32 of type f32
+#nixnan: error [NaN] detected in operand 3 of instruction FFMA R7, R7, c[0x0][0x170], R6 ; in function rd_step_fp32 of type f32
+#nixnan: error [NaN] detected in operand 1 of instruction FFMA R7, R6, c[0x0][0x174], R7 ; in function rd_step_fp32 of type f32
+#nixnan: error [NaN] detected in operand 0 of instruction FADD R0, R0, R7 ; in function rd_step_fp32 of type f32
+#nixnan: error [NaN] detected in operand 1 of instruction FADD R7, R0, -R7 ; in function rd_step_fp32 of type f32
+#nixnan: error [NaN] detected in operand 0 of instruction FADD R7, R6, R6 ; in function rd_step_fp32 of type f32
+#nixnan: error [NaN] detected in operand 2 of instruction FADD R7, R0, -R7 ; in function rd_step_fp32 of type f32
+  step  1900 (t=1.900)  max=0.0000e+00   <-- non-finite present
+  step  2000 (t=2.000)  max=0.0000e+00   <-- non-finite present
+  step  2100 (t=2.100)  max=0.0000e+00   <-- non-finite present
+  step  2200 (t=2.200)  max=0.0000e+00   <-- non-finite present
+  step  2300 (t=2.300)  max=0.0000e+00   <-- non-finite present
+  step  2400 (t=2.400)  max=0.0000e+00   <-- non-finite present
+  step  2500 (t=2.500)  max=0.0000e+00   <-- non-finite present
+  first non-finite at step 1900 (t=1.900)
+
+Done. Re-run under LD_PRELOAD=nixnan.so with HISTOGRAM=1 and BIN_SPEC_FILE=spec.json.
+#nixnan: Finalizing GPU context...
+
+#nixnan: ------------ nixnan Report -----------
+
+#nixnan: --- FP16 Operations ---
+#nixnan: NaN:                   22 (100134 repeats)
+#nixnan: Infinity:              22 (639 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- BF16 Operations ---
+#nixnan: NaN:                   15 (32975 repeats)
+#nixnan: Infinity:               6 (76 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- FP32 Operations ---
+#nixnan: NaN:                   19 (40966 repeats)
+#nixnan: Infinity:               8 (90 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- FP64 Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- FP16 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- BF16 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- FP32 Memory  Operations ---
+#nixnan: NaN:                    1 (2734 repeats)
+#nixnan: --- FP64 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+
+#nixnan: --- FP exponent ranges --- 
+#nixnan: Exponent range for bf16: [zero, inf]
+#nixnan: Exponent range for f16: [zero, inf]
+#nixnan: Exponent range for f32: [zero, inf]
