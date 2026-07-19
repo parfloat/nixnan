@@ -31,7 +31,7 @@
 #include <cmath>
 #include <vector>
 #include <cuda_fp16.h>
-#include <cuda_bfloat16.h>
+#include <cuda_bf16.h>
 
 #ifndef N
 #define N 101          // grid points; dx = L/(N-1) = 0.01
