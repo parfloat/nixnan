@@ -1,0 +1,33 @@
+{
+  "overflow": {
+    "FP16": {
+      "step": 300,
+      "time": 0.3
+    },
+    "BF16": {
+      "step": 1900,
+      "time": 1.9000000000000001
+    },
+    "FP32": {
+      "step": 1900,
+      "time": 1.9000000000000001
+    }
+  },
+  "exceptions": {
+    "FP16": {},
+    "BF16": {},
+    "FP32": {}
+  },
+  "instructions": {
+    "FP16:HADD2:Infinity": 6,
+    "FP16:HFMA2:Infinity": 16,
+    "FP16:HFMA2:NaN": 8,
+    "FP16:HADD2:NaN": 3,
+    "BF16:HFMA2:Infinity": 6,
+    "BF16:HFMA2:NaN": 12,
+    "FP32:FADD:Infinity": 8,
+    "FP32:FADD:NaN": 9,
+    "FP32:FFMA:NaN": 6,
+    "FP32:STG:NaN": 1
+  }
+}

@@ -1,0 +1,27 @@
+<svg width="800" height="400" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    text { font-family: sans-serif; font-size: 11px; }
+    .title { font-size: 14px; font-weight: bold; }
+    .label { font-size: 10px; fill: #333; }
+  </style>
+
+  <text x="400.0" y="25" text-anchor="middle" class="title">Exception Propagation: NaN/Infinity Repeats (log scale)</text>
+
+  <line x1="70" y1="70" x2="70" y2="330" stroke="#333" stroke-width="2"/>
+  <line x1="70" y1="330" x2="730" y2="330" stroke="#333" stroke-width="2"/>
+
+  <text x="20" y="85" class="label">1M</text>
+  <text x="20" y="200.0" class="label">1K</text>
+  <text x="20" y="330" class="label">1</text>
+
+  <!-- Legend -->
+  <rect x="580" y="80" width="15" height="15" fill="#ff9896" stroke="#333" stroke-width="1"/>
+  <text x="600" y="92" class="label">NaN</text>
+  <rect x="580" y="100" width="15" height="15" fill="#d62728" stroke="#333" stroke-width="1"/>
+  <text x="600" y="112" class="label">Infinity</text>
+  <rect x="580" y="120" width="15" height="15" fill="#8c564b" stroke="#333" stroke-width="1"/>
+  <text x="600" y="132" class="label">Subnormal</text>
+  <text x="372.5" y="350" text-anchor="middle" class="label" font-weight="bold">FP16</text>
+  <text x="592.5" y="350" text-anchor="middle" class="label" font-weight="bold">BF16</text>
+  <text x="812.5" y="350" text-anchor="middle" class="label" font-weight="bold">FP32</text>
+</svg>

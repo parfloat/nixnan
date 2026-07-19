@@ -1,0 +1,40 @@
+<svg width="800" height="300" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    text { font-family: sans-serif; font-size: 11px; }
+    .title { font-size: 14px; font-weight: bold; }
+    .label { font-size: 10px; fill: #333; }
+  </style>
+
+  <text x="400.0" y="25" text-anchor="middle" class="title">Mantissa Precision Impact: BF16 vs FP32</text>
+
+  <text x="200" y="70" text-anchor="middle" class="label" font-weight="bold">Mantissa Bits</text>
+  <text x="600" y="70" text-anchor="middle" class="label" font-weight="bold">Precision Fidelity</text>
+
+  <!-- Group 1: Mantissa widths -->
+  <rect x="100" y="90" width="30" height="150" fill="#1f77b4" stroke="#333" stroke-width="1"/>
+  <text x="115" y="250" text-anchor="middle" class="label" font-weight="bold">FP16</text>
+  <text x="115" y="85" text-anchor="middle" class="label">10</text>
+
+  <rect x="150" y="100" width="30" height="120" fill="#ff7f0e" stroke="#333" stroke-width="1"/>
+  <text x="165" y="250" text-anchor="middle" class="label" font-weight="bold">BF16</text>
+  <text x="165" y="90" text-anchor="middle" class="label">8</text>
+
+  <rect x="200" y="50" width="30" height="200" fill="#2ca02c" stroke="#333" stroke-width="1"/>
+  <text x="215" y="270" text-anchor="middle" class="label" font-weight="bold">FP32</text>
+  <text x="215" y="40" text-anchor="middle" class="label">24</text>
+
+  <!-- Group 2: Precision fidelity -->
+  <rect x="500" y="100" width="30" height="160" fill="#1f77b4" stroke="#333" stroke-width="1"/>
+  <text x="515" y="280" text-anchor="middle" class="label" font-weight="bold">FP16</text>
+  <text x="515" y="80" text-anchor="middle" class="label">100%</text>
+
+  <rect x="550" y="210" width="30" height="50" fill="#ff7f0e" stroke="#333" stroke-width="1"/>
+  <text x="565" y="280" text-anchor="middle" class="label" font-weight="bold">BF16</text>
+  <text x="565" y="200" text-anchor="middle" class="label">3%</text>
+
+  <rect x="600" y="100" width="30" height="160" fill="#2ca02c" stroke="#333" stroke-width="1"/>
+  <text x="615" y="280" text-anchor="middle" class="label" font-weight="bold">FP32</text>
+  <text x="615" y="80" text-anchor="middle" class="label">100%</text>
+
+  <text x="565" y="230" text-anchor="middle" class="label" fill="#d62728" font-weight="bold">Noise</text>
+</svg>

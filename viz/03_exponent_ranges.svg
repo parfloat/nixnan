@@ -1,0 +1,25 @@
+<svg width="700" height="300" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    text { font-family: sans-serif; font-size: 11px; }
+    .title { font-size: 14px; font-weight: bold; }
+    .label { font-size: 10px; fill: #333; }
+  </style>
+
+  <text x="350.0" y="25" text-anchor="middle" class="title">Dynamic Range: Exponent Space per Format</text>
+
+  <line x1="80" y1="230" x2="620" y2="230" stroke="#333" stroke-width="2"/>
+  <rect x="317.8571428571429" y="130" width="62.14285714285711" height="30" fill="#1f77b4" stroke="#333" stroke-width="2"/>
+  <text x="70" y="150" text-anchor="end" class="label" font-weight="bold">FP16</text>
+  <text x="312.8571428571429" y="170" text-anchor="end" class="label">-14</text>
+  <text x="385.0" y="170" text-anchor="start" class="label">15</text>
+  <rect x="80.0" y="190" width="540.0" height="30" fill="#ff7f0e" stroke="#333" stroke-width="2"/>
+  <text x="70" y="210" text-anchor="end" class="label" font-weight="bold">BF16</text>
+  <text x="75.0" y="230" text-anchor="end" class="label">-125</text>
+  <text x="625.0" y="230" text-anchor="start" class="label">127</text>
+  <rect x="80.0" y="250" width="540.0" height="30" fill="#2ca02c" stroke="#333" stroke-width="2"/>
+  <text x="70" y="270" text-anchor="end" class="label" font-weight="bold">FP32</text>
+  <text x="75.0" y="290" text-anchor="end" class="label">-125</text>
+  <text x="625.0" y="290" text-anchor="start" class="label">127</text>
+  <line x1="380.0" y1="85" x2="380.0" y2="230" stroke="#d62728" stroke-width="2" stroke-dasharray="4,4"/>
+  <text x="380.0" y="75" text-anchor="middle" class="label" fill="#d62728">FP16 max</text>
+</svg>

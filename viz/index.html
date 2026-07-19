@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SC26 Precision-Edge Tutorial Visualizations</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 14px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(550px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: box-shadow 0.3s;
+        }
+        .card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        }
+        .card-svg {
+            width: 100%;
+            background: #fafafa;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .card-content {
+            padding: 20px;
+        }
+        .card h2 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #1f77b4;
+        }
+        .card p {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+        .legend {
+            background: #f9f9f9;
+            border-left: 4px solid #1f77b4;
+            padding: 20px;
+            margin-bottom: 30px;
+            font-size: 12px;
+            border-radius: 4px;
+        }
+        .legend-item {
+            display: inline-block;
+            margin-right: 25px;
+            margin-bottom: 10px;
+        }
+        .color-box {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            margin-right: 7px;
+            vertical-align: middle;
+            border-radius: 2px;
+            border: 1px solid #333;
+        }
+        .interpretation {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 40px;
+        }
+        .interpretation h3 {
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        .interpretation ul {
+            margin: 10px 0;
+            padding-left: 20px;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+        .interpretation li {
+            margin-bottom: 8px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid #ddd;
+            color: #999;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Precision-Edge Visualization Suite</h1>
+        <p class="subtitle">SC26 Nixnan Tutorial: Floating-Point Precision Limits in Reaction-Diffusion CUDA</p>
+
+        <div class="legend">
+            <strong>Format Legend:</strong><br>
+            <span class="legend-item">
+                <span class="color-box" style="background: #1f77b4;"></span>
+                <strong>FP16:</strong> 5-bit exp, 10-bit mantissa (fails earliest)
+            </span>
+            <span class="legend-item">
+                <span class="color-box" style="background: #ff7f0e;"></span>
+                <strong>BF16:</strong> 8-bit exp, 8-bit mantissa (range okay, precision compromised)
+            </span>
+            <span class="legend-item">
+                <span class="color-box" style="background: #2ca02c;"></span>
+                <strong>FP32:</strong> 8-bit exp, 24-bit mantissa (reference precision)
+            </span>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <div class="card-svg">
+                    <svg viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg">
+                        <style>
+                            text { font-family: sans-serif; font-size: 12px; }
+                            .title { font-size: 14px; font-weight: bold; }
+                            .label { font-size: 11px; fill: #333; }
+                        </style>
+                        <text x="350" y="25" text-anchor="middle" class="title">Overflow Timeline: Step Count to Non-Finite</text>
+                        <line x1="60" y1="60" x2="60" y2="240" stroke="#333" stroke-width="2"/>
+                        <line x1="60" y1="240" x2="640" y2="240" stroke="#333" stroke-width="2"/>
+                        <rect x="60" y="130" width="189" height="40" fill="#1f77b4" stroke="#333" stroke-width="1"/>
+                        <text x="15" y="154" class="label" text-anchor="end">FP16</text>
+                        <text x="254" y="154" class="label">Step 300 (t=0.30s)</text>
+                        <rect x="60" y="180" width="545" height="40" fill="#ff7f0e" stroke="#333" stroke-width="1"/>
+                        <text x="15" y="204" class="label" text-anchor="end">BF16</text>
+                        <text x="610" y="204" class="label">Step 1900 (t=1.90s)</text>
+                        <rect x="60" y="230" width="545" height="40" fill="#2ca02c" stroke="#333" stroke-width="1"/>
+                        <text x="15" y="254" class="label" text-anchor="end">FP32</text>
+                        <text x="610" y="254" class="label">Step 1900 (t=1.90s)</text>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <h2>1. Overflow Timeline</h2>
+                    <p><strong>What:</strong> Step count at which each format first overflows to infinity.</p>
+                    <p><strong>Key finding:</strong> FP16 fails 6.3× earlier (step 300 vs 1900) due to limited exponent range (2¹⁵ vs 2¹²⁷).</p>
+                    <p><strong>Physics:</strong> Reaction term grows ~1.05× per step; each format climbs exponent axis until saturation.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-svg">
+                    <embed src="02_exception_counts.svg" type="image/svg+xml" style="width: 100%; display: block;">
+                </div>
+                <div class="card-content">
+                    <h2>2. Exception Propagation</h2>
+                    <p><strong>What:</strong> Per-format count of NaN and Infinity exceptions (log scale).</p>
+                    <p><strong>Key finding:</strong> FP16 shows 100K+ NaN repeats vs 32K for BF16 — cascade of broken stencil operations.</p>
+                    <p><strong>Teaching moment:</strong> Infinity triggers NaN in next iteration (inf - 2·inf + inf = NaN).</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-svg">
+                    <embed src="03_exponent_ranges.svg" type="image/svg+xml" style="width: 100%; display: block;">
+                </div>
+                <div class="card-content">
+                    <h2>3. Dynamic Range</h2>
+                    <p><strong>What:</strong> Exponent range (min to max representable) for each format.</p>
+                    <p><strong>FP16 constraint:</strong> Stuck at [-14, 15] (29 bits total). Interior nodes reach exponent 15 by step ~227.</p>
+                    <p><strong>Hidden difference:</strong> BF16 and FP32 share identical exponent range but diverge in mantissa fidelity.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div style="background: #f9f9f9; padding: 20px; min-height: 300px;">
+                    <h3 style="margin-bottom: 15px; font-size: 16px; color: #1f77b4;">4. Per-Instruction Error Hotspots</h3>
+                    <p style="font-size: 13px; color: #666; line-height: 1.6; margin-bottom: 8px;"><strong>Hottest instructions by format:</strong></p>
+                    <ul style="margin: 10px 0; padding-left: 20px; font-size: 13px; line-height: 1.8;">
+                        <li><strong>FP16:</strong> HADD2, HFMA2 (packed FP16 ops) — NaN/Inf propagation in stencil</li>
+                        <li><strong>BF16:</strong> HFMA2.BF16_V2 — FMA (fused multiply-add) is error hotspot</li>
+                        <li><strong>FP32:</strong> FADD, FFMA — floating-point addition/FMA lead NaN cascade</li>
+                    </ul>
+                    <p style="font-size: 13px; color: #666; line-height: 1.6;"><strong>Stencil anatomy:</strong> Laplacian (u_{i+1} - 2u_i + u_{i-1}) dominates error frequency. Second-difference cancellation is the critical path.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-svg">
+                    <embed src="05_mantissa_precision.svg" type="image/svg+xml" style="width: 100%; display: block;">
+                </div>
+                <div class="card-content">
+                    <h2>5. Mantissa Precision Impact</h2>
+                    <p><strong>Left:</strong> Mantissa width — BF16's 8 bits vs FP32's 24 bits.</p>
+                    <p><strong>Right:</strong> Diffusion term fidelity in PDE. BF16 (~2⁻⁸·u) is below noise floor → physics lost.</p>
+                    <p><strong>Hook:</strong> Same exponent range, same overflow step, wildly different precision for the gradient.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="interpretation">
+            <h3>Interpretation Guide</h3>
+            <ul>
+                <li><strong>FP16 subnormals:</strong> Expected zero in this run (high growth rate λ=50). Lower λ or raise dt to push boundary diffusion below 2⁻¹⁴ and observe subnormal underflow.</li>
+                <li><strong>BF16 vs FP32 parity:</strong> Same overflow step (~1900), identical exponent histograms, but BF16's 8-bit mantissa renders diffusion invisible — precision loss not flagged by exceptions.</li>
+                <li><strong>max_element() silent failure:</strong> After NaN propagates through interior, all comparisons with NaN return false → reports 0.0 (boundary), not inf/NaN. Classic silent failure mode.</li>
+                <li><strong>Exception timeline:</strong> Infinity appears ~step 227 (FP16) or ~1818 (BF16/FP32); NaN follows in next stencil iteration due to inf - 2·inf + inf arithmetic.</li>
+                <li><strong>Diffusion flushing:</strong> FP16 shows 22 Infinity + 22 NaN unique instances (100K repeats) vs BF16's 6 Infinity + 15 NaN. Repetition factor is cascade depth in interior.</li>
+            </ul>
+        </div>
+
+        <div class="footer">
+            <p>Generated by <code>viz.sh</code> → <code>analyze.py</code> + SVG charting</p>
+            <p>Palette: categorical hues (#1f77b4, #ff7f0e, #2ca02c) validated for colorblind access (WCAG AAA)</p>
+            <p>Data source: <code>traces/Stage2-5/</code> (rd_nixnan experiment, ~2171 trace lines parsed)</p>
+            <p style="margin-top: 10px; font-size: 11px; color: #bbb;">
+                SC26 Nixnan Demo | Reaction-Diffusion FTCS | 3 precisions, 1 PDE, 3 kernels
+            </p>
+        </div>
+    </div>
+</body>
+</html>
