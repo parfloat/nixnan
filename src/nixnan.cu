@@ -74,6 +74,7 @@ std::unordered_set<CUfunction> instrumented_functions;
 
 bool skip_flag = false;
 long max_errors = 0;
+bool kernel_logging_enabled = false;
 
 void nvbit_at_init() {
   // Disable warning about using CUDA API calls in nvbit_at_init.
@@ -107,6 +108,18 @@ void nvbit_at_init() {
               "Disable debug information for source code locations. Having this enabled may cause crashes, so set this to 0 if you encounter issues.");
   if (!filename.empty()) {
     set_out_file(filename);
+  }
+
+  std::string kl_path;
+  GET_VAR_STR(kl_path, "LOG_KERNELS",
+              "Path to a log file containing the sequence of kernel "
+              "invocations. When set, this will disable "
+              "instrumentation; instead the program will be allowed to run "
+              "normally so interesting kernels can be identified. The log file "
+              "will contain the sequence of kernel invocations");
+  if (!kl_path.empty()) {
+    set_out_file(kl_path);
+    kernel_logging_enabled = true;
   }
   GET_VAR_INT(max_errors, "MAX_ERRORS", 0, "Maximum number of errors to report before stopping the program. Default is 0, which means no limit.");
   if (max_errors < 0) {
@@ -310,7 +323,10 @@ void nvbit_at_cuda_event(CUcontext ctx, int is_exit, nvbit_api_cuda_t cbid,
       } else {
         enable_instr = true;
       }
-
+      enable_instr &= !kernel_logging_enabled;
+      if (kernel_logging_enabled) {
+        nnout() << "kernel [" << kernel_name << "] ..." << std::endl;
+      }
       if (sampling != 0 && analyzed_kernels.count(short_name)) {
         if (analyzed_kernels[short_name] % sampling != 0) {
           ++analyzed_kernels[short_name];
@@ -364,6 +380,9 @@ void nvbit_at_cuda_event(CUcontext ctx, int is_exit, nvbit_api_cuda_t cbid,
 }
 
 void nvbit_tool_init(CUcontext ctx) {
+  if (kernel_logging_enabled) {
+    return;
+  }
   std::string k_whitelist_name = "kernel_whitelist.txt";
   std::string k_blacklist_name = "kernel_blacklist.txt";
 
@@ -390,6 +409,9 @@ void nvbit_at_ctx_term(CUcontext ctx) {
   if (recv_thread_started) {
     recv_thread_started = false;
     recv_thread.join();
+  }
+  if (kernel_logging_enabled) {
+    return;
   }
   recorder->end();
   recorder->free_device();
