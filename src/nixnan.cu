@@ -288,8 +288,8 @@ void recv_thread_fun(std::shared_ptr<nixnan::recorder> recorder, ChannelHost cha
         num_processed_bytes += sizeof(exception_info);
         error_count++;
         if (max_errors > 0 && error_count >= max_errors) {
-          nnout() << "Maximum number of errors (" << max_errors << ") reached. Terminating program." << std::endl;
-          raise(SIGTERM);
+          nnout() << "Maximum number of errors (" << max_errors << ") reached. Sending SIGINT to the program." << std::endl;
+          raise(SIGINT);
         }
       }
     }
