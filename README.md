@@ -1,5 +1,5 @@
 # News
-Updated NVBit to 1.8: This may cause GPU functions to not be instrumented on CUDA versions below 13. If you encounter an issue, use an older version of Nixnan or upgrade CUDA to version 13+.
+There is an addition of two new flags: first, MAX_ERRORS which sends a signal to the instrumented program when MAX_ERRORS exceptions are reported to the user. And LOG_KERNELS which is a path to which kernel invocations will be logged. No instrumentation is performed when logging kernel invocations.
 
 # About
 A tool designed to provide a new framework for floating-point exceptional-value detection.
