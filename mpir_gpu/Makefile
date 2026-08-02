@@ -42,6 +42,10 @@ refine: ir_gpu
 	TIMING=2 ./ir_gpu --n 4096 --allconfigs --kappa 1e2 --seed 0 | tee refine.log
 	TIMING=2 ./ir_gpu --n 4096 --allconfigs --kappa 1e3 --seed 0 | tee -a refine.log
 
+# Phase G: Safe convergence runs (n=256, κ≤1000, including FP64 and Nix-Nan)
+safe: ir_gpu
+	bash run_safe.sh
+
 clean:
 	rm -f ir_gpu
 .PHONY: all run sweep detail phase_d nixnan clean

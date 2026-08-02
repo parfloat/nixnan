@@ -1,0 +1,129 @@
+------------- NVBit (NVidia Binary Instrumentation Tool v1.8) Loaded --------------
+NVBit core environment variables (mostly for nvbit-devs):
+ACK_CTX_INIT_LIMITATION = 0 - if set, no warning will be printed for nvbit_at_ctx_init()
+            NVDISASM = nvdisasm - override default nvdisasm found in PATH
+            NOBANNER = 0 - if set, does not print this banner
+       NO_EAGER_LOAD = 1 - lazy module loading is now turned on by default. If you see deadlocks in your tool, set NO_EAGER_LOAD to 0
+---------------------------------------------------------------------------------
+         INSTR_BEGIN = 0 - Beginning of the instruction interval where to apply instrumentation
+           INSTR_END = 4294967295 - End of the instruction interval where to apply instrumentation
+        TOOL_VERBOSE = 0 - Enable verbosity inside the tool
+   ENABLE_FUN_DETAIL = 0 - Enable detailed function information for kernel
+     PRINT_ILL_INSTR = 0 - Print the instruction which caused the exception
+            SAMPLING = 0 - Instrument a repeat kernel every SAMPLING times
+           INSTR_MEM = 0 - Instrument memory instructions for NaN/Inf detection
+           HISTOGRAM = 0 - Enable FP exponent histogramming
+       BIN_SPEC_FILE =  - Specification for which exponent ranges to report. If the file does not exist, a template specification will be created.
+For example:
+{
+    "count": 128,
+    "doublings": 0,
+    "bf16": [],
+    "f16": [[0,5],[-4,-1]],
+    "f32": [],
+    "f64": []
+}
+will report every 128 occurrences of exponents in the ranges 0 to 5 and -4 to -1 for f16 numbers.
+
+If `doublings=-N`, where `N` is positive, then each bucket will begin with a
+size of `count`. When a bucket reaches the count threshold, it will double the
+threshold and report. This doubling will continue until one bucket has been
+doubled N times, then all buckets are reset to `count`.
+             LOGFILE =  - Path to the optional log file. Default is to print to stderr. This is useful for the case when an instrumented program is capturing stderr.
+           LINE_INFO = 1 - Disable debug information for source code locations. Having this enabled may cause crashes, so set this to 0 if you encounter issues.
+iter=0 dt_ms=4300.036 err=2.611e-06 exc=0
+RESULT config=F32 n=256 kappa=1.00e+02 seed=0 status=converged niter=1 t_fact_ms=687.23 t_loop_ms=4301.63 t_per_iter_ms=4301.633 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F32 t_total_ms=4988.86 (= t_fact + t_loop)
+iter=0 dt_ms=104.573 err=2.611e-06 exc=0
+RESULT config=TF32 n=256 kappa=1.00e+02 seed=0 status=converged niter=1 t_fact_ms=96.10 t_loop_ms=106.16 t_per_iter_ms=106.165 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=TF32 t_total_ms=202.27 (= t_fact + t_loop)
+iter=0 dt_ms=93.299 err=3.821e-03 exc=0
+iter=1 dt_ms=86.272 err=7.569e-06 exc=0
+RESULT config=F16 n=256 kappa=1.00e+02 seed=0 status=converged niter=2 t_fact_ms=365.68 t_loop_ms=180.75 t_per_iter_ms=90.373 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F16 t_total_ms=546.43 (= t_fact + t_loop)
+iter=0 dt_ms=92.054 err=2.889e-02 exc=0
+iter=1 dt_ms=89.481 err=4.992e-04 exc=0
+iter=2 dt_ms=85.771 err=1.683e-05 exc=0
+RESULT config=B16T n=256 kappa=1.00e+02 seed=0 status=converged niter=3 t_fact_ms=96.35 t_loop_ms=268.47 t_per_iter_ms=89.491 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=B16T t_total_ms=364.82 (= t_fact + t_loop)
+iter=0 dt_ms=155.654 err=1.681e-01 exc=0
+iter=1 dt_ms=135.341 err=5.878e-03 exc=0
+iter=2 dt_ms=135.281 err=3.245e-04 exc=0
+iter=3 dt_ms=134.948 err=2.118e-05 exc=0
+RESULT config=B16S n=256 kappa=1.00e+02 seed=0 status=converged niter=4 t_fact_ms=925.01 t_loop_ms=562.50 t_per_iter_ms=140.625 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=B16S t_total_ms=1487.51 (= t_fact + t_loop)
+RESULT config=F64 n=256 kappa=1.00e+02 seed=0 status=converged niter=0 t_fact_ms=189.09 t_loop_ms=1.22 t_per_iter_ms=0.000 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F64 t_total_ms=190.31 (= t_fact + t_loop)
+------------- NVBit (NVidia Binary Instrumentation Tool v1.8) Loaded --------------
+NVBit core environment variables (mostly for nvbit-devs):
+ACK_CTX_INIT_LIMITATION = 0 - if set, no warning will be printed for nvbit_at_ctx_init()
+            NVDISASM = nvdisasm - override default nvdisasm found in PATH
+            NOBANNER = 0 - if set, does not print this banner
+       NO_EAGER_LOAD = 1 - lazy module loading is now turned on by default. If you see deadlocks in your tool, set NO_EAGER_LOAD to 0
+---------------------------------------------------------------------------------
+         INSTR_BEGIN = 0 - Beginning of the instruction interval where to apply instrumentation
+           INSTR_END = 4294967295 - End of the instruction interval where to apply instrumentation
+        TOOL_VERBOSE = 0 - Enable verbosity inside the tool
+   ENABLE_FUN_DETAIL = 0 - Enable detailed function information for kernel
+     PRINT_ILL_INSTR = 0 - Print the instruction which caused the exception
+            SAMPLING = 0 - Instrument a repeat kernel every SAMPLING times
+           INSTR_MEM = 0 - Instrument memory instructions for NaN/Inf detection
+           HISTOGRAM = 0 - Enable FP exponent histogramming
+       BIN_SPEC_FILE =  - Specification for which exponent ranges to report. If the file does not exist, a template specification will be created.
+For example:
+{
+    "count": 128,
+    "doublings": 0,
+    "bf16": [],
+    "f16": [[0,5],[-4,-1]],
+    "f32": [],
+    "f64": []
+}
+will report every 128 occurrences of exponents in the ranges 0 to 5 and -4 to -1 for f16 numbers.
+
+If `doublings=-N`, where `N` is positive, then each bucket will begin with a
+size of `count`. When a bucket reaches the count threshold, it will double the
+threshold and report. This doubling will continue until one bucket has been
+doubled N times, then all buckets are reset to `count`.
+             LOGFILE =  - Path to the optional log file. Default is to print to stderr. This is useful for the case when an instrumented program is capturing stderr.
+           LINE_INFO = 1 - Disable debug information for source code locations. Having this enabled may cause crashes, so set this to 0 if you encounter issues.
+iter=0 dt_ms=4202.623 err=1.382e-05 exc=0
+RESULT config=F32 n=256 kappa=1.00e+03 seed=0 status=converged niter=1 t_fact_ms=659.01 t_loop_ms=4203.84 t_per_iter_ms=4203.841 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F32 t_total_ms=4862.85 (= t_fact + t_loop)
+iter=0 dt_ms=107.747 err=1.382e-05 exc=0
+RESULT config=TF32 n=256 kappa=1.00e+03 seed=0 status=converged niter=1 t_fact_ms=96.10 t_loop_ms=108.87 t_per_iter_ms=108.872 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=TF32 t_total_ms=204.97 (= t_fact + t_loop)
+iter=0 dt_ms=110.387 err=2.261e-02 exc=0
+iter=1 dt_ms=106.806 err=4.090e-04 exc=0
+iter=2 dt_ms=106.988 err=1.031e-05 exc=0
+RESULT config=F16 n=256 kappa=1.00e+03 seed=0 status=converged niter=3 t_fact_ms=357.91 t_loop_ms=325.34 t_per_iter_ms=108.446 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F16 t_total_ms=683.24 (= t_fact + t_loop)
+iter=0 dt_ms=85.361 err=2.155e-01 exc=0
+iter=1 dt_ms=85.945 err=3.340e-02 exc=0
+iter=2 dt_ms=85.504 err=8.427e-03 exc=0
+iter=3 dt_ms=85.232 err=2.413e-03 exc=0
+iter=4 dt_ms=85.776 err=7.747e-04 exc=0
+iter=5 dt_ms=85.268 err=2.546e-04 exc=0
+iter=6 dt_ms=85.812 err=8.154e-05 exc=0
+iter=7 dt_ms=85.714 err=2.650e-05 exc=0
+iter=8 dt_ms=85.600 err=8.568e-06 exc=0
+iter=9 dt_ms=85.787 err=2.938e-06 exc=0
+RESULT config=B16T n=256 kappa=1.00e+03 seed=0 status=converged niter=10 t_fact_ms=96.15 t_loop_ms=857.30 t_per_iter_ms=85.730 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=B16T t_total_ms=953.45 (= t_fact + t_loop)
+iter=0 dt_ms=145.824 err=7.158e-01 exc=0
+iter=1 dt_ms=138.079 err=1.172e-01 exc=0
+iter=2 dt_ms=137.991 err=3.405e-02 exc=0
+iter=3 dt_ms=137.234 err=1.177e-02 exc=0
+iter=4 dt_ms=118.788 err=3.889e-03 exc=0
+iter=5 dt_ms=117.963 err=1.437e-03 exc=0
+iter=6 dt_ms=118.239 err=4.118e-04 exc=0
+iter=7 dt_ms=118.034 err=1.567e-04 exc=0
+iter=8 dt_ms=118.474 err=4.631e-05 exc=0
+iter=9 dt_ms=117.946 err=1.695e-05 exc=0
+iter=10 dt_ms=118.230 err=5.121e-06 exc=0
+iter=11 dt_ms=118.512 err=1.673e-06 exc=0
+RESULT config=B16S n=256 kappa=1.00e+03 seed=0 status=converged niter=12 t_fact_ms=895.80 t_loop_ms=1506.29 t_per_iter_ms=125.524 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=B16S t_total_ms=2402.08 (= t_fact + t_loop)
+iter=0 dt_ms=86.158 err=1.622e-06 exc=0
+RESULT config=F64 n=256 kappa=1.00e+03 seed=0 status=converged niter=1 t_fact_ms=190.59 t_loop_ms=87.04 t_per_iter_ms=87.036 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F64 t_total_ms=277.62 (= t_fact + t_loop)

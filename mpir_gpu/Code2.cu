@@ -44,8 +44,8 @@
 #define CR(x) do { curandStatus_t s_=(x); if(s_!=CURAND_STATUS_SUCCESS){ \
   fprintf(stderr,"cuRAND error %d at %s:%d\n",(int)s_,__FILE__,__LINE__); exit(1);} } while(0)
 
-enum Config { CFG_F32, CFG_TF32, CFG_F16, CFG_B16T, CFG_B16S };
-static const char* CFG_NAME[] = {"F32","TF32","F16","B16T","B16S"};
+enum Config { CFG_F32, CFG_TF32, CFG_F16, CFG_B16T, CFG_B16S, CFG_F64 };
+static const char* CFG_NAME[] = {"F32","TF32","F16","B16T","B16S","F64"};
 
 // ---------------------------------------------------------------- kernels ---
 __global__ void k_d2s(const double* a, float* b, long m){
@@ -217,6 +217,27 @@ static void make_problem(Ctx& c, double kappa2, unsigned long seed, double ascal
 // round-through factors) for the cublas solve path; B16S fills c.Abf.
 static int factorize(Ctx& c, Config cfg, int NB){
   int n=c.n; float one=1.f, mone=-1.f;
+  if(cfg==CFG_F64){
+    // F64: pure double precision (reference baseline)
+    CK(cudaMemcpy(c.A64, c.Ac64, c.nn*sizeof(double), cudaMemcpyDeviceToDevice));
+    for(int k=0;k<n;k+=NB){
+      int nb=(k+NB<=n)? NB : n-k; int m=n-k-nb;
+      int lwq; CS(cusolverDnDpotrf_bufferSize(c.cs, CUBLAS_FILL_MODE_LOWER, nb, c.A64 + k + (long)k*n, n, &lwq));
+      CS(cusolverDnDpotrf(c.cs, CUBLAS_FILL_MODE_LOWER, nb, c.A64 + k + (long)k*n, n, c.dtmp, lwq, c.dinfo));
+      int info; CK(cudaMemcpy(&info, c.dinfo, sizeof(int), cudaMemcpyDeviceToHost));
+      if(info>0) return k+info;
+      if(m>0){
+        double moned=-1.0, oned=1.0;
+        CB(cublasDtrsm(c.cb, CUBLAS_SIDE_RIGHT, CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_T,
+                       CUBLAS_DIAG_NON_UNIT, m, nb, &oned, c.A64 + k + (long)k*n, n,
+                       c.A64 + (k+nb) + (long)k*n, n));
+        CB(cublasDsyrk(c.cb, CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_N, m, nb, &moned,
+                       c.A64 + (k+nb) + (long)k*n, n, &oned, c.A64 + (k+nb) + (long)(k+nb)*n, n));
+      }
+    }
+    CK(cudaDeviceSynchronize());
+    return 0;
+  }
   if(cfg==CFG_B16S){
     k_s2bf<<<g1(c.nn),B1>>>(c.A32, c.Abf, c.nn);
     for(int k=0;k<n;k+=NB){
@@ -296,6 +317,12 @@ static void corr_solve(Ctx& c, Config cfg, const float* rin, float* dout){
     k_bf_trsv<<<1,1024>>>(c.Abf, c.ybf, n, 0);
     k_bf_trsv<<<1,1024>>>(c.Abf, c.ybf, n, 1);
     k_bf2s<<<g1(n),B1>>>(c.ybf, dout, n);
+  } else if(cfg==CFG_F64){
+    // F64: solve in double precision (not used for correction in current flow)
+    k_s2d<<<g1(n),B1>>>(rin, c.r64, n);
+    CB(cublasDtrsv(c.cb, CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT, n, c.A64, n, c.r64, 1));
+    CB(cublasDtrsv(c.cb, CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_T, CUBLAS_DIAG_NON_UNIT, n, c.A64, n, c.r64, 1));
+    k_d2s<<<g1(n),B1>>>(c.r64, dout, n);
   } else {
     CB(cublasStrsv(c.cb, CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT, n, c.Lf, n, dout, 1));
     CB(cublasStrsv(c.cb, CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_T, CUBLAS_DIAG_NON_UNIT, n, c.Lf, n, dout, 1));
@@ -345,8 +372,8 @@ int main(int argc, char** argv){
   if(sweep){ char* s=strdup(sweep); for(char* t=strtok(s,","); t && nk<32; t=strtok(NULL,",")) kappas[nk++]=atof(t); }
   else kappas[nk++]=kappa;
   Config cfgs[5]; int ncf=0;
-  if(allcfg){ for(int i=0;i<5;i++) cfgs[ncf++]=(Config)i; }
-  else { int f=-1; for(int i=0;i<5;i++) if(!strcmp(cfgname,CFG_NAME[i])) f=i;
+  if(allcfg){ for(int i=0;i<6;i++) cfgs[ncf++]=(Config)i; }
+  else { int f=-1; for(int i=0;i<6;i++) if(!strcmp(cfgname,CFG_NAME[i])) f=i;
          if(f<0){ fprintf(stderr,"bad --config\n"); return 1; } cfgs[ncf++]=(Config)f; }
 
   cudaEvent_t evF0,evF1,evH0,evH1,evL0;

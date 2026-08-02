@@ -1,0 +1,133 @@
+RESULT config=F32 n=256 kappa=1.00e+01 seed=0 status=converged niter=0 t_fact_ms=0.41 t_loop_ms=0.60 t_per_iter_ms=0.000 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F32 t_total_ms=1.01 (= t_fact + t_loop)
+RESULT config=TF32 n=256 kappa=1.00e+01 seed=0 status=converged niter=0 t_fact_ms=0.31 t_loop_ms=0.09 t_per_iter_ms=0.000 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=TF32 t_total_ms=0.40 (= t_fact + t_loop)
+iter=0 dt_ms=0.170 err=1.386e-03 exc=0
+iter=1 dt_ms=0.166 err=1.387e-06 exc=0
+RESULT config=F16 n=256 kappa=1.00e+01 seed=0 status=converged niter=2 t_fact_ms=0.32 t_loop_ms=0.44 t_per_iter_ms=0.222 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F16 t_total_ms=0.77 (= t_fact + t_loop)
+iter=0 dt_ms=0.161 err=7.701e-03 exc=0
+iter=1 dt_ms=0.161 err=7.597e-05 exc=0
+RESULT config=B16T n=256 kappa=1.00e+01 seed=0 status=converged niter=2 t_fact_ms=0.31 t_loop_ms=0.43 t_per_iter_ms=0.214 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=B16T t_total_ms=0.74 (= t_fact + t_loop)
+iter=0 dt_ms=0.396 err=7.459e-02 exc=0
+iter=1 dt_ms=0.394 err=1.815e-03 exc=0
+iter=2 dt_ms=0.361 err=4.390e-05 exc=0
+iter=3 dt_ms=0.358 err=1.214e-06 exc=0
+RESULT config=B16S n=256 kappa=1.00e+01 seed=0 status=converged niter=4 t_fact_ms=0.34 t_loop_ms=1.84 t_per_iter_ms=0.459 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=B16S t_total_ms=2.18 (= t_fact + t_loop)
+RESULT config=F64 n=256 kappa=1.00e+01 seed=0 status=converged niter=0 t_fact_ms=1.10 t_loop_ms=0.15 t_per_iter_ms=0.000 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F64 t_total_ms=1.25 (= t_fact + t_loop)
+iter=0 dt_ms=0.698 err=1.102e-06 exc=0
+RESULT config=F32 n=256 kappa=3.00e+01 seed=0 status=converged niter=1 t_fact_ms=0.41 t_loop_ms=0.81 t_per_iter_ms=0.815 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F32 t_total_ms=1.23 (= t_fact + t_loop)
+iter=0 dt_ms=0.163 err=1.102e-06 exc=0
+RESULT config=TF32 n=256 kappa=3.00e+01 seed=0 status=converged niter=1 t_fact_ms=0.30 t_loop_ms=0.26 t_per_iter_ms=0.265 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=TF32 t_total_ms=0.57 (= t_fact + t_loop)
+iter=0 dt_ms=0.168 err=1.795e-03 exc=0
+iter=1 dt_ms=0.166 err=3.305e-06 exc=0
+RESULT config=F16 n=256 kappa=3.00e+01 seed=0 status=converged niter=2 t_fact_ms=0.32 t_loop_ms=0.44 t_per_iter_ms=0.222 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F16 t_total_ms=0.77 (= t_fact + t_loop)
+iter=0 dt_ms=0.163 err=1.439e-02 exc=0
+iter=1 dt_ms=0.170 err=1.578e-04 exc=0
+iter=2 dt_ms=0.163 err=2.652e-06 exc=0
+RESULT config=B16T n=256 kappa=3.00e+01 seed=0 status=converged niter=3 t_fact_ms=0.31 t_loop_ms=0.61 t_per_iter_ms=0.204 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=B16T t_total_ms=0.92 (= t_fact + t_loop)
+iter=0 dt_ms=0.379 err=9.195e-02 exc=0
+iter=1 dt_ms=0.392 err=2.398e-03 exc=0
+iter=2 dt_ms=0.367 err=7.332e-05 exc=0
+iter=3 dt_ms=0.371 err=2.509e-06 exc=0
+RESULT config=B16S n=256 kappa=3.00e+01 seed=0 status=converged niter=4 t_fact_ms=0.35 t_loop_ms=1.83 t_per_iter_ms=0.457 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=B16S t_total_ms=2.18 (= t_fact + t_loop)
+RESULT config=F64 n=256 kappa=3.00e+01 seed=0 status=converged niter=0 t_fact_ms=1.10 t_loop_ms=0.15 t_per_iter_ms=0.000 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F64 t_total_ms=1.25 (= t_fact + t_loop)
+iter=0 dt_ms=0.705 err=2.611e-06 exc=0
+RESULT config=F32 n=256 kappa=1.00e+02 seed=0 status=converged niter=1 t_fact_ms=0.41 t_loop_ms=0.82 t_per_iter_ms=0.824 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F32 t_total_ms=1.24 (= t_fact + t_loop)
+iter=0 dt_ms=0.159 err=2.611e-06 exc=0
+RESULT config=TF32 n=256 kappa=1.00e+02 seed=0 status=converged niter=1 t_fact_ms=0.30 t_loop_ms=0.26 t_per_iter_ms=0.260 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=TF32 t_total_ms=0.56 (= t_fact + t_loop)
+iter=0 dt_ms=0.161 err=3.821e-03 exc=0
+iter=1 dt_ms=0.159 err=7.569e-06 exc=0
+RESULT config=F16 n=256 kappa=1.00e+02 seed=0 status=converged niter=2 t_fact_ms=0.32 t_loop_ms=0.43 t_per_iter_ms=0.214 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F16 t_total_ms=0.75 (= t_fact + t_loop)
+iter=0 dt_ms=0.158 err=2.889e-02 exc=0
+iter=1 dt_ms=0.159 err=4.992e-04 exc=0
+iter=2 dt_ms=0.159 err=1.683e-05 exc=0
+RESULT config=B16T n=256 kappa=1.00e+02 seed=0 status=converged niter=3 t_fact_ms=0.31 t_loop_ms=0.59 t_per_iter_ms=0.198 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=B16T t_total_ms=0.90 (= t_fact + t_loop)
+iter=0 dt_ms=0.360 err=1.681e-01 exc=0
+iter=1 dt_ms=0.359 err=5.878e-03 exc=0
+iter=2 dt_ms=0.356 err=3.245e-04 exc=0
+iter=3 dt_ms=0.354 err=2.118e-05 exc=0
+RESULT config=B16S n=256 kappa=1.00e+02 seed=0 status=converged niter=4 t_fact_ms=0.35 t_loop_ms=1.75 t_per_iter_ms=0.437 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=B16S t_total_ms=2.10 (= t_fact + t_loop)
+RESULT config=F64 n=256 kappa=1.00e+02 seed=0 status=converged niter=0 t_fact_ms=1.10 t_loop_ms=0.15 t_per_iter_ms=0.000 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F64 t_total_ms=1.25 (= t_fact + t_loop)
+iter=0 dt_ms=0.707 err=5.590e-06 exc=0
+RESULT config=F32 n=256 kappa=3.00e+02 seed=0 status=converged niter=1 t_fact_ms=0.41 t_loop_ms=0.82 t_per_iter_ms=0.819 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F32 t_total_ms=1.22 (= t_fact + t_loop)
+iter=0 dt_ms=0.167 err=5.590e-06 exc=0
+RESULT config=TF32 n=256 kappa=3.00e+02 seed=0 status=converged niter=1 t_fact_ms=0.30 t_loop_ms=0.27 t_per_iter_ms=0.268 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=TF32 t_total_ms=0.57 (= t_fact + t_loop)
+iter=0 dt_ms=0.160 err=7.884e-03 exc=0
+iter=1 dt_ms=0.158 err=5.415e-05 exc=0
+RESULT config=F16 n=256 kappa=3.00e+02 seed=0 status=converged niter=2 t_fact_ms=0.32 t_loop_ms=0.42 t_per_iter_ms=0.212 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F16 t_total_ms=0.74 (= t_fact + t_loop)
+iter=0 dt_ms=0.159 err=8.019e-02 exc=0
+iter=1 dt_ms=0.159 err=2.918e-03 exc=0
+iter=2 dt_ms=0.159 err=1.985e-04 exc=0
+iter=3 dt_ms=0.164 err=1.761e-05 exc=0
+iter=4 dt_ms=0.159 err=1.235e-06 exc=0
+RESULT config=B16T n=256 kappa=3.00e+02 seed=0 status=converged niter=5 t_fact_ms=0.31 t_loop_ms=0.92 t_per_iter_ms=0.184 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=B16T t_total_ms=1.23 (= t_fact + t_loop)
+iter=0 dt_ms=0.368 err=2.992e-01 exc=0
+iter=1 dt_ms=0.357 err=1.471e-02 exc=0
+iter=2 dt_ms=0.353 err=2.217e-03 exc=0
+iter=3 dt_ms=0.356 err=1.235e-04 exc=0
+iter=4 dt_ms=0.355 err=1.315e-05 exc=0
+iter=5 dt_ms=0.356 err=1.112e-06 exc=0
+RESULT config=B16S n=256 kappa=3.00e+02 seed=0 status=converged niter=6 t_fact_ms=0.35 t_loop_ms=2.48 t_per_iter_ms=0.413 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=B16S t_total_ms=2.83 (= t_fact + t_loop)
+RESULT config=F64 n=256 kappa=3.00e+02 seed=0 status=converged niter=0 t_fact_ms=1.10 t_loop_ms=0.15 t_per_iter_ms=0.000 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F64 t_total_ms=1.25 (= t_fact + t_loop)
+iter=0 dt_ms=0.709 err=1.382e-05 exc=0
+RESULT config=F32 n=256 kappa=1.00e+03 seed=0 status=converged niter=1 t_fact_ms=0.41 t_loop_ms=0.83 t_per_iter_ms=0.827 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F32 t_total_ms=1.24 (= t_fact + t_loop)
+iter=0 dt_ms=0.159 err=1.382e-05 exc=0
+RESULT config=TF32 n=256 kappa=1.00e+03 seed=0 status=converged niter=1 t_fact_ms=0.30 t_loop_ms=0.27 t_per_iter_ms=0.269 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=TF32 t_total_ms=0.57 (= t_fact + t_loop)
+iter=0 dt_ms=0.165 err=2.261e-02 exc=0
+iter=1 dt_ms=0.163 err=4.090e-04 exc=0
+iter=2 dt_ms=0.162 err=1.031e-05 exc=0
+RESULT config=F16 n=256 kappa=1.00e+03 seed=0 status=converged niter=3 t_fact_ms=0.32 t_loop_ms=0.61 t_per_iter_ms=0.204 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F16 t_total_ms=0.94 (= t_fact + t_loop)
+iter=0 dt_ms=0.160 err=2.155e-01 exc=0
+iter=1 dt_ms=0.162 err=3.340e-02 exc=0
+iter=2 dt_ms=0.162 err=8.427e-03 exc=0
+iter=3 dt_ms=0.171 err=2.413e-03 exc=0
+iter=4 dt_ms=0.161 err=7.747e-04 exc=0
+iter=5 dt_ms=0.161 err=2.546e-04 exc=0
+iter=6 dt_ms=0.161 err=8.154e-05 exc=0
+iter=7 dt_ms=0.161 err=2.650e-05 exc=0
+iter=8 dt_ms=0.161 err=8.568e-06 exc=0
+iter=9 dt_ms=0.170 err=2.938e-06 exc=0
+RESULT config=B16T n=256 kappa=1.00e+03 seed=0 status=converged niter=10 t_fact_ms=0.31 t_loop_ms=1.78 t_per_iter_ms=0.178 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=B16T t_total_ms=2.09 (= t_fact + t_loop)
+iter=0 dt_ms=0.361 err=7.158e-01 exc=0
+iter=1 dt_ms=0.362 err=1.172e-01 exc=0
+iter=2 dt_ms=0.358 err=3.405e-02 exc=0
+iter=3 dt_ms=0.366 err=1.177e-02 exc=0
+iter=4 dt_ms=0.353 err=3.889e-03 exc=0
+iter=5 dt_ms=0.375 err=1.437e-03 exc=0
+iter=6 dt_ms=0.362 err=4.118e-04 exc=0
+iter=7 dt_ms=0.357 err=1.567e-04 exc=0
+iter=8 dt_ms=0.358 err=4.631e-05 exc=0
+iter=9 dt_ms=0.360 err=1.695e-05 exc=0
+iter=10 dt_ms=0.359 err=5.121e-06 exc=0
+iter=11 dt_ms=0.367 err=1.673e-06 exc=0
+RESULT config=B16S n=256 kappa=1.00e+03 seed=0 status=converged niter=12 t_fact_ms=0.34 t_loop_ms=4.71 t_per_iter_ms=0.392 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=B16S t_total_ms=5.04 (= t_fact + t_loop)
+iter=0 dt_ms=0.220 err=1.622e-06 exc=0
+RESULT config=F64 n=256 kappa=1.00e+03 seed=0 status=converged niter=1 t_fact_ms=1.10 t_loop_ms=0.38 t_per_iter_ms=0.381 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F64 t_total_ms=1.48 (= t_fact + t_loop)
