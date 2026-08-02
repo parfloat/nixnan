@@ -31,6 +31,12 @@ phase_d: ir_gpu
 	TIMING=1 ./ir_gpu --n 4096 --config B16T --kappa 1e3 --noscale --bscale 1e5 --seed 0
 	TIMING=2 ./ir_gpu --n 4096 --config F16  --kappa 1e3 --noscale --seed 0
 
+# Phase E: Nix-Nan exception detection on overflow cases
+nixnan: ir_gpu
+	LD_PRELOAD=../nixnan.so TIMING=1 ./ir_gpu --n 4096 --config F16  --kappa 1e3 --noscale --bscale 1e5 --seed 0
+	LD_PRELOAD=../nixnan.so TIMING=1 ./ir_gpu --n 4096 --config B16T --kappa 1e3 --noscale --bscale 1e5 --seed 0
+	LD_PRELOAD=../nixnan.so TIMING=1 ./ir_gpu --n 4096 --config F32  --kappa 1e3 --noscale --bscale 1e5 --seed 0
+
 clean:
 	rm -f ir_gpu
-.PHONY: all run sweep detail phase_d clean
+.PHONY: all run sweep detail phase_d nixnan clean

@@ -14,3 +14,7 @@ echo "== Phase D: fp16 exceptions (overflow, then underflow stall) =="
 TIMING=1 ./ir_gpu --n 4096 --config F16  --kappa 1e3 --noscale --bscale 1e5 --seed 0 | tee phased.log
 TIMING=1 ./ir_gpu --n 4096 --config B16T --kappa 1e3 --noscale --bscale 1e5 --seed 0 | tee -a phased.log
 TIMING=2 ./ir_gpu --n 4096 --config F16  --kappa 1e3 --noscale --seed 0 | tee -a phased.log
+echo "== Phase E: Nix-Nan exception detection on overflow cases =="
+LD_PRELOAD=../nixnan.so TIMING=1 ./ir_gpu --n 4096 --config F16  --kappa 1e3 --noscale --bscale 1e5 --seed 0 | tee nixnan.log
+LD_PRELOAD=../nixnan.so TIMING=1 ./ir_gpu --n 4096 --config B16T --kappa 1e3 --noscale --bscale 1e5 --seed 0 | tee -a nixnan.log
+LD_PRELOAD=../nixnan.so TIMING=1 ./ir_gpu --n 4096 --config F32  --kappa 1e3 --noscale --bscale 1e5 --seed 0 | tee -a nixnan.log

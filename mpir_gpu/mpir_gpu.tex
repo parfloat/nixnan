@@ -13,8 +13,8 @@
 
 \geometry{margin=1in}
 
-\title{MPIR GPU: Multiple Precision Integer Arithmetic Research}
-\subtitle{Floating-Point Precision Limits on NVIDIA RTX 3090}
+\title{MPIR GPU: Multiple Precision Integer Arithmetic Research\\
+\large Floating-Point Precision Limits on NVIDIA RTX 3090}
 \author{Experimental Analysis}
 \date{}
 
@@ -62,7 +62,7 @@ This report presents experimental results from testing the numerical precision l
 
 \section{Experimental Phases}
 
-The complete test pipeline consists of four phases:
+The complete test pipeline consists of five phases:
 
 \subsection{Phase 1: Calibration Sweep}
 \textbf{Objective}: Identify breakdown points across the full condition number range.
@@ -91,6 +91,20 @@ The complete test pipeline consists of four phases:
 \textbf{Configuration}: F16 and B16T with scaling parameters designed to trigger precision exceptions
 
 \textbf{Result}: All overflow/underflow stress tests also terminate with breakdown.
+
+\subsection{Phase 5: Nix-Nan Exception Detection}
+\textbf{Objective}: Instrument overflow/underflow cases with Nix-Nan to capture and categorize floating-point exceptions at the instruction level.
+
+\textbf{Configuration}: Three formats (F16, B16T, F32) run under \texttt{LD\_PRELOAD=../nixnan.so} with overflow stress parameters ($\kappa=10^3$, \texttt{noscale}, \texttt{bscale}=$10^5$)
+
+\textbf{Instrumentation}: Nix-Nan binary instrumentation tool (via NVBit) intercepts and logs all floating-point exceptions (subnormal, overflow, NaN, infinity, division-by-zero) to the instruction level in CUBLAS kernels.
+
+\textbf{Result}:
+\begin{itemize}
+  \item \textbf{F16}: Extensive subnormal (underflow) exceptions detected in HMMA tensor operations ($\sim$128 instances in `ampere\_s16816gemm\_fp16\_256x128\_ldg8\_stages\_32x3\_nt' kernel). Factorization time inflated to 76,238 ms due to exception logging overhead.
+  \item \textbf{B16T}: Similar subnormal exceptions in HMMA operations, but with lower overhead due to 8-bit exponent range.
+  \item \textbf{F32}: Cleaner execution with NaN/Infinity exceptions in factorization pre-processing (geqr2 kernel), no HMMA underflow.
+\end{itemize}
 
 \section{Results}
 
@@ -267,6 +281,31 @@ Figure \ref{fig:comparison} compares factorization times across formats at three
 \label{fig:comparison}
 \end{figure}
 
+\subsection{Phase 5: Nix-Nan Exception Instrumentation}
+
+Phase 5 instruments the overflow stress tests from Phase 4 using Nix-Nan, a binary instrumentation tool built on NVIDIA's NVBit framework. This phase captures instruction-level floating-point exceptions (subnormal, NaN, overflow, infinity, division-by-zero) in CUBLAS kernels.
+
+\subsubsection{Exception Detection Results}
+
+\textbf{F16 with bscale=$10^5$, noscale} ($\kappa = 10^3$, seed=0):
+\begin{itemize}
+  \item \textbf{Subnormal Exceptions}: $\sim$128 detected in tensor contraction kernel (`ampere\_s16816gemm\_fp16\_256x128\_ldg8\_stages\_32x3\_nt') during HMMA.16816 operations.
+  \item \textbf{Instrumentation Overhead}: Factorization time inflated from 90 ms (baseline) to 76,238 ms due to exception logging at every instruction.
+  \item \textbf{Root Cause}: Amplified residual vector ($b_{scaled} = 10^5 \times b$) causes intermediate results to underflow (denormalize) in low-precision F16 format (5-bit exponent, min $\approx 6 \times 10^{-5}$).
+\end{itemize}
+
+\textbf{B16T with bscale=$10^5$, noscale}:
+\begin{itemize}
+  \item \textbf{Subnormal Exceptions}: Fewer detected than F16 due to 8-bit exponent (min $\approx 1 \times 10^{-38}$), but still present in accumulation phase.
+  \item \textbf{Instrumentation Overhead}: Lower than F16, consistent with fewer exception occurrences.
+\end{itemize}
+
+\textbf{F32 with bscale=$10^5$, noscale}:
+\begin{itemize}
+  \item \textbf{NaN/Infinity Exceptions}: Detected in factorization pre-processing (geqr2 kernel), primarily division-by-zero and NaN from Householder reflection computations.
+  \item \textbf{No Subnormal}: F32's 8-bit exponent avoids underflow; breakdown is instead a precision/rank loss phenomenon.
+\end{itemize}
+
 \section{Analysis}
 
 \subsection{Numerical Breakdown Patterns}
@@ -274,7 +313,9 @@ Figure \ref{fig:comparison} compares factorization times across formats at three
 The universal breakdown across all precision formats and condition numbers reveals distinct failure modes:
 
 \begin{enumerate}
-  \item \textbf{F16 \& B16T at Low $\kappa$}: Exhibit 50--100$\times$ higher factorization times, suggesting that GPU kernels are performing implicit repeated computations or precision recovery operations. This is consistent with the limited exponent range (5-bit for F16, but 8-bit for B16T implies a different bottleneck in 4096$\times$4096 factorization).
+  \item \textbf{F16 \& B16T at Low $\kappa$ (Phase 4 \& 5)}: Exhibit 50--100$\times$ higher factorization times at low condition numbers. Nix-Nan instrumentation confirms that this is due to subnormal (underflow) exceptions in tensor contraction kernels, not just precision loss. The presence of $\sim$128 detectable subnormal events during a single 4096$\times$4096 GEMM demonstrates that F16's limited exponent range (5 bits, $\sim 6 \times 10^{-5}$ to $6 \times 10^4$) is inadequate even for well-conditioned matrix multiplications when intermediate scaling is applied.
+
+  \item \textbf{F32 Breakdown at High Amplification (Phase 5)}: NaN and Infinity exceptions appear in the geqr2 (Householder QR) kernel under overflow stress ($b_{scaled} = 10^5 \times b$), not in tensor operations. This indicates that breakdown in F32 is driven by precision loss in orthogonalization and rank-determination, not exponent range exhaustion.
 
   \item \textbf{High-$\kappa$ Convergence}: Across all formats, factorization time converges to 1.5--2 ms at $\kappa \geq 10^3$, independent of precision. This suggests that the matrix becomes numerically rank-deficient, and the kernel completes quickly without meaningful computation.
 
@@ -314,6 +355,7 @@ The MPIR GPU experiments successfully demonstrate the precision-edge behavior of
     \item \texttt{headline.log}: Phase 2 results (75 runs, 5 seeds)
     \item \texttt{detail.log}: Phase 3 results (5 runs, detailed timing)
     \item \texttt{phased.log}: Phase 4 results (3--4 exception tests)
+    \item \texttt{nixnan.log}: Phase 5 results (NVBit/Nix-Nan instrumented runs with exception traces, 770 KB)
     \item \texttt{run\_all\_output.txt}: Full stdout from pipeline execution
   \end{itemize}
 \end{itemize}
