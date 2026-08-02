@@ -1,0 +1,5 @@
+RESULT config=F32 n=4096 kappa=1.00e+03 seed=0 status=breakdown niter=-1 t_fact_ms=72.96 t_loop_ms=0 t_per_iter_ms=0 first_exc_iter=-1 first_exc_ms=-1
+RESULT config=TF32 n=4096 kappa=1.00e+03 seed=0 status=breakdown niter=-1 t_fact_ms=3.65 t_loop_ms=0 t_per_iter_ms=0 first_exc_iter=-1 first_exc_ms=-1
+RESULT config=F16 n=4096 kappa=1.00e+03 seed=0 status=breakdown niter=-1 t_fact_ms=89.52 t_loop_ms=0 t_per_iter_ms=0 first_exc_iter=-1 first_exc_ms=-1
+RESULT config=B16T n=4096 kappa=1.00e+03 seed=0 status=breakdown niter=-1 t_fact_ms=82.49 t_loop_ms=0 t_per_iter_ms=0 first_exc_iter=-1 first_exc_ms=-1
+RESULT config=B16S n=4096 kappa=1.00e+03 seed=0 status=breakdown niter=-1 t_fact_ms=21.55 t_loop_ms=0 t_per_iter_ms=0 first_exc_iter=-1 first_exc_ms=-1
