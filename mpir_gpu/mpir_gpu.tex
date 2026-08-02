@@ -292,20 +292,28 @@ Phase 5 instruments the overflow stress tests from Phase 4 using Nix-Nan, a bina
 \textbf{F16 with bscale=$10^5$, noscale} ($\kappa = 10^3$, seed=0):
 \begin{itemize}
   \item \textbf{Subnormal Exceptions}: $\sim$128 detected in tensor contraction kernel (`ampere\_s16816gemm\_fp16\_256x128\_ldg8\_stages\_32x3\_nt') during HMMA.16816 operations.
-  \item \textbf{Instrumentation Overhead}: Factorization time inflated from 90 ms (baseline) to 76,238 ms due to exception logging at every instruction.
+  \item \textbf{Baseline Time}: 90 ms (Phase 4, without instrumentation)
+  \item \textbf{Instrumented Time}: 76,238 ms (Phase 5, with Nix-Nan LD\_PRELOAD)
+  \item \textbf{Instrumentation Overhead}: 847$\times$ slowdown due to exception logging at every instruction
   \item \textbf{Root Cause}: Amplified residual vector ($b_{scaled} = 10^5 \times b$) causes intermediate results to underflow (denormalize) in low-precision F16 format (5-bit exponent, min $\approx 6 \times 10^{-5}$).
 \end{itemize}
 
-\textbf{B16T with bscale=$10^5$, noscale}:
+\textbf{B16T with bscale=$10^5$, noscale} ($\kappa = 10^3$, seed=0):
 \begin{itemize}
+  \item \textbf{Baseline Time}: 155 ms (Phase 4)
+  \item \textbf{Instrumented Time}: 79,530 ms (Phase 5)
+  \item \textbf{Instrumentation Overhead}: 513$\times$ slowdown
   \item \textbf{Subnormal Exceptions}: Fewer detected than F16 due to 8-bit exponent (min $\approx 1 \times 10^{-38}$), but still present in accumulation phase.
-  \item \textbf{Instrumentation Overhead}: Lower than F16, consistent with fewer exception occurrences.
+  \item \textbf{Interpretation}: Overhead scales with exception frequency; B16T's wider exponent range reduces subnormal incidence.
 \end{itemize}
 
-\textbf{F32 with bscale=$10^5$, noscale}:
+\textbf{F32 with bscale=$10^5$, noscale} ($\kappa = 10^3$, seed=0):
 \begin{itemize}
-  \item \textbf{NaN/Infinity Exceptions}: Detected in factorization pre-processing (geqr2 kernel), primarily division-by-zero and NaN from Householder reflection computations.
-  \item \textbf{No Subnormal}: F32's 8-bit exponent avoids underflow; breakdown is instead a precision/rank loss phenomenon.
+  \item \textbf{Baseline Time}: 1.5 ms (Phase 4)
+  \item \textbf{Instrumented Time}: 82,727 ms (Phase 5)
+  \item \textbf{Instrumentation Overhead}: 55,152$\times$ slowdown (extreme)
+  \item \textbf{NaN/Infinity Exceptions}: Extensive exceptions detected in factorization pre-processing (geqr2 kernel), primarily division-by-zero and NaN from Householder reflection computations on amplified/scaled inputs.
+  \item \textbf{Interpretation}: F32's breakdown is driven by precision loss during QR, not exponent exhaustion. Amplification triggers multiple NaN-generating operations (sqrt of negative, division by zero), each logged by Nix-Nan.
 \end{itemize}
 
 \section{Analysis}
