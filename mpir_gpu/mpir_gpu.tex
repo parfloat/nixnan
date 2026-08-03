@@ -346,7 +346,7 @@ Figure \ref{fig:refinement} shows iterative refinement convergence curves for fi
 
 \subsection{Phase 6: Safe Convergence Summary (n=256, with FP64)}
 
-Table \ref{tab:convergence} presents the complete convergence results for well-conditioned matrices (n=256, seed=0, \kappa \in \{10, 30, 100, 300, 1000\}) across all six formats including FP64 double precision. This phase demonstrates that with well-conditioned systems and appropriate matrix sizes, iterative refinement successfully solves linear systems.
+Table \ref{tab:convergence} presents the complete convergence results for well-conditioned matrices (n=256, seed=0, $\kappa \in \{10, 30, 100, 300, 1000\}$) across all six formats including FP64 double precision. This phase demonstrates that with well-conditioned systems and appropriate matrix sizes, iterative refinement successfully solves linear systems.
 
 \begin{table}[!ht]
 \centering
@@ -368,15 +368,15 @@ $\mathbf{\kappa}$ & F64 & F32 & TF32 & F16 & B16T & B16S \\
 
 \textbf{Key Observations from Phase 6:}
 \begin{enumerate}
-  \item \textbf{FP64 Reference}: Double precision converges in at most 1 iteration, providing the gold-standard baseline. At low \kappa, factorization error is already below convergence threshold (niter=0).
-  \item \textbf{FP32 Convergence}: Single precision matches F64 behavior at low \kappa (niter ≤ 1), validating that F32 precision is sufficient for well-conditioned problems.
-  \item \textbf{Precision-Dependent Scaling}: Iteration count scales roughly as 2×log₁₀(\kappa) for lower precisions (F16, B16T, B16S), consistent with error amplification by the condition number.
-  \item \textbf{Contrast with Phases 1--5}: The ill-conditioned test matrices (n=4096, \kappa \leq 10^5) ALL break down immediately (niter=-1), while well-conditioned matrices (n=256, \kappa \leq 10^3) ALL converge successfully (niter ≥ 0).
+  \item \textbf{FP64 Reference}: Double precision converges in at most 1 iteration, providing the gold-standard baseline. At low $\kappa$, factorization error is already below convergence threshold (niter=0).
+  \item \textbf{FP32 Convergence}: Single precision matches F64 behavior at low $\kappa$ (niter $\leq$ 1), validating that F32 precision is sufficient for well-conditioned problems.
+  \item \textbf{Precision-Dependent Scaling}: Iteration count scales roughly as $2 \times \log_{10}(\kappa)$ for lower precisions (F16, B16T, B16S), consistent with error amplification by the condition number.
+  \item \textbf{Contrast with Phases 1--5}: The ill-conditioned test matrices (n=4096, $\kappa \leq 10^5$) ALL break down immediately (niter=-1), while well-conditioned matrices (n=256, $\kappa \leq 10^3$) ALL converge successfully (niter $\geq$ 0).
 \end{enumerate}
 
 \subsection{Phase 7: Comprehensive Nix-Nan Instrumentation (Well-Conditioned Cases)}
 
-Phase 7 applies Nix-Nan binary instrumentation to the well-conditioned convergence cases (n=256) at two representative condition numbers: \kappa=10 (easy convergence) and \kappa=1000 (challenging convergence). This demonstrates exception behavior across the full precision spectrum when matrices are solvable.
+Phase 7 applies Nix-Nan binary instrumentation to the well-conditioned convergence cases (n=256) at two representative condition numbers: $\kappa=10$ (easy convergence) and $\kappa=1000$ (challenging convergence). This demonstrates exception behavior across the full precision spectrum when matrices are solvable.
 
 \textbf{Methodology}: Each of the 6 formats (F64, F32, TF32, F16, B16T, B16S) is instrumented with `LD_PRELOAD=../nixnan.so` to capture instruction-level floating-point exceptions (subnormal, NaN, overflow, infinity, division-by-zero).
 
@@ -390,14 +390,14 @@ Phase 7 applies Nix-Nan binary instrumentation to the well-conditioned convergen
   \item \textbf{B16S}: Moderate subnormal and rounding exceptions from stochastic operations. Converges in 4 iterations.
 \end{itemize}
 
-\textbf{Implication}: Even at \kappa=10, low-precision formats (F16, B16x) experience numerical exceptions, yet the iterative refinement algorithm recovers via a small number of correction steps.
+\textbf{Implication}: Even at $\kappa=10$, low-precision formats (F16, B16x) experience numerical exceptions, yet the iterative refinement algorithm recovers via a small number of correction steps.
 
 \subsubsection{Nix-Nan Findings at \texorpdfstring{$\kappa=1000$}{kappa=1000} (High Condition Number)}
 
 \textbf{Exception Incidence:}
 \begin{itemize}
-  \item \textbf{F64}: Single NaN exception in factorization pre-processing (sqrt near zero in Householder QR at high \kappa). Despite exception, F64 recovers and converges in 1 iteration.
-  \item \textbf{F32}: NaN exceptions in QR preprocessing due to precision loss at \kappa=1000. Convergence: 1 iteration.
+  \item \textbf{F64}: Single NaN exception in factorization pre-processing (sqrt near zero in Householder QR at high $\kappa$). Despite exception, F64 recovers and converges in 1 iteration.
+  \item \textbf{F32}: NaN exceptions in QR preprocessing due to precision loss at $\kappa=1000$. Convergence: 1 iteration.
   \item \textbf{TF32}: Fewer exceptions than F32 (TF32 has slightly better dynamic range for this problem). Convergence: 1 iteration.
   \item \textbf{F16}: Extensive subnormal exceptions throughout HMMA operations (underflow regime for intermediate results). Factorization instrumentation overhead: 100--300× (vs. baseline 0.3 ms). Despite exceptions, refinement converges in 3 iterations.
   \item \textbf{B16T}: Subnormal exceptions in GEMM operations, but fewer than F16. Convergence requires 10 iterations.
@@ -408,23 +408,23 @@ Phase 7 applies Nix-Nan binary instrumentation to the well-conditioned convergen
 
 \textbf{Artifacts}: Comprehensive Nix-Nan logs saved as:
 \begin{itemize}
-  \item \kappa=10: \texttt{nixnan\_log\_10\_\{F64, F32, TF32, F16, B16T, B16S\}.log} (each ~2.4 KB)
-  \item \kappa=1000: \texttt{nixnan\_log\_1000\_\{F64, F32, TF32, F16, B16T, B16S\}.log} (each ~2.2 KB)
+  \item $\kappa=10$: \texttt{nixnan\_log\_10\_\{F64, F32, TF32, F16, B16T, B16S\}.log} (each ~2.4 KB)
+  \item $\kappa=1000$: \texttt{nixnan\_log\_1000\_\{F64, F32, TF32, F16, B16T, B16S\}.log} (each ~2.2 KB)
 \end{itemize}
 
 \subsection{Phase 8: Exception Threshold Discovery (\texorpdfstring{$\kappa$}{kappa}-Sweep)}
 
-Phase 8 investigates where exceptions overwhelm the iterative refinement algorithm by sweeping condition numbers from \kappa=1000 (safe, Phase 7) upward through \kappa \in \{2000, 3000, 5000, 10000, 20000, 30000\}. The goal is to identify the exception escalation points and map when convergence becomes impossible despite refinement iterations.
+Phase 8 investigates where exceptions overwhelm the iterative refinement algorithm by sweeping condition numbers from $\kappa=1000$ (safe, Phase 7) upward through $\kappa \in \{2000, 3000, 5000, 10000, 20000, 30000\}$. The goal is to identify the exception escalation points and map when convergence becomes impossible despite refinement iterations.
 
 \textbf{Critical Finding from Phase 7 Data}:
-Exceptions do NOT prevent convergence when iteration budget is sufficient. At \kappa=1000, all formats showed exceptions yet converged:
+Exceptions do NOT prevent convergence when iteration budget is sufficient. At $\kappa=1000$, all formats showed exceptions yet converged:
 \begin{itemize}
   \item F16: 100+ subnormal exceptions → converged in 3 iterations
   \item B16T: 50+ subnormal exceptions → converged in 10 iterations
   \item B16S: 80+ subnormal + stochastic exceptions → converged in 12 iterations
 \end{itemize}
 
-This means the true exception ``threshold'' is not first-appearance but rather ``convergence failure point''—the \kappa where exceptions cause niter=-1 (breakdown without convergence).
+This means the true exception ``threshold'' is not first-appearance but rather ``convergence failure point''—the $\kappa$ where exceptions cause niter=-1 (breakdown without convergence).
 
 \textbf{Phase 8 Experimental Results}:
 
