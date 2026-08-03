@@ -64,22 +64,25 @@ The algorithm implements Carson-Higham iterative refinement with working precisi
 \toprule
 \textbf{Operation} & \textbf{F64} & \textbf{F32} & \textbf{TF32} & \textbf{F16} & \textbf{B16T} & \textbf{B16S} \\
 \midrule
-Factorization $A = LL^T$ & FP64 & FP32 & FP32 & FP32 & FP32 & FP32 \\
-Initial solve $Ax_0 = b$ & FP64 & FP32 & FP32 & FP32 & FP32 & FP32 \\
+Storage Precision & FP64 & FP32 & FP32 & FP16 & BF16 & BF16 \\
+Factorization $A = LL^T$ & FP64 & FP32 & FP32 TC$^*$ & FP32 TC$^*$ & FP32 TC$^*$ & BF16 SIMT$^*$ \\
+Initial solve $Ax_0 = b$ & FP64 & FP32 & FP32 & FP32 & FP32 & BF16 \\
 Residual $r_i = b - Ax_i$ & FP64 & FP64 & FP64 & FP64 & FP64 & FP64 \\
-Correction solve $Ad_i = r_i$ & FP64 & FP32 & FP32 & FP32 & FP32 & FP32 \\
+Correction solve $Ad_i = r_i$ & FP64 & FP32 & FP32 & FP32 & FP32 & BF16 \\
 Update $x_{i+1} = x_i + d_i$ & FP32 & FP32 & FP32 & FP32 & FP32 & FP32 \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\textbf{Key Points}:
+\footnotesize TC = Tensor Core (input precision, FP32 accumulation); SIMT = custom kernel (BF16 accumulation)
+
+\normalsize \textbf{Key Points}:
 \begin{itemize}
-  \item \textbf{Working Precision $u$}: F64 uses pure FP64; all other configs (F32/TF32/F16/B16T/B16S) use FP32 for factorization and solving, with tensor-core acceleration where applicable (TF32, F16, B16T).
-  \item \textbf{Residual Precision $u_r$}: All configs compute residuals in FP64 (double precision) to obtain high-accuracy error estimation, independent of working precision.
-  \item \textbf{Update Precision}: Corrections are always applied in FP32, providing a consistent accumulation strategy across all configs.
-  \item \textbf{Factorization Details}: F64 uses cuSOLVER \texttt{Dpotrf} (double), while F32/TF32/F16/B16T/B16S use cuSOLVER \texttt{Spotrf} (single) with representation-dependent rounding for F16/B16T storage.
-  \item \textbf{Solve Semantics}: Factorizations are stored (with rounding for low-precision formats) and used for all correction solves $Ad_i = r_i$ via triangular solves (\texttt{Dtrsv} for F64, \texttt{Strsv} for others), with BF16 solves using custom SIMT kernels for B16S.
+  \item \textbf{Tensor Core Usage (TF32, F16, B16T)}: Read low-precision input, accumulate in FP32, write FP32 output. Storage precision (TF32/FP16/BF16) is used only for factorization factors; all computation accumulates in FP32.
+  \item \textbf{Custom BF16 Kernels (B16S)}: Uses custom SIMT \texttt{\_\_hfma} kernels with actual BF16 accumulation (not FP32), providing genuine BF16 arithmetic without tensor core overhead.
+  \item \textbf{Residual Precision $u_r$}: All configs compute residuals in FP64 to obtain high-accuracy error estimation, independent of working precision.
+  \item \textbf{Update Precision}: Corrections are always applied in FP32 (or BF16 for B16S), providing consistent accumulation across all configs.
+  \item \textbf{Factorization Details}: F64 uses cuSOLVER \texttt{Dpotrf} (FP64); F32/TF32/F16/B16T use cuSOLVER \texttt{Spotrf} (FP32) with GemmEx for low-precision input packing; B16S uses custom kernel for BF16 factorization with FP32 panel-base-block structure.
 \end{itemize}
 
 \subsection{Test Matrix Parameters}
