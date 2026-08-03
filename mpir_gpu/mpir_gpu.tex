@@ -405,9 +405,9 @@ $\mathbf{\kappa}$ & F64 & F32 & TF32 & F16 & B16T & B16S \\
 
 Phase 7 applies Nix-Nan binary instrumentation to the well-conditioned convergence cases (n=256) at two representative condition numbers: $\kappa=10$ (easy convergence) and $\kappa=1000$ (challenging convergence). This demonstrates exception behavior across the full precision spectrum when matrices are solvable.
 
-\textbf{Methodology}: Each of the 6 formats (F64, F32, TF32, F16, B16T, B16S) is instrumented with `LD_PRELOAD=../nixnan.so` to capture instruction-level floating-point exceptions (subnormal, NaN, overflow, infinity, division-by-zero).
+\textbf{Methodology}: Each of the 6 formats (F64, F32, TF32, F16, B16T, B16S) is instrumented with \texttt{LD\_PRELOAD=../nixnan.so} to capture instruction-level floating-point exceptions (subnormal, NaN, overflow, infinity, division-by-zero).
 
-\subsubsection{Nix-Nan Findings at \texorpdfstring{$\kappa=10$}{kappa=10} (Well-Conditioned)}
+\subsubsection{Nix-Nan Findings at $\kappa=10$ (Well-Conditioned)}
 
 \textbf{Exception Incidence:}
 \begin{itemize}
@@ -419,7 +419,7 @@ Phase 7 applies Nix-Nan binary instrumentation to the well-conditioned convergen
 
 \textbf{Implication}: Even at $\kappa=10$, low-precision formats (F16, B16x) experience numerical exceptions, yet the iterative refinement algorithm recovers via a small number of correction steps.
 
-\subsubsection{Nix-Nan Findings at \texorpdfstring{$\kappa=1000$}{kappa=1000} (High Condition Number)}
+\subsubsection{Nix-Nan Findings at $\kappa=1000$ (High Condition Number)}
 
 \textbf{Exception Incidence:}
 \begin{itemize}
@@ -439,7 +439,7 @@ Phase 7 applies Nix-Nan binary instrumentation to the well-conditioned convergen
   \item $\kappa=1000$: \texttt{nixnan\_log\_1000\_\{F64, F32, TF32, F16, B16T, B16S\}.log} (each ~2.2 KB)
 \end{itemize}
 
-\subsection{Phase 8: Exception Threshold Discovery (\texorpdfstring{$\kappa$}{kappa}-Sweep)}
+\subsection{Phase 8: Exception Threshold Discovery ($\kappa$-Sweep)}
 
 Phase 8 investigates where exceptions overwhelm the iterative refinement algorithm by sweeping condition numbers from $\kappa=1000$ (safe, Phase 7) upward through $\kappa \in \{2000, 3000, 5000, 10000, 20000, 30000\}$. The goal is to identify the exception escalation points and map when convergence becomes impossible despite refinement iterations.
 
