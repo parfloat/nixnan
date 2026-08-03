@@ -55,6 +55,33 @@ This report presents experimental results from testing the numerical precision l
   \item \textbf{B16S}: NVIDIA bfloat16 Stochastic (8-bit exponent, 8-bit mantissa, stochastic rounding)
 \end{itemize}
 
+\subsection{Mixed-Precision Iterative Refinement Algorithm}
+
+The algorithm implements Carson-Higham iterative refinement with working precision $u$ and residual precision $u_r$. The following table documents which precision is used for each algorithmic step:
+
+\begin{center}
+\begin{tabular}{l|cccccc}
+\toprule
+\textbf{Operation} & \textbf{F64} & \textbf{F32} & \textbf{TF32} & \textbf{F16} & \textbf{B16T} & \textbf{B16S} \\
+\midrule
+Factorization $A = LL^T$ & FP64 & FP32 & FP32 & FP32 & FP32 & FP32 \\
+Initial solve $Ax_0 = b$ & FP64 & FP32 & FP32 & FP32 & FP32 & FP32 \\
+Residual $r_i = b - Ax_i$ & FP64 & FP64 & FP64 & FP64 & FP64 & FP64 \\
+Correction solve $Ad_i = r_i$ & FP64 & FP32 & FP32 & FP32 & FP32 & FP32 \\
+Update $x_{i+1} = x_i + d_i$ & FP32 & FP32 & FP32 & FP32 & FP32 & FP32 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Key Points}:
+\begin{itemize}
+  \item \textbf{Working Precision $u$}: F64 uses pure FP64; all other configs (F32/TF32/F16/B16T/B16S) use FP32 for factorization and solving, with tensor-core acceleration where applicable (TF32, F16, B16T).
+  \item \textbf{Residual Precision $u_r$}: All configs compute residuals in FP64 (double precision) to obtain high-accuracy error estimation, independent of working precision.
+  \item \textbf{Update Precision}: Corrections are always applied in FP32, providing a consistent accumulation strategy across all configs.
+  \item \textbf{Factorization Details}: F64 uses cuSOLVER \texttt{Dpotrf} (double), while F32/TF32/F16/B16T/B16S use cuSOLVER \texttt{Spotrf} (single) with representation-dependent rounding for F16/B16T storage.
+  \item \textbf{Solve Semantics}: Factorizations are stored (with rounding for low-precision formats) and used for all correction solves $Ad_i = r_i$ via triangular solves (\texttt{Dtrsv} for F64, \texttt{Strsv} for others), with BF16 solves using custom SIMT kernels for B16S.
+\end{itemize}
+
 \subsection{Test Matrix Parameters}
 \begin{itemize}
   \item \textbf{Matrix Size}: $n = 4096 \times 4096$
