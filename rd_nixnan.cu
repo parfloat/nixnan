@@ -11,7 +11,7 @@
 //
 // The reaction term makes the mode grow like exp((lambda - D pi^2) t), so the
 // grid values march straight up the FP exponent axis until they hit each
-// format's overflow edge.  We run the SAME step in three precisions, one kernel
+// format's overflow edge.  We run the SAME step in four precisions, one kernel
 // each, so nixnan attributes exceptions and the exponent histogram per format:
 //
 //   FP16 (5-bit exp, max 65504) : overflows ~step 227 (t~0.23); diffusion
@@ -20,6 +20,7 @@
 //                                 makes the u_{i+1}-2u_i+u_{i-1} cancellation
 //                                 pure noise (precision loss, not an exception).
 //   FP32                        : overflows ~step 1818, clean mantissa.
+//   FP64 (11-bit exp, ~1.8e308) : overflows much later; highest precision.
 //
 // Build:  nvcc -arch=sm_86 -lineinfo rd_nixnan.cu -o rd_nixnan
 // Run  :  ./rd_nixnan                                   # baseline blow-up
@@ -54,9 +55,9 @@ static const double LDT    = LAMBDA * DT;          // 0.05  (reaction per step)
     exit(1);} } while(0)
 
 // =============================================================================
-// One explicit FTCS step, three precisions, three kernels.
+// One explicit FTCS step, four precisions, four kernels.
 // Everything stays IN-TYPE so nixnan sees genuine HADD/HMUL (f16), the bf16
-// variants, and FADD/FFMA (f32) -- no silent promotion to float.
+// variants, FADD/FFMA (f32), and DADD/DFMA (f64) -- no silent promotion.
 // =============================================================================
 
 __global__ void rd_step_fp16(const __half* u, __half* un, __half r, __half lam)
@@ -96,19 +97,31 @@ __global__ void rd_step_fp32(const float* u, float* un, float r, float lam)
     un[i] = u[i] + r * lap + lam * u[i];   // FADD / FFMA in SASS
 }
 
+__global__ void rd_step_fp64(const double* u, double* un, double r, double lam)
+{
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    if (i >= N) return;
+    if (i == 0 || i == N - 1) { un[i] = 0.0; return; }
+
+    double lap = (u[i + 1] + u[i - 1]) - 2.0 * u[i];
+    un[i] = u[i] + r * lap + lam * u[i];   // DADD / DFMA in SASS
+}
+
 // =============================================================================
 // Host drivers.  One per format so each blow-up timeline stays clean.
 // Host-side conversions (__*2float / __float2*) are host-callable in CUDA 12.
 // =============================================================================
 
 template <class T> static T   to_T(double);              // convert double -> T
-template <class T> static float from_T(T);               // convert T -> float
+template <class T> static double from_T(T);               // convert T -> double
 template <> __half           to_T<__half>(double v){ return __float2half((float)v); }
 template <> __nv_bfloat16    to_T<__nv_bfloat16>(double v){ return __float2bfloat16((float)v); }
 template <> float            to_T<float>(double v){ return (float)v; }
-template <> float from_T<__half>(__half v){ return __half2float(v); }
-template <> float from_T<__nv_bfloat16>(__nv_bfloat16 v){ return __bfloat162float(v); }
-template <> float from_T<float>(float v){ return v; }
+template <> double           to_T<double>(double v){ return v; }
+template <> double from_T<__half>(__half v){ return (double)__half2float(v); }
+template <> double from_T<__nv_bfloat16>(__nv_bfloat16 v){ return (double)__bfloat162float(v); }
+template <> double from_T<float>(float v){ return (double)v; }
+template <> double from_T<double>(double v){ return v; }
 
 template <class T, class Kernel>
 static void run(const char* tag, Kernel kern)
@@ -162,6 +175,7 @@ int main()
     run<__half>       ("FP16", rd_step_fp16);
     run<__nv_bfloat16>("BF16", rd_step_bf16);
     run<float>        ("FP32", rd_step_fp32);
+    run<double>       ("FP64", rd_step_fp64);
 
     printf("\nDone. Re-run under LD_PRELOAD=nixnan.so with HISTOGRAM=1 "
            "and BIN_SPEC_FILE=spec.json.\n");
