@@ -180,6 +180,55 @@ Kernels: 4
 The total number of exceptions are: 128
 ```
 
+### First-Run Workflow with Template Generation
+
+When using binade-targeted monitoring, nixnan can auto-generate a template specification file:
+
+**First run (specification file doesn't exist):**
+```bash
+BIN_SPEC_FILE=./spec.json HISTOGRAM=1 LD_PRELOAD=./nixnan.so ./rd_nixnan
+```
+
+**Output:**
+```
+#nixnan: Created template bin specification file at ./spec.json
+#nixnan: Exiting now. Please edit the file to specify which exponent ranges to report.
+```
+
+**Template file created (spec.json):**
+```json
+{
+    "count": 128,
+    "doublings": 2,
+    "bf16": [],
+    "f16": [],
+    "f32": [],
+    "f64": []
+}
+```
+
+**Second step: Edit the file to specify ranges:**
+```json
+{
+    "count": 256,
+    "doublings": 7,
+    "bf16": [[120, 127]],
+    "f16":  [[13, 15]],
+    "f32":  [[120, 127]],
+    "f64":  []
+}
+```
+
+**Final run (with proper configuration):**
+```bash
+BIN_SPEC_FILE=./spec.json HISTOGRAM=1 LOGFILE=./analysis.log LD_PRELOAD=./nixnan.so ./rd_nixnan
+```
+
+This workflow ensures you:
+1. Generate a proper template for your specific formats
+2. Edit it to monitor the exponent ranges you care about
+3. Run the actual analysis with full binade tracking enabled
+
 ---
 
 ## Environment Variables Reference <a name="environment-variables-reference"></a>
@@ -192,7 +241,7 @@ Nixnan's behavior is controlled through environment variables. These are read at
 |----------|------|---------|-------------|
 | `INSTR_BEGIN` | Integer | 0 | Beginning of the instruction interval where to apply instrumentation |
 | `INSTR_END` | Integer | UINT32_MAX | End of the instruction interval where to apply instrumentation |
-| `SAMPLING` | Integer | 0 | Instrument a repeat kernel every SAMPLING times. Set to N to instrument only every Nth kernel invocation (reduces overhead for repeatedly-called kernels) |
+| `SAMPLING` | Integer | 0 | Instrument a repeat kernel every SAMPLING times. Set to N to instrument only every Nth kernel invocation (reduces overhead for repeatedly-called kernels). **Note**: This controls kernel invocation sampling, not to be confused with adaptive threshold doubling (see Histogram Features below) |
 
 ### Output and Debugging
 
@@ -214,11 +263,12 @@ Nixnan's behavior is controlled through environment variables. These are read at
 
 | Variable | Type | Default | Description |
 |----------|------|---------|-------------|
-| `HISTOGRAM` | Integer | 0 | Enable whole-program exponent range tracking. Generates reports like "Exponent range for f16: [-5, 3]" |
-| `BIN_SPEC_FILE` | String | (none) | Path to JSON specification file for targeted range monitoring |
+| `HISTOGRAM` | Integer | 0 | Enable whole-program exponent range tracking. Generates reports like "Exponent range for f16: [-5, 3]". Use with `BIN_SPEC_FILE` for binade-level monitoring |
+| `BIN_SPEC_FILE` | String | (none) | Path to JSON specification file for binade (exponent range) monitoring with optional adaptive threshold doubling. See "Understanding Binades" section below |
 
 ### Usage Examples
 
+**Basic exception detection:**
 ```bash
 # Basic usage with verbose output
 TOOL_VERBOSE=1 LD_PRELOAD=./nixnan.so ./my_program
@@ -231,18 +281,38 @@ SAMPLING=64 LD_PRELOAD=./nixnan.so ./my_program
 
 # Log to file instead of stderr
 LOGFILE=/tmp/nixnan.log LD_PRELOAD=./nixnan.so ./my_program
+```
 
+**Binade/Histogram monitoring (using rd_nixnan.cu as example):**
+```bash
+# Simple histogram: global exponent ranges
+HISTOGRAM=1 LD_PRELOAD=./nixnan.so ./rd_nixnan
+
+# Binade monitoring: first run generates template
+BIN_SPEC_FILE=./spec.json HISTOGRAM=1 LD_PRELOAD=./nixnan.so ./rd_nixnan
+# Now edit spec.json with your desired ranges
+
+# Binade monitoring with adaptive doubling: detailed multi-scale analysis
+BIN_SPEC_FILE=./spec.json HISTOGRAM=1 SAMPLING=2 LOGFILE=./analysis.log \
+  LD_PRELOAD=./nixnan.so ./rd_nixnan
+
+# Multiple precision comparison: FP16, BF16, FP32 side-by-side
+# (rd_nixnan runs all three precisions in one execution)
+BIN_SPEC_FILE=./spec.json HISTOGRAM=1 LOGFILE=./all_precisions.log \
+  LD_PRELOAD=./nixnan.so ./rd_nixnan
+```
+
+**Advanced analysis:**
+```bash
 # Enable memory instrumentation
 INSTR_MEM=1 LD_PRELOAD=./nixnan.so ./my_program
 
 # Limit instrumentation to specific instruction range
 INSTR_BEGIN=100 INSTR_END=500 LD_PRELOAD=./nixnan.so ./my_program
 
-# Enable histogram tracking
-HISTOGRAM=1 LD_PRELOAD=./nixnan.so ./my_program
-
-# Combined: verbose, line info, and logging
-TOOL_VERBOSE=1 LINE_INFO=1 LOGFILE=./debug.log LD_PRELOAD=./nixnan.so ./my_program
+# Combined: binade tracking, sampling, line info, and logging
+BIN_SPEC_FILE=./spec.json HISTOGRAM=1 SAMPLING=2 LINE_INFO=1 LOGFILE=./debug.log \
+  LD_PRELOAD=./nixnan.so ./rd_nixnan
 ```
 
 ---
@@ -280,31 +350,181 @@ Exponent range for f32: [-12, 15]
 Exponent range for f64: [-50, 100]
 ```
 
-#### Targeted Range Monitoring
+This shows the overall range of exponents observed but does not provide binned/bucketed statistics.
 
-Create a JSON specification file:
+#### Binade-Targeted Range Monitoring with Adaptive Doubling
+
+For detailed exception tracking across specific exponent ranges (binades), create a JSON specification file:
 
 ```json
 {
-  "f32": {
-    "ranges": [
-      {"min": -126, "max": -120, "report_frequency": 1000},
-      {"min": 120, "max": 127, "report_frequency": 100}
-    ]
-  },
-  "f16": {
-    "ranges": [
-      {"min": -14, "max": -10, "report_frequency": 500}
-    ]
-  }
+  "count": 256,
+  "doublings": 7,
+  "bf16": [[120, 127]],
+  "f16":  [[13, 15]],
+  "f32":  [[120, 127]],
+  "f64":  []
 }
 ```
+
+**Parameters:**
+- `count`: Initial threshold for binned reporting (report when reaching 256 occurrences)
+- `doublings`: Enable adaptive threshold doubling; threshold will double (256→512→1024→...→32768) up to N times, then reset
+- Format arrays: `[[min_exp, max_exp]]` format, where exponents are in the unbiased range
 
 Run with specification:
 
 ```bash
-BIN_SPEC_FILE=./ranges.json LD_PRELOAD=./nixnan.so ./my_program
+BIN_SPEC_FILE=./spec.json HISTOGRAM=1 LD_PRELOAD=./nixnan.so ./my_program
 ```
+
+**Output example:**
+```
+#nixnan: f16 bin has reached threshold: kernel=rd_step_fp16 range=[13,15] count=256
+#nixnan: f16 bin has reached threshold: kernel=rd_step_fp16 range=[13,15] count=512
+#nixnan: f16 bin has reached threshold: kernel=rd_step_fp16 range=[13,15] count=1024
+...
+#nixnan: f16 bin has reached threshold: kernel=rd_step_fp16 range=[13,15] count=32768
+#nixnan: f16 bin has reached threshold: kernel=rd_step_fp16 range=[13,15] count=256  (resets after doublings limit)
+```
+
+See the "Understanding Binades and Adaptive Threshold Doubling" section below for detailed explanation.
+
+### Understanding Binades and Adaptive Threshold Doubling
+
+#### What is a Binade?
+
+In IEEE 754 floating-point arithmetic, a **binade** is a set of numbers with the same exponent. For example, in FP32:
+- Binade [120, 127]: All numbers whose exponents fall between 120 and 127
+- Binade [13, 15]: Smaller range for FP16
+
+Binades are useful for:
+1. **Overflow detection**: Monitoring high exponent ranges (close to infinity)
+2. **Underflow detection**: Monitoring low exponent ranges (close to subnormal)
+3. **Precision analysis**: Understanding which magnitude ranges are most affected by exceptions
+4. **Performance profiling**: Identifying exception hotspots at specific scales
+
+#### Example: Reaction-Diffusion Simulation
+
+The `rd_nixnan.cu` example demonstrates binade monitoring in a reaction-diffusion FTCS solver:
+
+```bash
+# Compile
+nvcc -arch=sm_86 -lineinfo rd_nixnan.cu -o rd_nixnan
+
+# Create specification for overflow monitoring
+cat > spec.json << 'EOF'
+{
+    "count": 256,
+    "doublings": 7,
+    "bf16": [[120, 127]],
+    "f16":  [[13, 15]],
+    "f32":  [[120, 127]],
+    "f64":  []
+}
+EOF
+
+# Run with binade tracking
+BIN_SPEC_FILE=./spec.json HISTOGRAM=1 SAMPLING=2 LOGFILE=./analysis.log \
+  LD_PRELOAD=/path/to/nixnan.so ./rd_nixnan
+```
+
+**What happens:**
+- The simulation grows values exponentially until overflow occurs
+- FP16 overflows at step ~300 (values exceed 65504)
+- BF16 overflows at step ~1900 (values exceed ~3.4e38)
+- FP32 overflows at step ~1900 (values exceed ~3.4e38)
+
+**Binade output:**
+```
+#nixnan: f16 bin has reached threshold: kernel=rd_step_fp16 range=[13,15] count=256
+#nixnan: f16 bin has reached threshold: kernel=rd_step_fp16 range=[13,15] count=512
+#nixnan: f16 bin has reached threshold: kernel=rd_step_fp16 range=[13,15] count=1024
+...
+#nixnan: f16 bin has reached threshold: kernel=rd_step_fp16 range=[13,15] count=32768
+#nixnan: f16 bin has reached threshold: kernel=rd_step_fp16 range=[13,15] count=256  <- Resets
+
+#nixnan: bf16 bin has reached threshold: kernel=rd_step_bf16 range=[120,127] count=256
+#nixnan: bf16 bin has reached threshold: kernel=rd_step_bf16 range=[120,127] count=512
+... (multiple complete doubling cycles)
+```
+
+#### How to Choose Binade Ranges
+
+**For FP16 (5-bit exponent, range -14 to 15):**
+- Overflow range: `[[13, 15]]` - catches numbers close to 65504
+- Underflow range: `[[-14, -10]]` - catches subnormal transitions
+
+**For FP32 (8-bit exponent, range -126 to 127):**
+- Overflow range: `[[120, 127]]` - catches numbers close to 3.4e38
+- Underflow range: `[[-126, -100]]` - catches subnormal transitions
+
+**For BF16 (8-bit exponent, range -126 to 127):**
+- Overflow range: `[[120, 127]]` - same as FP32 range
+
+**For FP64 (11-bit exponent, range -1022 to 1023):**
+- Overflow range: `[[1015, 1023]]` - catches numbers close to 1.8e308
+- Underflow range: `[[-1022, -900]]` - catches subnormal transitions
+
+#### Adaptive Threshold Doubling
+
+The `doublings` parameter enables **adaptive sampling** at multiple scales:
+
+```json
+{
+    "count": 256,
+    "doublings": 7,
+    "f16": [[13, 15]]
+}
+```
+
+**Behavior:**
+1. **Initial phase**: Report when reaching 256 occurrences in range [13,15]
+2. **First doubling**: Threshold becomes 512, report at 512 occurrences
+3. **Second doubling**: Threshold becomes 1024, report at 1024 occurrences
+4. **... continues**: 2048, 4096, 8192, 16384, 32768
+5. **After 7 doublings**: Reset to original 256, repeat cycle
+
+**Why use this?**
+- **Early detection**: Catch exceptions quickly with lower thresholds
+- **Scale-aware**: Observe behavior changes as exception rates grow
+- **Automatic adaptation**: No need to manually adjust count between runs
+- **Prevention of overflow**: Prevents threshold from growing infinitely large
+
+**Example output pattern:**
+```
+count=256    <- Initial threshold reached
+count=512    <- After 1st doubling
+count=1024   <- After 2nd doubling
+count=2048   <- After 3rd doubling
+count=4096   <- After 4th doubling
+count=8192   <- After 5th doubling
+count=16384  <- After 6th doubling
+count=32768  <- After 7th doubling
+count=256    <- RESET, cycle repeats
+```
+
+### Kernel-Specific Analysis
+
+Each binade report includes the kernel name that generated the exception:
+
+```
+#nixnan: f32 bin has reached threshold: kernel=ampere_sgemm_32x128_nn range=[120,127] count=256
+#nixnan: f32 bin has reached threshold: kernel=ampere_sgemm_32x128_nn range=[120,127] count=512
+#nixnan: bf16 bin has reached threshold: kernel=rd_step_bf16 range=[120,127] count=256
+```
+
+**Use cases:**
+- Identify which kernels generate exceptions
+- Compare exception patterns across different kernels
+- Isolate problems to specific library functions (cuBLAS, cuDNN, custom kernels)
+
+In the `rd_nixnan.cu` example, three separate kernels run:
+- `rd_step_fp16`: FP16 reaction-diffusion step
+- `rd_step_bf16`: BF16 reaction-diffusion step
+- `rd_step_fp32`: FP32 reaction-diffusion step
+
+Each kernel's overflow behavior is tracked independently, showing precision-specific characteristics.
 
 ### Memory Instrumentation Mode
 
@@ -415,7 +635,97 @@ const float recipPrecision = 0.5f / eb;  // eb was subnormal, causing INF
 
 **Fix**: Add input validation for the error bound parameter.
 
-### Case Study 3: CUDA GMRES Solver
+### Case Study 3: Reaction-Diffusion Simulation with Precision Comparison (rd_nixnan.cu)
+
+**Problem**: Need to compare floating-point exception behavior across FP16, BF16, and FP32 in a PDE solver.
+
+**Setup**: The `rd_nixnan.cu` example solves a reaction-diffusion equation:
+```c
+du/dt = D * u_xx + lambda * u
+```
+
+With parameters:
+- Grid points: N=101, time steps: M=2500
+- Diffusion coefficient: D=0.01
+- Reaction term: lambda=50.0
+- Expected overflow around step 1818 (t≈1.82)
+
+**Specification for binade monitoring** (spec.json):
+```json
+{
+    "count": 256,
+    "doublings": 7,
+    "bf16": [[120, 127]],
+    "f16":  [[13, 15]],
+    "f32":  [[120, 127]],
+    "f64":  []
+}
+```
+
+**Run with analysis:**
+```bash
+BIN_SPEC_FILE=./spec.json HISTOGRAM=1 SAMPLING=2 LOGFILE=./analysis.log \
+  LD_PRELOAD=/path/to/nixnan.so ./rd_nixnan
+```
+
+**Key findings from output:**
+
+1. **FP16 behavior** (5-bit exponent, max ≈ 65504):
+   ```
+   #nixnan: f16 bin has reached threshold: kernel=rd_step_fp16 range=[13,15] count=256
+   #nixnan: f16 bin has reached threshold: kernel=rd_step_fp16 range=[13,15] count=512
+   #nixnan: f16 bin has reached threshold: kernel=rd_step_fp16 range=[13,15] count=1024
+   ... (rapid doubling cycles due to fast overflow)
+   first non-finite at step 300 (t=0.300)   <- Overflows very early
+   ```
+
+2. **BF16 behavior** (8-bit exponent, max ≈ 3.4e38):
+   ```
+   #nixnan: bf16 bin has reached threshold: kernel=rd_step_bf16 range=[120,127] count=256
+   #nixnan: bf16 bin has reached threshold: kernel=rd_step_bf16 range=[120,127] count=512
+   ... (multiple complete doubling cycles)
+   #nixnan: bf16 bin has reached threshold: kernel=rd_step_bf16 range=[120,127] count=32768
+   #nixnan: bf16 bin has reached threshold: kernel=rd_step_bf16 range=[120,127] count=256  <- Reset
+   first non-finite at step 1900 (t=1.900)
+   ```
+
+3. **FP32 behavior** (same range as BF16 but better mantissa):
+   ```
+   #nixnan: f32 bin has reached threshold: kernel=rd_step_fp32 range=[120,127] count=256
+   #nixnan: f32 bin has reached threshold: kernel=rd_step_fp32 range=[120,127] count=512
+   ... (similar to BF16)
+   first non-finite at step 1900 (t=1.900)   <- Same timing, cleaner mantissa
+   ```
+
+**Summary report:**
+```
+#nixnan: --- FP16 Operations ---
+#nixnan: NaN:                   22 (100134 repeats)
+#nixnan: Infinity:              22 (639 repeats)
+
+#nixnan: --- BF16 Operations ---
+#nixnan: NaN:                   15 (32975 repeats)
+#nixnan: Infinity:               6 (76 repeats)
+
+#nixnan: --- FP32 Operations ---
+#nixnan: NaN:                   19 (40966 repeats)
+#nixnan: Infinity:               8 (90 repeats)
+```
+
+**Insights:**
+- FP16 is unusable for this problem (overflows at t≈0.3)
+- BF16 and FP32 both reach overflow at t≈1.9, as expected
+- BF16 has fewer unique exceptions due to lower mantissa precision
+- The adaptive doubling (256→512→1024→...→32768) captures the progressive growth of exception frequency
+- Multi-kernel tracking shows precision-specific overflow characteristics
+
+**Debugging approach:**
+1. First run identified that FP16 fails early
+2. Second run with `doublings: 7` showed exception frequency growth patterns
+3. Comparison of three kernels revealed precision-dependent behavior
+4. Adaptive thresholds prevented data saturation while tracking detailed patterns
+
+### Case Study 4: CUDA GMRES Solver
 
 **Problem**: Residual always NaN from the first iteration.
 
@@ -575,6 +885,49 @@ SAMPLING=128 LD_PRELOAD=./nixnan.so ./my_program
 **Solution**: Redirect nixnan output to a file:
 ```bash
 LOGFILE=/tmp/nixnan.log LD_PRELOAD=./nixnan.so ./my_program
+```
+
+#### 7. Binade Threshold Overflow Warning
+
+**Symptom**: Error message about threshold overflow when using large `doublings` parameter:
+```
+Doubling count threshold of X by Y times would cause overflow. 
+Please decrease count threshold or number of doublings.
+Exiting now.
+```
+
+**Explanation**: The sum `(bit_width(count) + doublings)` must fit in 64 bits. Large `count` values (near 2^63) cannot be doubled many times.
+
+**Solution**: Use smaller `doublings` value or smaller `count`:
+```json
+{
+    "count": 256,
+    "doublings": 7,    <- Instead of 20
+    "f16": [[13, 15]]
+}
+```
+
+Example calculations:
+- `count: 256, doublings: 7` → OK (256 = 2^8, can double 7 times safely)
+- `count: 1024, doublings: 30` → ERROR (1024 = 2^10, can only double ~53 times before overflow)
+- `count: 1, doublings: 63` → OK (1 = 2^0, can double up to 63 times)
+
+#### 8. Missing Binade Output in Log
+
+**Symptom**: Expected binade threshold messages don't appear in log file.
+
+**Likely causes:**
+1. Exception frequency is lower than `count` threshold - no thresholds reached
+2. Exponent ranges don't match where exceptions actually occur
+3. Kernel invocation sampling (`SAMPLING` parameter) skipped the exceptions
+
+**Solution**: 
+- Start with lower `count` value (e.g., 10 instead of 256)
+- Verify your binade ranges match the problem area
+- Disable `SAMPLING` for initial analysis
+```bash
+BIN_SPEC_FILE=./spec.json HISTOGRAM=1 SAMPLING=0 LOGFILE=./test.log \
+  LD_PRELOAD=./nixnan.so ./my_program
 ```
 
 ---
