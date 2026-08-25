@@ -1,154 +1,155 @@
-# News
-There is an addition of two new flags: first, MAX_ERRORS which sends a signal to the instrumented program when MAX_ERRORS exceptions are reported to the user. And LOG_KERNELS which is a path to which kernel invocations will be logged. No instrumentation is performed when logging kernel invocations.
+# Nixnan: GPU Floating-Point Exception Detection
 
-# About
-A tool designed to provide a new framework for floating-point exceptional-value detection.
-The tool uses [NVbit](https://github.com/NVlabs/NVBit) in order to instrument Nvidia CUDA programs.
-The goals are to add more support for instructions (and instruction types) from [GPU-FPX]() in a more general framework that will allow new instrumentation passes to be added.
+**For comprehensive documentation, see [Tutorial.md](Tutorial.md)**
 
-# Requirements
-Linux on x86 with Cuda version 12 and compute capability greater than or equal to 8.6.
-ARM should work, but will require replacing the x86 version of NVbit downloaded by `make`.
+Nixnan is a binary instrumentation tool for detecting floating-point exceptional values (NaN, Infinity, Subnormals, Division-by-Zero) in NVIDIA CUDA programs. It provides runtime detection without requiring source code modification or recompilation.
 
-# Setup
-Run `make` in the root directory.
-This should produce a file in the main director called `nixnan.so`.
-This is the instrumentation library.
-(The older detector and analyzer are located in nvbit_release/tools/GPU-FPX.)
+## Quick Start
 
-# Usage
-In the `examples` directory, run the following command:
-```nvcc -arch=compute_86 -lineinfo basic.cu -o basic```
-Then run:
-```LD_PRELOAD=../nixnan.so basic```
-You should then get something like the following:
-```
------ Test overflow: A[0,0]=max_normal, B[0,0]=max_normal, C[0,0]=0 -----
-A[0,0] = 65504.000000 (0x7bff), B[0,0] = 65504.000000 (0x7bff), C[0,0] = 0.000000 (0x0000)
-Computing D = A * B + C with Tensor Cores...
-#nixnan: Initializing GPU context...
-#nixnan: Could not open kernel_whitelist.txt!
-#nixnan: Could not open kernel_blacklist.txt!
-#nixnan: instrumenting all kernels
-#nixnan: running kernel [WMMAF16TensorCore] ...
-#nixnan: error [infinity] detected in instruction HMMA.16816.F16 R20, R4.reuse, R16, RZ ; in function WMMAF16TensorCore at line 0 of type f16
-#nixnan: error [infinity] detected in instruction HMMA.16816.F16 R8, R4.reuse, R16, R8 ; in function WMMAF16TensorCore at line 0 of type f16
-D[0,0]=inf (0x7c00)
---------------------------------------------------------------------------------
------ Test NaN: A[0,0]=inf, B[0,0]=1, C[0,0]=-inf -----
-A[0,0] = inf (0x7c00), B[0,0] = 1.000000 (0x3c00), C[0,0] = -inf (0xfc00)
-Computing D = A * B + C with Tensor Cores...
-#nixnan: error [NaN,infinity] detected in instruction HMMA.16816.F16 R20, R4.reuse, R16, RZ ; in function WMMAF16TensorCore at line 0 of type f16
-#nixnan: error [NaN] detected in instruction HMMA.16816.F16 R22, R4, R18, RZ ; in function WMMAF16TensorCore at line 0 of type f16
-D[0,0]=nan (0x7fff)
---------------------------------------------------------------------------------
------ Test underflow mul: A[0,0]=min_normal, B[0,0]=0.5, C[0,0]=0.0 -----
-A[0,0] = 0.000061 (0x0400), B[0,0] = 0.500000 (0x3800), C[0,0] = 0.000000 (0x0000)
-Computing D = A * B + C with Tensor Cores...
-#nixnan: error [subnormal] detected in instruction HMMA.16816.F16 R20, R4.reuse, R16, RZ ; in function WMMAF16TensorCore at line 0 of type f16
-#nixnan: error [subnormal] detected in instruction HMMA.16816.F16 R8, R4.reuse, R16, R8 ; in function WMMAF16TensorCore at line 0 of type f16
-D[0,0]=0.000031 (0x0200)
---------------------------------------------------------------------------------
------ Test underflow mul: A[0,0]=neg_min_normal, B[0,0]=0.5, C[0,0]=0.0 -----
-A[0,0] = -0.000061 (0x8400), B[0,0] = 0.500000 (0x3800), C[0,0] = 0.000000 (0x0000)
-Computing D = A * B + C with Tensor Cores...
-D[0,0]=-0.000031 (0x8200)
---------------------------------------------------------------------------------
------ Test underflow mul: A[0,0]=min_subnormal, B[0,0]=0.5, C[0,0]=0.0 -----
-A[0,0] = 0.000000 (0x0001), B[0,0] = 0.500000 (0x3800), C[0,0] = 0.000000 (0x0000)
-Computing D = A * B + C with Tensor Cores...
-D[0,0]=0.000000 (0x0000)
---------------------------------------------------------------------------------
------ Test underflow mul: A[0,0]=neg_min_subnormal, B[0,0]=0.5, C[0,0]=0.0 -----
-A[0,0] = -0.000000 (0x8001), B[0,0] = 0.500000 (0x3800), C[0,0] = 0.000000 (0x0000)
-Computing D = A * B + C with Tensor Cores...
-D[0,0]=0.000000 (0x0000)
---------------------------------------------------------------------------------
-#nixnan: Finalizing GPU context...
+### Requirements
+- **OS**: Linux on x86_64
+- **CUDA**: Version 12.x
+- **GPU Compute Capability**: ≥ 8.6 (Ampere or newer recommended)
+- **Build Tools**: GCC, Make
 
-#nixnan: ------------ nixnan Report -----------
+### Installation
 
-#nixnan: --- FP16 Operations ---
-#nixnan: NaN: 4
-#nixnan: Infinity: 3
-#nixnan: Subnormal: 2
-#nixnan: Division by 0: 0
-
-#nixnan: --- FP32 Operations ---
-#nixnan: NaN: 0
-#nixnan: Infinity: 0
-#nixnan: Subnormal: 0
-#nixnan: Division by 0: 0
-
-#nixnan: --- FP64 Operations ---
-#nixnan: NaN: 0
-#nixnan: Infinity: 0
-#nixnan: Subnormal: 0
-#nixnan: Division by 0: 0
-```
-
-The tool notifies the user of detected errors in the program.
-For example in:
-`#nixnan: error [infinity] detected in instruction HMMA.16816.F16 R20, R4.reuse, R16, RZ ; in function WMMAF16TensorCore at line 0 of type f16`
-An infinity was detected arising in a 16-bit matrix-multiply-and-accumulate instruction.
-
-The summary at the end indicates that there were four NaN values, three infinity values and two subnormal values generated during program execution.
-
-# FP Exponent Histogramming
-
-Nixnan now has the facility to track FP exponent binades. This can be controlled with the 
-`HISTOGRAM` and `BIN_SPEC_FILE` environment variables.
-
-## Whole program histogramming
-The `HISTOGRAM` variable enables
-general tracking of exponents encountered per format in a CUDA program's execution,
-producing a summary of the results at the end of execution. For example
 ```bash
-$ HISTOGRAM=1 LD_PRELOAD=nixnan.so half-matmul
-...
-#nixnan: --- FP16 Memory  Operations ---
-#nixnan: NaN:                    4 (60 repeats)
-#nixnan: --- BF16 Memory  Operations ---
-#nixnan: NaN:                    0 (0 repeats)
-#nixnan: --- FP32 Memory  Operations ---
-#nixnan: NaN:                    0 (0 repeats)
-#nixnan: --- FP64 Memory  Operations ---
-#nixnan: NaN:                    0 (0 repeats)
-
-#nixnan: --- FP exponent ranges --- 
-#nixnan: Exponent range for f16: [-5, 3]
-$
+git clone https://github.com/parfloat/nixnan.git
+cd nixnan
+make
 ```
-Shows that in this program, the exponent range of the f16 format is between -5 and 3.
 
-## Targeted range warning
-The `BIN_SPEC_FILE` is a JSON file specification for which exponent ranges should
-be tracked per format, and the frequency of when these fill. This variable expects
-a path to a file containing the specification. If the file does not exist,
-then it will be created and filled in with a template for the specification for what
-exponent ranges per format should be tracked, and how often they should be reported.
+This produces `nixnan.so` in the root directory (the instrumentation library).
 
-For example:
+### Basic Usage
+
+```bash
+# Simple exception detection
+LD_PRELOAD=/path/to/nixnan.so ./your_cuda_program
+
+# With line information (compile with -lineinfo)
+LINE_INFO=1 LD_PRELOAD=/path/to/nixnan.so ./your_cuda_program
+
+# Log to file instead of stderr
+LOGFILE=/tmp/analysis.log LD_PRELOAD=/path/to/nixnan.so ./your_cuda_program
+```
+
+## Key Features
+
+### 1. Exception Detection
+Detects and reports:
+- **NaN** (Not-a-Number) - invalid operations
+- **Infinity** - overflow or division by zero  
+- **Subnormal** - underflow, precision loss
+- **Division by Zero** - explicit divide-by-zero
+
+Supports FP16, BF16, FP32, and FP64 precision levels.
+
+### 2. Binade Monitoring (Exponent Range Tracking)
+Monitor floating-point values in specific exponent ranges (binades) to analyze overflow/underflow behavior across different magnitude scales.
+
+```bash
+BIN_SPEC_FILE=./spec.json HISTOGRAM=1 LD_PRELOAD=./nixnan.so ./program
+```
+
+Create `spec.json`:
 ```json
 {
-    "count": 128,
-    "bf16": [],
-    "f16": [[0,5],[-4,-1]],
-    "f32": [],
-    "f64": []
+    "count": 256,
+    "doublings": 7,
+    "f16":  [[13, 15]],
+    "f32":  [[120, 127]],
+    "bf16": [[120, 127]],
+    "f64":  []
 }
 ```
-will track exponent in the ranges [0,5] and [-4,-1] for the f16 format. The `"count"`
-entry means that exponents in a range are reported every 128 hits.
 
-An example use is:
-```bash
-$ BIN_SPEC_FILE=./spec.json HISTOGRAM=1 LD_PRELOAD=nixnan.so half-matmul
-...
-#nixnan: f16 bin has reached threshold: kernel=WMMAF16TensorCore range=[0,5] count=128
-#nixnan: f16 bin has reached threshold: kernel=WMMAF16TensorCore range=[-4,-1] count=128
-#nixnan: f16 bin has reached threshold: kernel=WMMAF16TensorCore range=[0,5] count=128
-...
+**Key parameters:**
+- `count`: Report threshold (how many occurrences before reporting)
+- `doublings`: Enable adaptive threshold scaling (256→512→1024→...→32768→reset)
+- Format arrays: Exponent ranges to monitor `[[min_exp, max_exp]]`
+
+### 3. Adaptive Threshold Doubling
+Automatically scale reporting thresholds during execution to observe exception behavior at multiple scales. When a threshold is reached, it doubles (e.g., 256 → 512 → 1024) and resets after N doublings, providing multi-scale insight without data saturation.
+
+### 4. Kernel-Specific Analysis
+Track which kernels generate exceptions with per-kernel reporting:
 ```
-This shows that the threshold was reached twice in the [0,5] range and once in 
-the [-4,-1] range.
+#nixnan: f32 bin has reached threshold: kernel=rd_step_fp32 range=[120,127] count=256
+```
+
+### 5. Sampling
+Reduce overhead for long-running programs by instrumenting only every Nth kernel invocation:
+
+```bash
+SAMPLING=64 LD_PRELOAD=./nixnan.so ./program
+```
+
+### 6. Memory Instrumentation
+Track exceptional values flowing into GPU memory:
+
+```bash
+INSTR_MEM=1 LD_PRELOAD=./nixnan.so ./program
+```
+
+## Example: Reaction-Diffusion Simulation
+
+The `rd_nixnan.cu` example demonstrates precision comparison across FP16, BF16, and FP32:
+
+```bash
+# Compile
+nvcc -arch=sm_86 -lineinfo rd_nixnan.cu -o rd_nixnan
+
+# Run with binade tracking and adaptive doubling
+BIN_SPEC_FILE=./spec.json HISTOGRAM=1 SAMPLING=2 LOGFILE=./analysis.log \
+  LD_PRELOAD=./nixnan.so ./rd_nixnan
+```
+
+This shows:
+- **FP16** overflows at step ~300 (values exceed 65504)
+- **BF16** and **FP32** overflow at step ~1900 (values exceed ~3.4e38)
+- Exception frequency growth captured by adaptive doubling (256, 512, 1024, ...)
+
+## Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `HISTOGRAM` | 0 | Enable exponent range tracking |
+| `BIN_SPEC_FILE` | (none) | JSON specification for targeted binade monitoring with adaptive doubling |
+| `SAMPLING` | 0 | Instrument every Nth kernel invocation |
+| `LOGFILE` | (stderr) | Path to output log file |
+| `TOOL_VERBOSE` | 0 | Enable detailed instrumentation logs |
+| `LINE_INFO` | 1 | Include source line information (requires -lineinfo compilation flag) |
+| `INSTR_MEM` | 0 | Monitor memory operations for exceptions |
+
+## Documentation
+
+**For comprehensive documentation, examples, troubleshooting, and advanced usage, see [Tutorial.md](Tutorial.md)**
+
+The tutorial covers:
+- Complete feature explanations
+- Detailed binade theory and selection guidelines
+- Adaptive threshold doubling mechanics
+- Case studies and debugging workflows
+- Performance considerations
+- Troubleshooting guide
+
+## Publications
+
+- **GPU-FPX**: Li, X., Laguna, I., Fang, B., Swirydowicz, K., Li, A., & Gopalakrishnan, G. (2023). "Design and Evaluation of GPU-FPX: A Low-Overhead tool for Floating-Point Exception Detection in NVIDIA GPUs." *HPDC '23*. https://doi.org/10.1145/3588195.3592991
+
+- **NVBit**: Villa, O., Stephenson, M., Nellans, D., & Keckler, S. W. (2019). "NVBit: A Dynamic Binary Instrumentation Framework for NVIDIA GPUs." *MICRO '19*.
+
+## License
+
+See LICENSE file for details.
+
+## Contributing
+
+For issues, questions, or contributions, please open an issue on GitHub or contact the maintainers.
+
+---
+
+**Last Updated**: 2026-08-24  
+**Documentation Version**: Complete with binade monitoring and adaptive doubling features
