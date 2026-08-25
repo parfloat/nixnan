@@ -38,7 +38,7 @@
 #define N 101          // grid points; dx = L/(N-1) = 0.01
 #endif
 #ifndef M
-#define M 2500         // time steps; dt = 1e-3 -> T = 2.5
+#define M 1600         // time steps; dt = 1e-3 -> T = 1.6
 #endif
 
 // --- physical / numerical constants (host + device) ---
