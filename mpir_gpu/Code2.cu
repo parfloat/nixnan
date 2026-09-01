@@ -22,6 +22,66 @@
 // (Code1.ipynb); not compiled in the authoring environment (no GPU) — every
 // CUDA/cuBLAS/cuSOLVER call is wrapped in a checked macro, so any issue
 // reports file:line on first run. Report errors back for a fix pass.
+//
+// ============================================================================
+// CUSOLVER CALLS DOCUMENTATION
+// ============================================================================
+//
+// This code uses cuSOLVER's dense linear algebra routines for:
+//   1. QR factorization (problem setup phase)
+//   2. Cholesky factorization (main factorization phase)
+//   3. Triangular solves (refinement loop, via cuBLAS/custom kernels)
+//
+// Call Types:
+// -----------
+// A. BUFFER SIZE QUERIES (return required workspace in bytes)
+//    - cusolverDnDgeqrf_bufferSize: Query workspace for double QR factorization
+//    - cusolverDnDorgqr_bufferSize: Query workspace for Q generation (double)
+//    - cusolverDnDpotrf_bufferSize: Query workspace for Cholesky (precision-agnostic)
+//      Variants:
+//        * cusolverDnDpotrf_bufferSize (line 205, 225): FP64 Cholesky workspace
+//        * cusolverDnSpotrf_bufferSize (line 246, 268): FP32 Cholesky workspace
+//
+// B. FACTORIZATION ROUTINES (compute LU/QR/Cholesky decompositions)
+//    - cusolverDnDgeqrf (line 180): QR factorization, A = Q*R (FP64)
+//    - cusolverDnDorgqr (line 181): Orthogonal Q from QR factors (FP64)
+//    - cusolverDnDpotrf (lines 207, 226): Cholesky factorization A = L*L^T (FP64)
+//    - cusolverDnSpotrf (lines 247, 269): Cholesky factorization A = L*L^T (FP32)
+//      Info output: device pointer filled with:
+//        * 0 = success
+//        * i > 0 = U[i,i] is zero (singularity at column i)
+//
+// C. TRIANGULAR SOLVE ROUTINES (solve L*x = b or L^T*x = b)
+//    - cusolverDnDpotrs (line 208): Solve using Cholesky factors (FP64)
+//      Note: This solves BOTH forward and backward triangular solves
+//            given the full Cholesky factors L from cusolverDnDpotrf
+//
+//    For iterative refinement, triangular solves also use cuBLAS:
+//    - cublasDtrsv (lines 323-324): Triangular solve (FP64, used in F64 config)
+//    - cublasStrsv (lines 327-328): Triangular solve (FP32, used in F32/TF32/F16/B16T)
+//    - Custom bf16 triangular solve (lines 317-318): k_bf_trsv kernel (B16S config)
+//
+// PRECISION-SPECIFIC PATHS:
+// ========================
+// CFG_F64:   cusolverDnDpotrf → cusolverDnDpotrs (pure FP64 reference)
+// CFG_B16S:  cusolverDnSpotrf on FP32 pivot (lines 246-247), k_bf_trsv custom solve
+// Others:    cusolverDnSpotrf on FP32 working copy (line 269)
+//
+// ERROR HANDLING:
+// ===============
+// All cuSOLVER calls wrapped in CS() macro (line 42-43):
+//   CS(x) checks cusolverStatus_t, exits on non-success
+// Info output copied to host (line 227-228, 248, 270):
+//   if(info > 0) return k+info;  // Breakdown detected
+//
+// ALGORITHM FLOW:
+// ================
+// 1. make_problem():   QR for orthogonal matrix generation
+//                      Cholesky for reference FP64 solution
+// 2. factorize():      Blocked Cholesky (block size NB, default 256)
+//                      One cusolverDnSpotrf per diagonal block
+// 3. Refinement loop:  Uses factorized L (no further cuSOLVER calls)
+//                      Triangular solves via cuBLAS/custom kernels
 
 #include <cstdio>
 #include <cstdlib>
@@ -174,10 +234,35 @@ static void make_problem(Ctx& c, double kappa2, unsigned long seed, double ascal
   CR(curandGenerateNormalDouble(g, G, ((nn+1)/2)*2, 0.0, 1.0));
   // QR -> Q in place
   double* tau; CK(cudaMalloc(&tau, n*sizeof(double)));
-  int lw1, lw2; CS(cusolverDnDgeqrf_bufferSize(c.cs, n, n, G, n, &lw1));
+  int lw1, lw2;
+  // CUSOLVER CALL 1: cusolverDnDgeqrf_bufferSize (FP64, buffer size query)
+  //   cusolverDnDgeqrf_bufferSize(handle, m, n, A, lda, &lwork)
+  //   Query: how much GPU workspace needed for QR decomposition of n×n matrix?
+  //   Returns: lw1 = required size in # of doubles (typically O(n) to O(n*n))
+  CS(cusolverDnDgeqrf_bufferSize(c.cs, n, n, G, n, &lw1));
+  // CUSOLVER CALL 2: cusolverDnDorgqr_bufferSize (FP64, buffer size query)
+  //   cusolverDnDorgqr_bufferSize(handle, m, n, k, A, lda, tau, &lwork)
+  //   Query: how much GPU workspace needed to generate Q from QR factors?
+  //   Returns: lw2 = required size in # of doubles
   CS(cusolverDnDorgqr_bufferSize(c.cs, n, n, n, G, n, tau, &lw2));
   int lw = lw1>lw2?lw1:lw2; double* work; CK(cudaMalloc(&work, (long)lw*sizeof(double)));
+  // CUSOLVER CALL 3: cusolverDnDgeqrf (FP64, QR decomposition)
+  //   cusolverDnDgeqrf(handle, m, n, A, lda, tau, Work, lwork, devInfo)
+  //   Compute: QR factorization of A (n×n matrix in G)
+  //   Input:  G is n×n matrix (ld=n)
+  //   Output: G overwritten with both R (upper triangle) and Householder vectors (lower)
+  //           tau holds Householder scalar coefficients (length n)
+  //           c.dinfo device int: 0=success, <0=arg error, >0=numerical fail
+  //   Used for: constructing orthogonal matrix Q for problem generation
   CS(cusolverDnDgeqrf(c.cs, n, n, G, n, tau, work, lw, c.dinfo));
+  // CUSOLVER CALL 4: cusolverDnDorgqr (FP64, generate Q from QR)
+  //   cusolverDnDorgqr(handle, m, n, k, A, lda, tau, Work, lwork, devInfo)
+  //   Compute: Reconstruct full orthogonal Q matrix from QR factorization
+  //   Input:  G contains QR factors from cusolverDnDgeqrf above
+  //           tau holds Householder coefficients
+  //           k=n means reconstruct all n columns of Q
+  //   Output: G overwritten in-place with the orthogonal matrix Q (dense, n×n)
+  //   Used for: problem generation (A := (Q*D)*Q^T via k_colscale + cublasDgemm)
   CS(cusolverDnDorgqr(c.cs, n, n, n, G, n, tau, work, lw, c.dinfo));
   // D geometric: sigma_j = kappa^(-j/(n-1)) ; A = (Q D) Q^T
   double* dvec; CK(cudaMalloc(&dvec, n*sizeof(double)));
@@ -202,9 +287,30 @@ static void make_problem(Ctx& c, double kappa2, unsigned long seed, double ascal
   // x_ref: fp64 solve of stored system
   CK(cudaMemcpy(c.dtmp, c.Ac64, nn*sizeof(double), cudaMemcpyDeviceToDevice));
   CK(cudaMemcpy(c.xref64, c.b64, n*sizeof(double), cudaMemcpyDeviceToDevice));
-  int lwd; CS(cusolverDnDpotrf_bufferSize(c.cs, CUBLAS_FILL_MODE_LOWER, n, c.dtmp, n, &lwd));
+  int lwd;
+  // CUSOLVER CALL 5: cusolverDnDpotrf_bufferSize (FP64, Cholesky buffer query)
+  //   cusolverDnDpotrf_bufferSize(handle, fill, n, A, lda, &lwork)
+  //   Query: workspace size for Cholesky decomposition of n×n symmetric positive definite matrix
+  //   CUBLAS_FILL_MODE_LOWER: working with lower triangle (L where A = L*L^T)
+  //   Returns: lwd = required workspace size (typically O(n))
+  CS(cusolverDnDpotrf_bufferSize(c.cs, CUBLAS_FILL_MODE_LOWER, n, c.dtmp, n, &lwd));
   if(lwd>lw){ CK(cudaFree(work)); CK(cudaMalloc(&work,(long)lwd*sizeof(double))); lw=lwd; }
+  // CUSOLVER CALL 6: cusolverDnDpotrf (FP64, Cholesky factorization)
+  //   cusolverDnDpotrf(handle, fill, n, A, lda, Work, lwork, devInfo)
+  //   Compute: Cholesky factorization A = L*L^T (L is lower triangular)
+  //   Input:  c.dtmp is n×n symmetric matrix (only lower triangle used)
+  //   Output: c.dtmp overwritten with L (lower triangle) and junk (upper)
+  //           c.dinfo device int: 0=success, <0=arg error, >0=matrix singular at row n
+  //   This produces the reference FP64 solution for the linear system
   CS(cusolverDnDpotrf(c.cs, CUBLAS_FILL_MODE_LOWER, n, c.dtmp, n, work, lw, c.dinfo));
+  // CUSOLVER CALL 7: cusolverDnDpotrs (FP64, Cholesky triangular solve)
+  //   cusolverDnDpotrs(handle, fill, n, nrhs, A, lda, B, ldb, devInfo)
+  //   Solve: A*x = b using Cholesky factors from cusolverDnDpotrf
+  //   Input:  c.dtmp contains L from Cholesky factorization (A = L*L^T)
+  //           c.xref64 is right-hand side b (n×1)
+  //           nrhs=1 means solving one linear system
+  //   Output: c.xref64 overwritten with solution x (solves both L*y=b and L^T*x=y internally)
+  //   Used for: computing reference solution x_ref (ground truth for iterative refinement)
   CS(cusolverDnDpotrs(c.cs, CUBLAS_FILL_MODE_LOWER, n, 1, c.dtmp, n, c.xref64, n, c.dinfo));
   k_d2s<<<g1(n),B1>>>(c.xref64, c.xref, n);
   CK(cudaFree(tau)); CK(cudaFree(work)); CK(cudaFree(dvec)); CK(cudaFree(QD));
@@ -219,10 +325,25 @@ static int factorize(Ctx& c, Config cfg, int NB){
   int n=c.n; float one=1.f, mone=-1.f;
   if(cfg==CFG_F64){
     // F64: pure double precision (reference baseline)
+    // Blocked Cholesky: process diagonal blocks (NB×NB) one at a time, update trailing matrix
     CK(cudaMemcpy(c.A64, c.Ac64, c.nn*sizeof(double), cudaMemcpyDeviceToDevice));
     for(int k=0;k<n;k+=NB){
       int nb=(k+NB<=n)? NB : n-k; int m=n-k-nb;
-      int lwq; CS(cusolverDnDpotrf_bufferSize(c.cs, CUBLAS_FILL_MODE_LOWER, nb, c.A64 + k + (long)k*n, n, &lwq));
+      int lwq;
+      // CUSOLVER CALL 8: cusolverDnDpotrf_bufferSize (FP64, Cholesky buffer, CFG_F64 factorize)
+      //   Query workspace for Cholesky factorization of the diagonal block (nb×nb)
+      //   The block starts at (k,k) with leading dimension n (stored in column-major order)
+      //   This is part of blocked Cholesky decomposition (NB=256 default block size)
+      CS(cusolverDnDpotrf_bufferSize(c.cs, CUBLAS_FILL_MODE_LOWER, nb, c.A64 + k + (long)k*n, n, &lwq));
+      // CUSOLVER CALL 9: cusolverDnDpotrf (FP64, Cholesky factorization, CFG_F64 factorize)
+      //   cusolverDnDpotrf(handle, fill, n, A, lda, Work, lwork, devInfo)
+      //   Compute: Cholesky factorization of the (k,k) diagonal block (size nb×nb)
+      //   Input:  c.A64 + k + k*n points to the (k,k) position; lda=n (full matrix leading dim)
+      //           nb is the block size (typically 256, or smaller for the last block)
+      //   Output: Overwrites (k,k) block with L (lower triangular Cholesky factor)
+      //           c.dinfo: 0=success, >0=singular at column (k+info)
+      //   Note: After this, the (k,k) block contains L such that block[k:k+nb, k:k+nb] = L*L^T
+      //   Used for: step 1 of blocked Cholesky (factorize diagonal block)
       CS(cusolverDnDpotrf(c.cs, CUBLAS_FILL_MODE_LOWER, nb, c.A64 + k + (long)k*n, n, c.dtmp, lwq, c.dinfo));
       int info; CK(cudaMemcpy(&info, c.dinfo, sizeof(int), cudaMemcpyDeviceToHost));
       if(info>0) return k+info;
@@ -239,11 +360,28 @@ static int factorize(Ctx& c, Config cfg, int NB){
     return 0;
   }
   if(cfg==CFG_B16S){
+    // B16S: bf16 SIMT accumulation path
+    // Works with FP32 pivot buffer c.P, then stores back to c.Abf (bf16) with rounding
     k_s2bf<<<g1(c.nn),B1>>>(c.A32, c.Abf, c.nn);
     for(int k=0;k<n;k+=NB){
       int nb = (k+NB<=n)? NB : n-k; int m = n-k-nb;
-      k_bfpanel2s<<<g2(n-k,nb),B2>>>(c.Abf, c.P, n, k, k, nb);
-      int lwq; CS(cusolverDnSpotrf_bufferSize(c.cs, CUBLAS_FILL_MODE_LOWER, nb, c.P + k, n, &lwq));
+      k_bfpanel2s<<<g2(n-k,nb),B2>>>(c.Abf, c.P, n, k, k, nb);  // bf16→FP32 for Cholesky
+      int lwq;
+      // CUSOLVER CALL 10: cusolverDnSpotrf_bufferSize (FP32, Cholesky buffer, CFG_B16S factorize)
+      //   Query workspace for FP32 Cholesky of the (k,k) diagonal block
+      //   The diagonal block is stored in c.P (FP32 pivot buffer, converted from bf16)
+      //   Block is (nb×nb) starting at (k,k), with leading dimension n
+      CS(cusolverDnSpotrf_bufferSize(c.cs, CUBLAS_FILL_MODE_LOWER, nb, c.P + k, n, &lwq));
+      // CUSOLVER CALL 11: cusolverDnSpotrf (FP32, Cholesky factorization, CFG_B16S factorize)
+      //   cusolverDnSpotrf(handle, fill, n, A, lda, Work, lwork, devInfo)
+      //   Compute: Cholesky factorization in FP32 (working precision) of (k,k) block
+      //   Input:  c.P + k + k*n points to (k,k) block (FP32 buffer); lda=n
+      //           nb is the block size
+      //   Output: c.P overwritten with L (lower triangular), stores in FP32 for accuracy
+      //           c.dinfo: 0=success, >0=singular at column (k+info)
+      //   Note: This is deliberate: factorize at higher precision (FP32), then round back
+      //         to bf16 storage via k_spanel2bf below. The triangular solve uses bf16 via k_bf_trsv.
+      //   Used for: step 1 of blocked Cholesky in B16S configuration
       CS(cusolverDnSpotrf(c.cs, CUBLAS_FILL_MODE_LOWER, nb, c.P + k, n, c.tmp, lwq, c.dinfo));
       int info; CK(cudaMemcpy(&info, c.dinfo, sizeof(int), cudaMemcpyDeviceToHost));
       if(info>0) return k+info;
@@ -259,13 +397,32 @@ static int factorize(Ctx& c, Config cfg, int NB){
     return 0;
   }
   // fp32 working copy path (F32 / TF32 / F16 / B16T)
+  // All these configs work with FP32 buffer c.C, then use different accumulation modes for the update
   CK(cudaMemcpy(c.C, c.A32, c.nn*sizeof(float), cudaMemcpyDeviceToDevice));
   int isbf = (cfg==CFG_B16T);
   if(cfg==CFG_F16 || cfg==CFG_B16T)
-    k_round16_sub<<<g2(n,n),B2>>>(c.C, n, 0,0, n, n, isbf);      // representation rounding
+    k_round16_sub<<<g2(n,n),B2>>>(c.C, n, 0,0, n, n, isbf);      // representation rounding to u_f
   for(int k=0;k<n;k+=NB){
     int nb=(k+NB<=n)? NB : n-k; int m=n-k-nb;
-    int lwq; CS(cusolverDnSpotrf_bufferSize(c.cs, CUBLAS_FILL_MODE_LOWER, nb, c.C + k + (long)k*n, n, &lwq));
+    int lwq;
+    // CUSOLVER CALL 12: cusolverDnSpotrf_bufferSize (FP32, Cholesky buffer, F32/TF32/F16/B16T factorize)
+    //   Query workspace for FP32 Cholesky factorization of the (k,k) diagonal block
+    //   Block is (nb×nb) stored in c.C (FP32 working buffer); leading dimension is n
+    //   This is the main factorization path used for most precision configurations
+    CS(cusolverDnSpotrf_bufferSize(c.cs, CUBLAS_FILL_MODE_LOWER, nb, c.C + k + (long)k*n, n, &lwq));
+    // CUSOLVER CALL 13: cusolverDnSpotrf (FP32, Cholesky factorization, F32/TF32/F16/B16T factorize)
+    //   cusolverDnSpotrf(handle, fill, n, A, lda, Work, lwork, devInfo)
+    //   Compute: Cholesky factorization in FP32 of the (k,k) diagonal block (nb×nb)
+    //   Input:  c.C + k + k*n points to (k,k) position; lda=n (full matrix leading dim)
+    //           nb is the block size
+    //   Output: c.C[(k,k)] overwritten with L (lower triangular Cholesky factor)
+    //           c.dinfo: 0=success, >0=singular at column (k+info)
+    //   Precision note:
+    //     - F32:  factorization in FP32, stored as FP32, updated with cublasSsyrk (FP32)
+    //     - TF32: factorization in FP32, stored as FP32, updated with TF32 tensor core GemmEx
+    //     - F16:  factorization in FP32 (cuSOLVER only has FP32/FP64), then rounded+stored in FP16
+    //     - B16T: same as F16 but uses bf16 storage and GemmEx with bf16 tensor cores
+    //   Used for: step 1 of blocked Cholesky in the 4-config FP32 working buffer path
     CS(cusolverDnSpotrf(c.cs, CUBLAS_FILL_MODE_LOWER, nb, c.C + k + (long)k*n, n, c.tmp, lwq, c.dinfo));
     int info; CK(cudaMemcpy(&info, c.dinfo, sizeof(int), cudaMemcpyDeviceToHost));
     if(info>0) return k+info;
