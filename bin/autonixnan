@@ -2,7 +2,6 @@
 """Auto-nixnan: Collect and report CUDA kernel information from target programs."""
 
 import argparse
-import json
 import os
 import subprocess
 import sys
@@ -11,19 +10,8 @@ import time
 from collections import OrderedDict
 
 
-def collect_kernels(program_args: list, timeout: int, lib_path: str, log_file: str) -> dict:
-    """
-    Run the target program with nixnan preloaded to collect kernel information.
-
-    Returns a dict with:
-      - kernels_seq: ordered list of kernel names in call order
-      - kernels_unique: dict of unique kernel names (preserving first-seen order)
-      - elapsed: wall-clock seconds the subprocess ran
-    """
-    env = os.environ.copy()
-    env["LD_PRELOAD"] = lib_path
-    env["LOG_KERNELS"] = log_file
-
+def run_with_env(program_args: list, timeout: int, env: dict) -> float:
+    """Run the target program with the given environment. Returns wall-clock seconds."""
     start = time.monotonic()
     try:
         subprocess.run(
@@ -31,6 +19,8 @@ def collect_kernels(program_args: list, timeout: int, lib_path: str, log_file: s
             env=env,
             check=True,
             timeout=timeout,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
         )
     except subprocess.CalledProcessError as exc:
         print(f"Error: target program exited with code {exc.returncode}", file=sys.stderr)
@@ -38,7 +28,23 @@ def collect_kernels(program_args: list, timeout: int, lib_path: str, log_file: s
     except subprocess.TimeoutExpired:
         print(f"Error: target program exceeded {timeout}s timeout", file=sys.stderr)
         sys.exit(1)
-    elapsed = time.monotonic() - start
+    return time.monotonic() - start
+
+
+def collect_kernels(program_args: list, timeout: int, lib_path: str, log_file: str) -> dict:
+    """
+    Run the target program with nixnan preloaded to collect kernel information.
+
+    Returns a dict with:
+      - kernels_seq: ordered list of kernel names in call order
+      - kernels_unique: dict of unique kernel names with call counts
+      - elapsed: wall-clock seconds the subprocess ran
+    """
+    env = os.environ.copy()
+    env["LD_PRELOAD"] = lib_path
+    env["LOG_KERNELS"] = log_file
+
+    elapsed = run_with_env(program_args, timeout, env)
 
     # Parse the log file
     kernels_seq: list[str] = []
@@ -49,7 +55,6 @@ def collect_kernels(program_args: list, timeout: int, lib_path: str, log_file: s
             line = line.strip()
             if not line.startswith("#nixnan: kernel ["):
                 continue
-            # Extract kernel name between [ and ]
             bracket_open = line.index("[") + 1
             bracket_close = line.index("]")
             kernel_name = line[bracket_open:bracket_close]
@@ -61,6 +66,13 @@ def collect_kernels(program_args: list, timeout: int, lib_path: str, log_file: s
         "kernels_unique": dict(kernels_unique),
         "elapsed": elapsed,
     }
+
+
+def run_instrumented(program_args: list, timeout: int, lib_path: str) -> float:
+    """Run the target program with nixnan preloaded (no logging) to measure instrumentation overhead."""
+    env = os.environ.copy()
+    env["LD_PRELOAD"] = lib_path
+    return run_with_env(program_args, timeout, env)
 
 
 def main() -> None:
@@ -83,22 +95,38 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    if not args.command:
+    # Strip leading '--' separator if present
+    cmd = args.command
+    if cmd and cmd[0] == "--":
+        cmd = cmd[1:]
+
+    if not cmd:
         parser.error("Please provide a program to run after --")
 
     # Resolve the nixnan shared library path (relative to this script)
     script_dir = os.path.dirname(os.path.abspath(__file__))
     lib_path = os.path.join(script_dir, "..", "nixnan.so")
 
-    # Create a temporary log file
+    # --- Step 1: Baseline run with kernel logging ---
     fd, log_file = tempfile.mkstemp(suffix=".log", prefix="nixnan_kernels_")
     try:
         with os.fdopen(fd, "w") as tmp:
             pass  # truncate
 
-        result = collect_kernels(args.command, args.timeout, lib_path, log_file)
+        result = collect_kernels(cmd, args.timeout, lib_path, log_file)
+        baseline_time = result["elapsed"]
 
-        # Print results
+        # --- Step 2: Instrumented run (LD_PRELOAD only, no logging) ---
+        instrumented_time = run_instrumented(cmd, args.timeout, lib_path)
+
+        # --- Overhead calculation ---
+        overhead_ms = (instrumented_time - baseline_time) * 1000
+        if baseline_time > 0:
+            overhead_pct = ((instrumented_time - baseline_time) / baseline_time) * 100
+        else:
+            overhead_pct = 0.0
+
+        # --- Print results ---
         print("=" * 70)
         print("Auto-nixnan Kernel Report")
         print("=" * 70)
@@ -110,8 +138,11 @@ def main() -> None:
             print(f"  {name} (called {count} time{'s' if count > 1 else ''})")
         print()
 
-        # Execution time
-        print(f"Execution Time: {result['elapsed']:.3f}s")
+        # Timing comparison
+        print("Timing:")
+        print(f"  Baseline (with kernel logging): {baseline_time:.3f}s")
+        print(f"  Instrumented (LD_PRELOAD only): {instrumented_time:.3f}s")
+        print(f"  Instrumentation overhead:       {overhead_ms:+.1f}ms ({overhead_pct:+.1f}%)")
         print()
 
         # Kernel call sequence
@@ -120,7 +151,6 @@ def main() -> None:
             print(f"  {idx:04d}. {name}")
 
     finally:
-        # Clean up temp file
         if os.path.exists(log_file):
             os.unlink(log_file)
 
