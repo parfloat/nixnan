@@ -31,15 +31,20 @@ def run_with_env(program_args: list, timeout: int, env: dict) -> float:
     return time.monotonic() - start
 
 
-def collect_kernels(program_args: list, timeout: int, lib_path: str, log_file: str) -> dict:
+def collect_kernels(program_args: list, timeout: int, lib_path: str) -> dict:
     """
     Run the target program with nixnan preloaded to collect kernel information.
+
+    Manages its own temporary log file (create, run, parse, cleanup).
 
     Returns a dict with:
       - kernels_seq: ordered list of kernel names in call order
       - kernels_unique: dict of unique kernel names with call counts
       - elapsed: wall-clock seconds the subprocess ran
     """
+    fd, log_file = tempfile.mkstemp(suffix=".log", prefix="nixnan_kernels_")
+    os.close(fd)
+
     env = os.environ.copy()
     env["LD_PRELOAD"] = lib_path
     env["LOG_KERNELS"] = log_file
@@ -60,6 +65,9 @@ def collect_kernels(program_args: list, timeout: int, lib_path: str, log_file: s
             kernel_name = line[bracket_open:bracket_close]
             kernels_seq.append(kernel_name)
             kernels_unique[kernel_name] = kernels_unique.get(kernel_name, 0) + 1
+
+    # Cleanup
+    os.unlink(log_file)
 
     return {
         "kernels_seq": kernels_seq,
@@ -108,51 +116,42 @@ def main() -> None:
     lib_path = os.path.join(script_dir, "..", "nixnan.so")
 
     # --- Step 1: Baseline run with kernel logging ---
-    fd, log_file = tempfile.mkstemp(suffix=".log", prefix="nixnan_kernels_")
-    try:
-        with os.fdopen(fd, "w") as tmp:
-            pass  # truncate
+    result = collect_kernels(cmd, args.timeout, lib_path)
+    baseline_time = result["elapsed"]
 
-        result = collect_kernels(cmd, args.timeout, lib_path, log_file)
-        baseline_time = result["elapsed"]
+    # --- Step 2: Instrumented run (LD_PRELOAD only, no logging) ---
+    instrumented_time = run_instrumented(cmd, args.timeout, lib_path)
 
-        # --- Step 2: Instrumented run (LD_PRELOAD only, no logging) ---
-        instrumented_time = run_instrumented(cmd, args.timeout, lib_path)
+    # --- Overhead calculation ---
+    overhead_ms = (instrumented_time - baseline_time) * 1000
+    if baseline_time > 0:
+        overhead_pct = ((instrumented_time - baseline_time) / baseline_time) * 100
+    else:
+        overhead_pct = 0.0
 
-        # --- Overhead calculation ---
-        overhead_ms = (instrumented_time - baseline_time) * 1000
-        if baseline_time > 0:
-            overhead_pct = ((instrumented_time - baseline_time) / baseline_time) * 100
-        else:
-            overhead_pct = 0.0
+    # --- Print results ---
+    print("=" * 70)
+    print("Auto-nixnan Kernel Report")
+    print("=" * 70)
+    print()
 
-        # --- Print results ---
-        print("=" * 70)
-        print("Auto-nixnan Kernel Report")
-        print("=" * 70)
-        print()
+    # Unique kernel names
+    print(f"Unique Kernels ({len(result['kernels_unique'])}):")
+    for name, count in result["kernels_unique"].items():
+        print(f"  {name} (called {count} time{'s' if count > 1 else ''})")
+    print()
 
-        # Unique kernel names
-        print(f"Unique Kernels ({len(result['kernels_unique'])}):")
-        for name, count in result["kernels_unique"].items():
-            print(f"  {name} (called {count} time{'s' if count > 1 else ''})")
-        print()
+    # Timing comparison
+    print("Timing:")
+    print(f"  Baseline (with kernel logging): {baseline_time:.3f}s")
+    print(f"  Instrumented (LD_PRELOAD only): {instrumented_time:.3f}s")
+    print(f"  Instrumentation overhead:       {overhead_ms:+.1f}ms ({overhead_pct:+.1f}%)")
+    print()
 
-        # Timing comparison
-        print("Timing:")
-        print(f"  Baseline (with kernel logging): {baseline_time:.3f}s")
-        print(f"  Instrumented (LD_PRELOAD only): {instrumented_time:.3f}s")
-        print(f"  Instrumentation overhead:       {overhead_ms:+.1f}ms ({overhead_pct:+.1f}%)")
-        print()
-
-        # Kernel call sequence
-        print(f"Kernel Call Sequence ({len(result['kernels_seq'])} calls):")
-        for idx, name in enumerate(result["kernels_seq"], start=1):
-            print(f"  {idx:04d}. {name}")
-
-    finally:
-        if os.path.exists(log_file):
-            os.unlink(log_file)
+    # Kernel call sequence
+    print(f"Kernel Call Sequence ({len(result['kernels_seq'])} calls):")
+    for idx, name in enumerate(result["kernels_seq"], start=1):
+        print(f"  {idx:04d}. {name}")
 
 
 if __name__ == "__main__":
