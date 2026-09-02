@@ -1,0 +1,129 @@
+#!/usr/bin/env python3
+"""Auto-nixnan: Collect and report CUDA kernel information from target programs."""
+
+import argparse
+import json
+import os
+import subprocess
+import sys
+import tempfile
+import time
+from collections import OrderedDict
+
+
+def collect_kernels(program_args: list, timeout: int, lib_path: str, log_file: str) -> dict:
+    """
+    Run the target program with nixnan preloaded to collect kernel information.
+
+    Returns a dict with:
+      - kernels_seq: ordered list of kernel names in call order
+      - kernels_unique: dict of unique kernel names (preserving first-seen order)
+      - elapsed: wall-clock seconds the subprocess ran
+    """
+    env = os.environ.copy()
+    env["LD_PRELOAD"] = lib_path
+    env["LOG_KERNELS"] = log_file
+
+    start = time.monotonic()
+    try:
+        subprocess.run(
+            program_args,
+            env=env,
+            check=True,
+            timeout=timeout,
+        )
+    except subprocess.CalledProcessError as exc:
+        print(f"Error: target program exited with code {exc.returncode}", file=sys.stderr)
+        sys.exit(exc.returncode)
+    except subprocess.TimeoutExpired:
+        print(f"Error: target program exceeded {timeout}s timeout", file=sys.stderr)
+        sys.exit(1)
+    elapsed = time.monotonic() - start
+
+    # Parse the log file
+    kernels_seq: list[str] = []
+    kernels_unique: OrderedDict[str, int] = OrderedDict()
+
+    with open(log_file, "r") as fh:
+        for line in fh:
+            line = line.strip()
+            if not line.startswith("#nixnan: kernel ["):
+                continue
+            # Extract kernel name between [ and ]
+            bracket_open = line.index("[") + 1
+            bracket_close = line.index("]")
+            kernel_name = line[bracket_open:bracket_close]
+            kernels_seq.append(kernel_name)
+            kernels_unique[kernel_name] = kernels_unique.get(kernel_name, 0) + 1
+
+    return {
+        "kernels_seq": kernels_seq,
+        "kernels_unique": dict(kernels_unique),
+        "elapsed": elapsed,
+    }
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Collect CUDA kernel information from a target program using nixnan.",
+        add_help=True,
+    )
+    parser.add_argument(
+        "-t", "--timeout",
+        type=int,
+        default=300,
+        help="Time limit in seconds for the target program (default: 300)",
+    )
+    parser.add_argument(
+        "command",
+        nargs=argparse.REMAINDER,
+        metavar="[-- PROGRAM [ARGS...]]",
+        help="Program and arguments to run (precede with --)",
+    )
+
+    args = parser.parse_args()
+
+    if not args.command:
+        parser.error("Please provide a program to run after --")
+
+    # Resolve the nixnan shared library path (relative to this script)
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    lib_path = os.path.join(script_dir, "..", "nixnan.so")
+
+    # Create a temporary log file
+    fd, log_file = tempfile.mkstemp(suffix=".log", prefix="nixnan_kernels_")
+    try:
+        with os.fdopen(fd, "w") as tmp:
+            pass  # truncate
+
+        result = collect_kernels(args.command, args.timeout, lib_path, log_file)
+
+        # Print results
+        print("=" * 70)
+        print("Auto-nixnan Kernel Report")
+        print("=" * 70)
+        print()
+
+        # Unique kernel names
+        print(f"Unique Kernels ({len(result['kernels_unique'])}):")
+        for name, count in result["kernels_unique"].items():
+            print(f"  {name} (called {count} time{'s' if count > 1 else ''})")
+        print()
+
+        # Execution time
+        print(f"Execution Time: {result['elapsed']:.3f}s")
+        print()
+
+        # Kernel call sequence
+        print(f"Kernel Call Sequence ({len(result['kernels_seq'])} calls):")
+        for idx, name in enumerate(result["kernels_seq"], start=1):
+            print(f"  {idx:04d}. {name}")
+
+    finally:
+        # Clean up temp file
+        if os.path.exists(log_file):
+            os.unlink(log_file)
+
+
+if __name__ == "__main__":
+    main()
