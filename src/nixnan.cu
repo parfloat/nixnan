@@ -45,6 +45,8 @@ using nixnan::exception_info;
 #include "meminstrumentation.cuh"
 #include "fp-histogram.cuh"
 #include <signal.h>
+#include <map>
+#include <chrono>
 
 uint32_t instr_begin_interval = 0;
 uint32_t instr_end_interval = UINT32_MAX;
@@ -54,6 +56,7 @@ int print_ill_instr = 0;
 int sampling = 0;
 bool instrument_mem = false;
 bool line_info = true;
+bool time_kernels = false;
 
 volatile bool recv_thread_started = false;
 volatile bool recv_thread_receiving = false;
@@ -126,6 +129,7 @@ void nvbit_at_init() {
     nnout() << "Invalid value for MAX_ERRORS: " << max_errors << ". It must be a non-negative integer." << std::endl;
     exit(1);
   }
+  GET_VAR_INT(time_kernels, "TIME_KERNELS", 0, "Enable timing of kernel execution. This will print the execution time of each kernel to the log file.");
   std::string pad(82, '-');
   nnout() << pad << '\n';
 }
@@ -302,6 +306,7 @@ void nvbit_at_cuda_event(CUcontext ctx, int is_exit, nvbit_api_cuda_t cbid,
   const char *name, void *params, CUresult *pStatus) {
   if (skip_flag)
     return;
+  static std::map<CUcontext, std::chrono::time_point<std::chrono::high_resolution_clock>> kernel_start_times;
 
   if (cbid == API_CUDA_cuLaunchKernel_ptsz || cbid == API_CUDA_cuLaunchKernel ||
       cbid == API_CUDA_cuLaunchCooperativeKernel ||
@@ -313,6 +318,10 @@ void nvbit_at_cuda_event(CUcontext ctx, int is_exit, nvbit_api_cuda_t cbid,
       /*----- Instrumentation Logic --------- */
       std::string kernel_name = nvbit_get_func_name(ctx, p->f);
       std::string short_name = cut_kernel_name(kernel_name);
+      if (time_kernels) {
+        kernel_start_times[ctx] = std::chrono::high_resolution_clock::now();
+        nnout() << "Kernel [" << kernel_name << "] started." << std::endl;
+      }
       bool enable_instr = false;
       recv_thread_receiving = true;
 
@@ -349,6 +358,13 @@ void nvbit_at_cuda_event(CUcontext ctx, int is_exit, nvbit_api_cuda_t cbid,
       nvbit_enable_instrumented(ctx, p->f, enable_instr);
       /*------------ End of Instrumentation Logic ---------------*/
     } else {
+      if (time_kernels) {
+        auto end_time = std::chrono::high_resolution_clock::now();
+        auto start_time = kernel_start_times[ctx];
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
+        std::string kernel_name = nvbit_get_func_name(ctx, p->f);
+        nnout() << "Kernel [" << kernel_name << "] execution time: " << duration << " microseconds" << std::endl;
+      }
       /* make sure current kernel is completed */
       cudaDeviceSynchronize();
       cudaError_t kernelError = cudaGetLastError();
