@@ -318,9 +318,9 @@ void nvbit_at_cuda_event(CUcontext ctx, int is_exit, nvbit_api_cuda_t cbid,
       /*----- Instrumentation Logic --------- */
       std::string kernel_name = nvbit_get_func_name(ctx, p->f);
       std::string short_name = cut_kernel_name(kernel_name);
-      if (time_kernels) {
+      if (time_kernels || kernel_logging_enabled) {
         kernel_start_times[ctx] = std::chrono::high_resolution_clock::now();
-        nnout() << "Kernel [" << kernel_name << "] started." << std::endl;
+        // nnout() << "Kernel [" << kernel_name << "] started." << std::endl;
       }
       bool enable_instr = false;
       recv_thread_receiving = true;
@@ -333,9 +333,6 @@ void nvbit_at_cuda_event(CUcontext ctx, int is_exit, nvbit_api_cuda_t cbid,
         enable_instr = true;
       }
       enable_instr &= !kernel_logging_enabled;
-      if (kernel_logging_enabled) {
-        nnout() << "kernel [" << kernel_name << "] ..." << std::endl;
-      }
       if (sampling != 0 && analyzed_kernels.count(short_name)) {
         if (analyzed_kernels[short_name] % sampling != 0) {
           ++analyzed_kernels[short_name];
@@ -358,7 +355,7 @@ void nvbit_at_cuda_event(CUcontext ctx, int is_exit, nvbit_api_cuda_t cbid,
       nvbit_enable_instrumented(ctx, p->f, enable_instr);
       /*------------ End of Instrumentation Logic ---------------*/
     } else {
-      if (time_kernels) {
+      if (time_kernels || kernel_logging_enabled) {
         auto end_time = std::chrono::high_resolution_clock::now();
         auto start_time = kernel_start_times[ctx];
         auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
