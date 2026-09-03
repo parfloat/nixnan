@@ -31,15 +31,56 @@ def run_with_env(program_args: list, timeout: int, env: dict) -> float:
     return time.monotonic() - start
 
 
+def _parse_kernel_log(log_file: str) -> tuple[list[str], OrderedDict[str, dict]]:
+    """
+    Parse a nixnan log file for kernel execution entries.
+
+    Expects lines in the format:
+      #nixnan: Kernel [<name>] execution time: <N> microseconds
+
+    Returns (kernels_seq, kernels_unique) where:
+      - kernels_seq: ordered list of kernel names in call order
+      - kernels_unique: OrderedDict of kernel name -> {"count": int, "total_time_us": float}
+    """
+    kernels_seq: list[str] = []
+    kernels_unique: OrderedDict[str, dict] = OrderedDict()
+
+    with open(log_file, "r") as fh:
+        for line in fh:
+            line = line.strip()
+            if not line.startswith("#nixnan: Kernel ["):
+                continue
+            bracket_open = line.index("[") + 1
+            bracket_close = line.index("]")
+            kernel_name = line[bracket_open:bracket_close]
+            # Extract execution time in microseconds
+            time_us = 0.0
+            time_marker = "execution time:"
+            if time_marker in line:
+                time_str = line[line.index(time_marker) + len(time_marker):].strip()
+                # time_str is like "3444 microseconds"
+                try:
+                    time_us = float(time_str.split()[0])
+                except (ValueError, IndexError):
+                    time_us = 0.0
+            kernels_seq.append(kernel_name)
+            if kernel_name not in kernels_unique:
+                kernels_unique[kernel_name] = {"count": 0, "total_time_us": 0.0}
+            kernels_unique[kernel_name]["count"] += 1
+            kernels_unique[kernel_name]["total_time_us"] += time_us
+
+    return kernels_seq, kernels_unique
+
+
 def collect_kernels(program_args: list, timeout: int, lib_path: str) -> dict:
     """
     Run the target program with nixnan preloaded to collect kernel information.
 
-    Manages its own temporary log file (create, run, parse, cleanup).
+    Uses LOG_KERNELS to direct output to a temporary log file, then parses it.
 
     Returns a dict with:
       - kernels_seq: ordered list of kernel names in call order
-      - kernels_unique: dict of unique kernel names with call counts
+      - kernels_unique: OrderedDict of kernel name -> {"count": int, "total_time_us": float}
       - elapsed: wall-clock seconds the subprocess ran
     """
     fd, log_file = tempfile.mkstemp(suffix=".log", prefix="nixnan_kernels_")
@@ -51,22 +92,7 @@ def collect_kernels(program_args: list, timeout: int, lib_path: str) -> dict:
 
     elapsed = run_with_env(program_args, timeout, env)
 
-    # Parse the log file
-    kernels_seq: list[str] = []
-    kernels_unique: OrderedDict[str, int] = OrderedDict()
-
-    with open(log_file, "r") as fh:
-        for line in fh:
-            line = line.strip()
-            if not line.startswith("#nixnan: kernel ["):
-                continue
-            bracket_open = line.index("[") + 1
-            bracket_close = line.index("]")
-            kernel_name = line[bracket_open:bracket_close]
-            kernels_seq.append(kernel_name)
-            kernels_unique[kernel_name] = kernels_unique.get(kernel_name, 0) + 1
-
-    # Cleanup
+    kernels_seq, kernels_unique = _parse_kernel_log(log_file)
     os.unlink(log_file)
 
     return {
@@ -76,11 +102,33 @@ def collect_kernels(program_args: list, timeout: int, lib_path: str) -> dict:
     }
 
 
-def run_instrumented(program_args: list, timeout: int, lib_path: str) -> float:
-    """Run the target program with nixnan preloaded (no logging) to measure instrumentation overhead."""
+def run_instrumented(program_args: list, timeout: int, lib_path: str) -> dict:
+    """
+    Run the target program with nixnan preloaded and kernel timing enabled.
+
+    Uses LOGFILE to direct output to a temporary log file and TIME_KERNELS to
+    enable kernel timing. Parses the log for the same kernel timing format.
+
+    Returns a dict with the same shape as collect_kernels.
+    """
+    fd, log_file = tempfile.mkstemp(suffix=".log", prefix="nixnan_instrumented_")
+    os.close(fd)
+
     env = os.environ.copy()
     env["LD_PRELOAD"] = lib_path
-    return run_with_env(program_args, timeout, env)
+    env["LOGFILE"] = log_file
+    env["TIME_KERNELS"] = "1"
+
+    elapsed = run_with_env(program_args, timeout, env)
+
+    kernels_seq, kernels_unique = _parse_kernel_log(log_file)
+    os.unlink(log_file)
+
+    return {
+        "kernels_seq": kernels_seq,
+        "kernels_unique": dict(kernels_unique),
+        "elapsed": elapsed,
+    }
 
 
 def main() -> None:
@@ -116,16 +164,15 @@ def main() -> None:
     lib_path = os.path.join(script_dir, "..", "nixnan.so")
 
     # --- Step 1: Baseline run with kernel logging ---
-    result = collect_kernels(cmd, args.timeout, lib_path)
-    baseline_time = result["elapsed"]
+    baseline = collect_kernels(cmd, args.timeout, lib_path)
 
-    # --- Step 2: Instrumented run (LD_PRELOAD only, no logging) ---
-    instrumented_time = run_instrumented(cmd, args.timeout, lib_path)
+    # --- Step 2: Instrumented run with kernel timing ---
+    instrumented = run_instrumented(cmd, args.timeout, lib_path)
 
-    # --- Overhead calculation ---
-    overhead_ms = (instrumented_time - baseline_time) * 1000
-    if baseline_time > 0:
-        overhead_pct = ((instrumented_time - baseline_time) / baseline_time) * 100
+    # --- Overall overhead calculation ---
+    overhead_ms = (instrumented["elapsed"] - baseline["elapsed"]) * 1000
+    if baseline["elapsed"] > 0:
+        overhead_pct = ((instrumented["elapsed"] - baseline["elapsed"]) / baseline["elapsed"]) * 100
     else:
         overhead_pct = 0.0
 
@@ -135,22 +182,47 @@ def main() -> None:
     print("=" * 70)
     print()
 
-    # Unique kernel names
-    print(f"Unique Kernels ({len(result['kernels_unique'])}):")
-    for name, count in result["kernels_unique"].items():
-        print(f"  {name} (called {count} time{'s' if count > 1 else ''})")
+    # Unique kernels with timing comparison
+    all_kernels: OrderedDict[str, None] = OrderedDict()
+    for name in baseline["kernels_unique"]:
+        all_kernels[name] = None
+    for name in instrumented["kernels_unique"]:
+        all_kernels[name] = None
+
+    print(f"Unique Kernels ({len(all_kernels)}):")
+    for name in all_kernels:
+        b_info = baseline["kernels_unique"].get(name, {"count": 0, "total_time_us": 0.0})
+        i_info = instrumented["kernels_unique"].get(name, {"count": 0, "total_time_us": 0.0})
+        b_count = b_info["count"]
+        b_total = b_info["total_time_us"]
+        i_count = i_info["count"]
+        i_total = i_info["total_time_us"]
+        b_avg = b_total / b_count if b_count > 0 else 0.0
+        i_avg = i_total / i_count if i_count > 0 else 0.0
+        # Slowdown factor: how much slower the instrumented kernel is
+        if b_avg > 0:
+            slowdown = i_avg / b_avg
+        else:
+            slowdown = 0.0
+        print(f"  {name}")
+        print(f"    baseline:    {b_count} call{'s' if b_count != 1 else ''}, {b_total:.0f} us total ({b_avg:.0f} us avg)")
+        print(f"    instrumented: {i_count} call{'s' if i_count != 1 else ''}, {i_total:.0f} us total ({i_avg:.0f} us avg)", end="")
+        if slowdown > 0:
+            print(f"  ({slowdown:.2f}x slowdown)")
+        else:
+            print()
     print()
 
     # Timing comparison
     print("Timing:")
-    print(f"  Baseline (with kernel logging): {baseline_time:.3f}s")
-    print(f"  Instrumented (LD_PRELOAD only): {instrumented_time:.3f}s")
-    print(f"  Instrumentation overhead:       {overhead_ms:+.1f}ms ({overhead_pct:+.1f}%)")
+    print(f"  Baseline:     {baseline['elapsed']:.3f}s")
+    print(f"  Instrumented: {instrumented['elapsed']:.3f}s")
+    print(f"  Overhead:     {overhead_ms:+.1f}ms ({overhead_pct:+.1f}%)")
     print()
 
-    # Kernel call sequence
-    print(f"Kernel Call Sequence ({len(result['kernels_seq'])} calls):")
-    for idx, name in enumerate(result["kernels_seq"], start=1):
+    # Kernel call sequence (baseline)
+    print(f"Kernel Call Sequence ({len(baseline['kernels_seq'])} calls):")
+    for idx, name in enumerate(baseline["kernels_seq"], start=1):
         print(f"  {idx:04d}. {name}")
 
 
