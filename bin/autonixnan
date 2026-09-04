@@ -2,12 +2,121 @@
 """Auto-nixnan: Collect and report CUDA kernel information from target programs."""
 
 import argparse
+import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
 import time
 from collections import OrderedDict
+
+# Exponent ranges per IEEE 754 format (excluding zero/inf).
+# (min_exp, max_exp) are the biased, signed values.
+FP_FORMAT_RANGES = {
+    "bf16": (-126, 127),   # 8 exp bits, bias 127
+    "f16": (-14, 15),      # 5 exp bits, bias 15
+    "f32": (-126, 127),    # 8 exp bits, bias 127
+    "f64": (-1022, 1023),  # 11 exp bits, bias 1023
+}
+
+# Regex to match bin-threshold lines in the nixnan log.
+BIN_REACHED_RE = re.compile(
+    r"^#nixnan:\s+(\w+)\s+bin has reached threshold:\s+kernel=(\S+)\s+range=\[(\S+),(\S+)\]\s+count=(\d+)"
+)
+
+
+def _make_binspec(count: int) -> dict:
+    """Build a BIN_SPEC_FILE covering the top-5% and bottom-5% exponent ranges.
+
+    For each format, the valid signed exponent range is split into percentiles.
+    The bottom 5% and top 5% integer ranges are returned as [lo, hi] bins.
+    """
+    bins: dict = {"count": count}
+    for fmt, (lo, hi) in FP_FORMAT_RANGES.items():
+        span = hi - lo + 1  # total number of distinct exponent values
+        fifth = max(1, span // 20)
+        bins[fmt] = [[lo, lo + fifth - 1], [hi - fifth + 1, hi]]
+    return bins
+
+
+def _parse_bin_log(log_file: str) -> list[dict]:
+    """Parse a nixnan log file for 'bin has reached threshold' lines.
+
+    Returns a list of dicts with keys: format, kernel, range_lo, range_hi, count.
+    """
+    results: list[dict] = []
+    with open(log_file, "r") as fh:
+        for line in fh:
+            m = BIN_REACHED_RE.match(line)
+            if m:
+                results.append(
+                    {
+                        "format": m.group(1),
+                        "kernel": m.group(2),
+                        "range_lo": m.group(3),
+                        "range_hi": m.group(4),
+                        "count": int(m.group(5)),
+                    }
+                )
+    return results
+
+
+def find_extreme_values(
+    program_args: list, timeout: int, lib_path: str
+) -> dict:
+    """Detect kernels that produce extreme (top/bottom 5%) FP exponents.
+
+    Repeatedly halves a starting count threshold until at least one bin in the
+    top- or bottom-5% exponent range fires.  Uses the existing machinery from
+    run_instrumented / collect_kernels (LD_PRELOAD, temp LOGFILE, run_with_env).
+
+    Returns a dict with:
+      - hits: list of hit records (empty if no extreme values found)
+      - final_count: the count threshold that produced hits, or None
+      - elapsed_total: cumulative wall-clock seconds across all runs
+    """
+    fd, log_file = tempfile.mkstemp(suffix=".log", prefix="nixnan_extreme_")
+    os.close(fd)
+
+    fd, spec_file = tempfile.mkstemp(suffix=".json", prefix="binspec_")
+    os.close(fd)
+
+    try:
+        # Start from a high count threshold (same shape as the example in the
+        # source code).  Halve until we see a hit or reach 1.
+        count = 1024
+        total_elapsed = 0.0
+
+        while count >= 1:
+            # Write the bin specification.
+            spec = _make_binspec(count)
+            with open(spec_file, "w") as f:
+                json.dump(spec, f)
+
+            env = os.environ.copy()
+            env["LD_PRELOAD"] = lib_path
+            env["BIN_SPEC_FILE"] = spec_file
+            env["LOGFILE"] = log_file
+
+            elapsed = run_with_env(program_args, timeout, env)
+            total_elapsed += elapsed
+
+            hits = _parse_bin_log(log_file)
+            # Truncate the log for the next iteration so we only see new hits.
+            with open(log_file, "w") as f:
+                f.write("")
+
+            if hits:
+                return {"hits": hits, "final_count": count, "elapsed_total": total_elapsed}
+
+            count = max(1, count // 2)
+
+        # Exhausted all thresholds with no hits.
+        return {"hits": [], "final_count": None, "elapsed_total": total_elapsed}
+    finally:
+        os.unlink(log_file)
+        os.unlink(spec_file)
 
 
 def run_with_env(program_args: list, timeout: int, env: dict) -> float:
@@ -169,6 +278,9 @@ def main() -> None:
     # --- Step 2: Instrumented run with kernel timing ---
     instrumented = run_instrumented(cmd, args.timeout, lib_path)
 
+    # --- Step 3: Extreme-value (bin-threshold) detection ---
+    extremes = find_extreme_values(cmd, args.timeout, lib_path)
+
     # --- Overall overhead calculation ---
     overhead_ms = (instrumented["elapsed"] - baseline["elapsed"]) * 1000
     if baseline["elapsed"] > 0:
@@ -224,6 +336,32 @@ def main() -> None:
     print(f"Kernel Call Sequence ({len(baseline['kernels_seq'])} calls):")
     for idx, name in enumerate(baseline["kernels_seq"], start=1):
         print(f"  {idx:04d}. {name}")
+
+    # --- Extreme-value report ---
+    print()
+    print("=" * 70)
+    print("Extreme-Value Exponent Analysis")
+    print("=" * 70)
+    if not extremes["hits"]:
+        print("  No extreme exponent values detected in any regime.")
+    else:
+        print(f"  Threshold reached at count = {extremes['final_count']}")
+        print(f"  Total scan time: {extremes['elapsed_total']:.3f}s")
+        print()
+        # Deduplicate by kernel, keeping the first hit's count.
+        seen_kernels: OrderedDict[str, dict] = OrderedDict()
+        for hit in extremes["hits"]:
+            key = hit["kernel"]
+            if key not in seen_kernels:
+                seen_kernels[key] = hit
+        print(f"  Kernels with extreme exponents ({len(seen_kernels)}):")
+        for kernel, hit in seen_kernels.items():
+            print(
+                f"    {kernel}  "
+                f"format={hit['format']}  "
+                f"range=[{hit['range_lo']},{hit['range_hi']}]  "
+                f"count={hit['count']}"
+            )
 
 
 if __name__ == "__main__":
