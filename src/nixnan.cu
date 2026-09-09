@@ -58,6 +58,9 @@ bool instrument_mem = false;
 bool line_info = true;
 bool time_kernels = false;
 
+std::string whitelist_name;
+std::string blacklist_name;
+
 volatile bool recv_thread_started = false;
 volatile bool recv_thread_receiving = false;
 
@@ -130,6 +133,12 @@ void nvbit_at_init() {
     exit(1);
   }
   GET_VAR_INT(time_kernels, "TIME_KERNELS", 0, "Enable timing of kernel execution. This will print the execution time of each kernel to the log file.");
+  GET_VAR_STR(whitelist_name, "FUNCTION_WHITELIST", "Path to a file containing a line-separated list of function names to whitelist for instrumentation.");
+  GET_VAR_STR(blacklist_name, "FUNCTION_BLACKLIST", "Path to a file containing a line-separated list of function names to blacklist for instrumentation.");
+  if (!whitelist_name.empty() && !blacklist_name.empty()) {
+    nnout() << "Both FUNCTION_WHITELIST and FUNCTION_BLACKLIST are set. Please set only one." << std::endl;
+    exit(1);
+  }
   std::string pad(82, '-');
   nnout() << pad << '\n';
 }
@@ -408,20 +417,18 @@ void nvbit_tool_init(CUcontext ctx) {
   if (kernel_logging_enabled) {
     return;
   }
-  std::string k_whitelist_name = "kernel_whitelist.txt";
-  std::string k_blacklist_name = "kernel_blacklist.txt";
 
   nnout() << "Initializing GPU context...\n";
-  kernel_whitelist = read_from_file(k_whitelist_name);
-  kernel_blacklist = read_from_file(k_blacklist_name);
-  if (!kernel_whitelist.empty()) {
-  nnout() << "Only instrumenting kernels specified in "
-              << k_whitelist_name << std::endl;
-  } else if (!kernel_blacklist.empty()) {
-  nnout() << "Not instrumenting kernels specified in "
-              << k_blacklist_name << std::endl;
+  if (!whitelist_name.empty()) {
+    nnout() << "Only instrumenting functions specified in "
+               << whitelist_name << std::endl;
+    kernel_whitelist = read_from_file(whitelist_name);
+  } else if (!blacklist_name.empty()) {
+    nnout() << "Not instrumenting functions specified in "
+            << blacklist_name << std::endl;
+    kernel_blacklist = read_from_file(blacklist_name);
   } else {
-  nnout() << "Instrumenting all kernels" << std::endl;
+    nnout() << "Instrumenting all functions" << std::endl;
   }
   recorder = std::make_shared<nixnan::recorder>(TABLE_SIZE);
   recv_thread_started = true;
