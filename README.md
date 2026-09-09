@@ -8,8 +8,8 @@ Nixnan is a binary instrumentation tool for detecting floating-point exceptional
 
 ### Requirements
 - **OS**: Linux on x86_64
-- **CUDA**: Version 12.x
-- **GPU Compute Capability**: ≥ 8.6 (Ampere or newer recommended)
+- **CUDA**: Version 12+
+- **GPU Compute Capability**: ≥ 8.6 (Ampere or newer required)
 - **Build Tools**: GCC, Make
 
 ### Installation
