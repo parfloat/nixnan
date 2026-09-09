@@ -55,6 +55,7 @@ int func_details = 0;
 int print_ill_instr = 0;
 int sampling = 0;
 bool instrument_mem = false;
+bool instrument_exceptions = true;
 bool line_info = true;
 bool time_kernels = false;
 
@@ -99,6 +100,8 @@ void nvbit_at_init() {
   GET_VAR_INT(
       sampling, "SAMPLING", 0,
       "Instrument a repeat kernel every SAMPLING times");
+  GET_VAR_INT(instrument_exceptions, "INSTRUMENT_EXCEPTIONS", 1,
+              "Enable instrumentation of exceptions");
   GET_VAR_INT(instrument_mem, "INSTR_MEM", 0,
               "Instrument memory instructions for NaN/Inf detection");
   nixnan::fp_histogram::init();
@@ -200,7 +203,7 @@ bool instrument_function(CUcontext ctx, CUfunction kernel) {
       }
       if (meminstr) {
         instrument_memory_instruction(instr, ctx, f, recorder, channel_dev);
-      } else {
+      } else if (instrument_exceptions) {
         uint32_t inst_id = recorder->mk_entry(instr, reg_infos, ctx, f);
         nvbit_insert_call(instr, "nixnan_check_regs", IPOINT_AFTER);
         nvbit_add_call_arg_guard_pred_val(instr);
