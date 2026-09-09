@@ -215,7 +215,7 @@ if (histogram_enabled) {
                                   unsigned char fmt = data->format();
                                   std::string fmt_str = type_to_string.at(fmt);
                                   nnout()
-                                    << fmt_str << " bin has reached threshold: kernel="
+                                    << fmt_str << " bin has reached threshold: function="
                                     << id_to_kernel[data->kernel_id()]
                                     << " range=[" << exp_with_bias(fmt, data->range().first)
                                     << "," << exp_with_bias(fmt, data->range().second)

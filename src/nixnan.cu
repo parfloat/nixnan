@@ -134,31 +134,58 @@ void nvbit_at_init() {
   nnout() << pad << '\n';
 }
 
-void instrument_function(CUcontext ctx, CUfunction func) {
+bool should_instrument(CUcontext ctx, CUfunction f) {
+  std::string func_name = nvbit_get_func_name(ctx, f);
+  bool enable_instr = false;
+  if (!kernel_whitelist.empty()) {
+    enable_instr = kernel_whitelist.count(func_name);
+  } else if (!kernel_blacklist.empty()) {
+    enable_instr = !kernel_blacklist.count(func_name);
+  } else {
+    enable_instr = true;
+  }
+  enable_instr &= !kernel_logging_enabled;
+  if (sampling != 0 && analyzed_kernels.count(func_name)) {
+    if (analyzed_kernels[func_name] % sampling != 0) {
+      ++analyzed_kernels[func_name];
+      enable_instr = false;
+    }
+  }
+  return enable_instr;
+}
+
+bool instrument_function(CUcontext ctx, CUfunction kernel) {
   /* Get related functions of the kernel (device function that can be
    * called by the kernel) */
   std::vector<CUfunction> related_functions =
-      nvbit_get_related_functions(ctx, func);
-  related_functions.push_back(func);
-
+      nvbit_get_related_functions(ctx, kernel);
+  related_functions.push_back(kernel);
+  bool use_instrumented = false;
   for (auto f : related_functions) {
     if (!instrumented_functions.insert(f).second) {
       continue;
     }
 
-    std::string kname = cut_kernel_name(nvbit_get_func_name(ctx, func));
+    std::string fname = nvbit_get_func_name(ctx, f);
     if (verbose) {
       auto old_flags = nnout_stream().flags();
       nnout() << "Inspecting function " << nvbit_get_func_name(ctx, f) <<
                    " at address 0x" << std::hex << nvbit_get_func_addr(ctx, f) << std::endl;
       nnout_stream().flags(old_flags);
     }
-
-    for (auto instr : nvbit_get_instrs(ctx, func)){
+    if (kernel_logging_enabled && f != kernel) {
+      nnout() << "Function [" << fname << "] of kernel [" << nvbit_get_func_name(ctx, kernel) << "]" << std::endl;
+      continue;
+    }
+    if (!should_instrument(ctx, f)) {
+      continue;
+    }
+    use_instrumented = true;
+    for (auto instr : nvbit_get_instrs(ctx, f)){
       auto reg_infos = instruction_info::get_reginfo(instr);
       bool meminstr = is_memory_instruction(instr);
       if (reg_infos.empty() && !meminstr) { continue; }
-      nixnan::fp_histogram::instrument(ctx, instr, kname);
+      nixnan::fp_histogram::instrument(ctx, instr, fname);
       if (verbose) {
         nnout() << "Instrumenting instruction " << instr->getSass() << std::endl;
       }
@@ -217,6 +244,7 @@ void instrument_function(CUcontext ctx, CUfunction func) {
       }
     }
   }
+  return use_instrumented;
 }
 
 // Kernel to run to flush the rest of the channel
@@ -322,27 +350,11 @@ void nvbit_at_cuda_event(CUcontext ctx, int is_exit, nvbit_api_cuda_t cbid,
         kernel_start_times[ctx] = std::chrono::high_resolution_clock::now();
         // nnout() << "Kernel [" << kernel_name << "] started." << std::endl;
       }
-      bool enable_instr = false;
       recv_thread_receiving = true;
 
-      if (!kernel_whitelist.empty()) {
-        enable_instr = kernel_whitelist.count(short_name);
-      } else if (!kernel_blacklist.empty()) {
-        enable_instr = !kernel_blacklist.count(short_name);
-      } else {
-        enable_instr = true;
-      }
-      enable_instr &= !kernel_logging_enabled;
-      if (sampling != 0 && analyzed_kernels.count(short_name)) {
-        if (analyzed_kernels[short_name] % sampling != 0) {
-          ++analyzed_kernels[short_name];
-          enable_instr = false;
-        }
-      }
-
+      bool enable_instr = instrument_function(ctx, p->f);
+      // Initialize kernel count if not present, then increment
       if (enable_instr) {
-        instrument_function(ctx, p->f);
-        // Initialize kernel count if not present, then increment
         int count = analyzed_kernels[short_name]++;
         if (count == 0) {
           nnout() << "running kernel [" << short_name << "] ..." << std::endl;
