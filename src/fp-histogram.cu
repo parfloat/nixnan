@@ -13,7 +13,7 @@ namespace fp_histogram {
 
 static unsigned long long int* device_histogram = nullptr;
 static const size_t num_entries = 4 * (1 << FP64_EXP_BITS);
-static BinArray* device_bins = nullptr;
+static std::map<uint32_t, BinArray*> device_bins;
 static unsigned long long int count_threshold = 0;
 
 static std::atomic<bool> recv_thread_running;
@@ -22,8 +22,25 @@ static ChannelHost channel_host;
 static __managed__ ChannelDev  channel_dev;
 std::thread recv_thread;
 std::string bin_spec_file;
-std::unordered_map<std::string, uint32_t> kernel_to_id;
-std::unordered_map<uint32_t, std::string> id_to_kernel;
+std::unordered_map<std::string, uint32_t> function_to_id;
+std::unordered_map<uint32_t, std::string> id_to_function;
+
+uint32_t get_function_id(const std::string& fname) {
+    if (function_to_id.find(fname) == function_to_id.end()) {
+        uint32_t new_id = function_to_id.size();
+        function_to_id[fname] = new_id;
+        id_to_function[new_id] = fname;
+    }
+    return function_to_id[fname];
+}
+
+std::string get_function_name(uint32_t id) {
+    if (id_to_function.find(id) == id_to_function.end()) {
+        return "";
+    }
+    return id_to_function[id];
+}
+
 template<typename T>
 void recv_thread_fun(std::atomic<bool> *recv_thread_running,
                      std::atomic<bool> *recv_thread_receiving,
@@ -115,7 +132,9 @@ int get_exp_bias(uint32_t type) {
     return (1 << (exp_bits - 1)) - 1;
 }
 
-BinCounter bin_from_json(const nlohmann::json& j, unsigned char fmt) {
+using json = nlohmann::json;
+
+BinCounter bin_from_json(const json& j, unsigned char fmt) {
     int bias = get_exp_bias(fmt);
     if (j.type() != nlohmann::json::value_t::array ||
         j.size() != 2) {
@@ -134,11 +153,10 @@ BinCounter bin_from_json(const nlohmann::json& j, unsigned char fmt) {
     return BinCounter(lower + bias, upper+bias);
 }
 
-using json = nlohmann::json;
-
 json empty_bin_spec() {
     return json{
         {"count", 1},
+        {"maxReports", 0},
         {"bf16", json::array()},
         {"f16", json::array()},
         {"f32", json::array()},
@@ -146,28 +164,11 @@ json empty_bin_spec() {
     };
 }
 
-void process_bin_spec() {
-    json bin_spec_json;
-    if (bin_spec_file == "") {
-        bin_spec_json = empty_bin_spec();
-    } else {
-        std::ifstream bin_spec_ifs(bin_spec_file);
-        try {
-            bin_spec_json = json::parse(bin_spec_ifs);
-        } catch (const std::exception& e) {
-            nnout() << "Error parsing bin specification file " << bin_spec_file << ": " << e.what() << "\nExiting now.\n";
-            exit(1);
-        }
-    }
-    count_threshold = bin_spec_json["count"].get<unsigned long long int>();
-
-    if (count_threshold <= 0) {
-        nnout() << "Invalid count threshold of " << count_threshold << " in bin specification file " << bin_spec_file << "\nExiting now.\n";
-        exit(1);
-    }
-
+void make_bins(const json& bin_spec_json, uint32_t id) {
+    if (device_bins.find(id) != device_bins.end() && device_bins[id] != nullptr)
+        return;
     BinArray host_bins[NUM_FORMATS];
-    cudaMalloc(&device_bins, NUM_FORMATS * sizeof(BinArray));
+    cudaMalloc(&device_bins[id], NUM_FORMATS * sizeof(BinArray));
     for (auto fmt : {BF16, FP16, FP32, FP64}) {
         std::string fmt_str = type_to_string.at(fmt);
 
@@ -184,12 +185,35 @@ void process_bin_spec() {
         host_bins[fmt].bins = d_cnts;
         host_bins[fmt].num_bins = h_cnts.size();
     }
-    cudaMemcpy(device_bins, host_bins, NUM_FORMATS * sizeof(BinArray), cudaMemcpyHostToDevice);
+    cudaMemcpy(device_bins[id], host_bins, NUM_FORMATS * sizeof(BinArray), cudaMemcpyHostToDevice);
     cudaError_t err = cudaGetLastError();
     if (err != cudaSuccess) {
         printf("Error allocating device histogram: %s\n", cudaGetErrorString(err));
         exit(1);
     }
+}
+
+void process_bin_spec(std::string function) {
+    static json bin_spec_json;
+    if (bin_spec_file == "") {
+        bin_spec_json = empty_bin_spec();
+    } else if (bin_spec_json.is_null()) {
+        std::ifstream bin_spec_ifs(bin_spec_file);
+        try {
+            bin_spec_json = json::parse(bin_spec_ifs);
+        } catch (const std::exception& e) {
+            nnout() << "Error parsing bin specification file " << bin_spec_file << ": " << e.what() << "\nExiting now.\n";
+            exit(1);
+        }
+    }
+    count_threshold = bin_spec_json["count"].get<unsigned long long int>();
+
+    if (count_threshold <= 0) {
+        nnout() << "Invalid count threshold of " << count_threshold << " in bin specification file " << bin_spec_file << "\nExiting now.\n";
+        exit(1);
+    }
+    auto function_id = get_function_id(function);
+    make_bins(bin_spec_json, function_id);
 }
 
 std::string exp_with_bias(char format, int exp);
@@ -203,7 +227,7 @@ if (histogram_enabled) {
         printf("Error allocating device histogram: %s\n", cudaGetErrorString(err));
         exit(1);
     }
-    process_bin_spec();
+    // process_bin_spec();
     channel_host.init(20, sizeof(exp_info), &channel_dev, nullptr);
     recv_thread_running = true;
     recv_thread_receiving = true;
@@ -216,7 +240,7 @@ if (histogram_enabled) {
                                   std::string fmt_str = type_to_string.at(fmt);
                                   nnout()
                                     << fmt_str << " bin has reached threshold: function="
-                                    << id_to_kernel[data->kernel_id()]
+                                    << id_to_function[data->kernel_id()]
                                     << " range=[" << exp_with_bias(fmt, data->range().first)
                                     << "," << exp_with_bias(fmt, data->range().second)
                                     << "] count=" << data->get_count() << "\n";
@@ -224,28 +248,25 @@ if (histogram_enabled) {
 }
 }
 
-void instrument(CUcontext ctx, Instr* instr, const std::string& kname) {
+void instrument(CUcontext ctx, Instr* instr, const std::string& fname) {
 if (histogram_enabled) {
+    process_bin_spec(fname);
     assert(device_histogram != nullptr && "Histogram not initialized!");
     auto reg_infos = instruction_info::get_reginfo(instr);
     if (reg_infos.size() == 0) {
         return;
     }
-    if (kernel_to_id.find(kname) == kernel_to_id.end()) {
-        uint32_t new_id = kernel_to_id.size();
-        kernel_to_id[kname] = new_id;
-        id_to_kernel[new_id] = kname;
-    }
+    uint32_t function_id = get_function_id(fname);
     /*nixnan_fp_histogram_counter(int pred, BinArray* bins, unsigned long count,
     unsigned long long int* histogram, ChannelDev* channel_dev, int kerid,
     uint32_t arg_count, ...)*/
     nvbit_insert_call(instr, "nixnan_fp_histogram_counter", IPOINT_AFTER);
     nvbit_add_call_arg_guard_pred_val(instr);
-    nvbit_add_call_arg_const_val64(instr, tobits64(device_bins), false);
+    nvbit_add_call_arg_const_val64(instr, tobits64(device_bins[function_id]), false);
     nvbit_add_call_arg_const_val64(instr, tobits64(count_threshold), false);
     nvbit_add_call_arg_const_val64(instr, tobits64(device_histogram), false);
     nvbit_add_call_arg_const_val64(instr, tobits64(&channel_dev), false);
-    nvbit_add_call_arg_const_val32(instr, tobits32(kernel_to_id[kname]), false); // kerid
+    nvbit_add_call_arg_const_val32(instr, tobits32(function_id), false); // kerid
     if (verbose) {
         nnout() << "Histogram instrumenting: " << instr->getSass() << std::endl;
     }
@@ -260,11 +281,11 @@ if (histogram_enabled) {
 
     nvbit_insert_call(instr, "nixnan_fp_histogram_counter", IPOINT_BEFORE);
     nvbit_add_call_arg_guard_pred_val(instr);
-    nvbit_add_call_arg_const_val64(instr, tobits64(device_bins), false);
+    nvbit_add_call_arg_const_val64(instr, tobits64(device_bins[function_id]), false);
     nvbit_add_call_arg_const_val64(instr, tobits64(count_threshold), false);
     nvbit_add_call_arg_const_val64(instr, tobits64(device_histogram), false);
     nvbit_add_call_arg_const_val64(instr, tobits64(&channel_dev), false);
-    nvbit_add_call_arg_const_val32(instr, tobits32(kernel_to_id[kname]), false); // kerid
+    nvbit_add_call_arg_const_val32(instr, tobits32(function_id), false); // kerid
     size_t num_regs = 0;
     for (size_t i = 1; i < reg_infos.size(); ++i) {
         auto [ri, rfuns] = reg_infos[i];
@@ -330,13 +351,16 @@ if (histogram_enabled) {
     delete[] host_histogram;
     cudaFree(device_histogram);
     {
-        BinArray host_bins[NUM_FORMATS];
-        cudaMemcpy(host_bins, device_bins, NUM_FORMATS * sizeof(BinArray), cudaMemcpyDeviceToHost);
-        for (auto fmt : {BF16, FP16, FP32, FP64}) {
-            BinCounter* d_cnts = host_bins[fmt].bins;
-            cudaFree(d_cnts);
+        for (auto& [id, d_bins] : device_bins) {
+            BinArray host_bins[NUM_FORMATS];
+            cudaMemcpy(host_bins, d_bins, NUM_FORMATS * sizeof(BinArray), cudaMemcpyDeviceToHost);
+            for (auto fmt : {BF16, FP16, FP32, FP64}) {
+                BinCounter* d_cnts = host_bins[fmt].bins;
+                cudaFree(d_cnts);
+            }
+            cudaFree(d_bins);
         }
-        cudaFree(device_bins);
+        device_bins.clear();
     }
 }
 }
