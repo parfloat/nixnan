@@ -7,6 +7,7 @@
 #include <atomic>
 #include "nlohmann/json.hpp"
 #include <fstream>
+#include <csignal>
 
 namespace nixnan {
 namespace fp_histogram {
@@ -24,6 +25,7 @@ std::thread recv_thread;
 std::string bin_spec_file;
 std::unordered_map<std::string, uint32_t> function_to_id;
 std::unordered_map<uint32_t, std::string> id_to_function;
+size_t max_reports = 0;
 
 uint32_t get_function_id(const std::string& fname) {
     if (function_to_id.find(fname) == function_to_id.end()) {
@@ -212,6 +214,7 @@ void process_bin_spec(std::string function) {
         nnout() << "Invalid count threshold of " << count_threshold << " in bin specification file " << bin_spec_file << "\nExiting now.\n";
         exit(1);
     }
+    max_reports = bin_spec_json["max_reports"].get<unsigned long long int>();
     auto function_id = get_function_id(function);
     make_bins(bin_spec_json, function_id);
 }
@@ -236,6 +239,8 @@ if (histogram_enabled) {
                               &recv_thread_receiving,
                               channel_host,
                               [](exp_info* data) {
+                                  static std::map<uint32_t, size_t> report_counts;
+
                                   unsigned char fmt = data->format();
                                   std::string fmt_str = type_to_string.at(fmt);
                                   nnout()
@@ -244,6 +249,10 @@ if (histogram_enabled) {
                                     << " range=[" << exp_with_bias(fmt, data->range().first)
                                     << "," << exp_with_bias(fmt, data->range().second)
                                     << "] count=" << data->get_count() << "\n";
+                                  report_counts[data->kernel_id()]++;
+                                  if (max_reports > 0 && report_counts[data->kernel_id()] >= max_reports) {
+                                      raise(SIGINT);
+                                  }
                               });
 }
 }
