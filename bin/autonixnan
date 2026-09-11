@@ -20,19 +20,23 @@ FP_FORMAT_RANGES = {
     "f64": (-1022, 1023),  # 11 exp bits, bias 1023
 }
 
+# Extra seconds given to the subprocess beyond NIXNAN_TIMEOUT so the target's
+# own timer, rather than the hard kill here, is what ends the run.
+TIMEOUT_GRACE = 30
+
 # Regex to match bin-threshold lines in the nixnan log.
 BIN_REACHED_RE = re.compile(
     r"^#nixnan:\s+(\w+)\s+bin has reached threshold:\s+kernel=(\S+)\s+range=\[(\S+),(\S+)\]\s+count=(\d+)"
 )
 
 
-def _make_binspec(count: int) -> dict:
+def _make_binspec(count: int, max_reports: int) -> dict:
     """Build a BIN_SPEC_FILE covering the top-5% and bottom-5% exponent ranges.
 
     For each format, the valid signed exponent range is split into percentiles.
     The bottom 5% and top 5% integer ranges are returned as [lo, hi] bins.
     """
-    bins: dict = {"count": count}
+    bins: dict = {"count": count, "max_reports": max_reports}
     for fmt, (lo, hi) in FP_FORMAT_RANGES.items():
         span = hi - lo + 1  # total number of distinct exponent values
         fifth = max(1, span // 20)
@@ -63,18 +67,20 @@ def _parse_bin_log(log_file: str) -> list[dict]:
 
 
 def find_extreme_values(
-    program_args: list, timeout: int, lib_path: str
+    program_args: list, timeout: int, max_reports: int, lib_path: str
 ) -> dict:
     """Detect kernels that produce extreme (top/bottom 5%) FP exponents.
 
-    Repeatedly halves a starting count threshold until at least one bin in the
-    top- or bottom-5% exponent range fires.  Uses the existing machinery from
-    run_instrumented / collect_kernels (LD_PRELOAD, temp LOGFILE, run_with_env).
+    A single run reports every extreme exponent it sees (bin count threshold of
+    1), capped at max_reports per kernel.  NIXNAN_TIMEOUT bounds the run inside
+    the instrumented process, so the target ends itself once the time limit is
+    up.  Uses the existing machinery from run_instrumented / collect_kernels
+    (LD_PRELOAD, temp LOGFILE, run_with_env).
 
     Returns a dict with:
       - hits: list of hit records (empty if no extreme values found)
-      - final_count: the count threshold that produced hits, or None
-      - elapsed_total: cumulative wall-clock seconds across all runs
+      - max_reports: the per-kernel report cap used
+      - elapsed_total: wall-clock seconds the run took
     """
     fd, log_file = tempfile.mkstemp(suffix=".log", prefix="nixnan_extreme_")
     os.close(fd)
@@ -83,50 +89,40 @@ def find_extreme_values(
     os.close(fd)
 
     try:
-        # Start from a high count threshold (same shape as the example in the
-        # source code).  Halve until we see a hit or reach 1.
-        count = 1024
-        total_elapsed = 0.0
+        # Report on the first value landing in an extreme bin, up to
+        # max_reports times per kernel.
+        with open(spec_file, "w") as f:
+            json.dump(_make_binspec(1, max_reports), f)
 
-        while count >= 1:
-            # Write the bin specification.
-            spec = _make_binspec(count)
-            with open(spec_file, "w") as f:
-                json.dump(spec, f)
+        env = os.environ.copy()
+        env["LD_PRELOAD"] = lib_path
+        env["BIN_SPEC_FILE"] = spec_file
+        env["LOGFILE"] = log_file
+        env["NIXNAN_TIMEOUT"] = str(timeout)
+        env["INSTRUMENT_EXCEPTIONS"] = "0"
 
-            env = os.environ.copy()
-            env["LD_PRELOAD"] = lib_path
-            env["BIN_SPEC_FILE"] = spec_file
-            env["LOGFILE"] = log_file
+        # The in-process timer ends the target with SIGINT, so don't treat a
+        # non-zero exit as a failure; allow some slack before the hard kill.
+        elapsed = run_with_env(program_args, timeout + TIMEOUT_GRACE, env, check=False)
 
-            elapsed = run_with_env(program_args, timeout, env)
-            total_elapsed += elapsed
-
-            hits = _parse_bin_log(log_file)
-            # Truncate the log for the next iteration so we only see new hits.
-            with open(log_file, "w") as f:
-                f.write("")
-
-            if hits:
-                return {"hits": hits, "final_count": count, "elapsed_total": total_elapsed}
-
-            count = max(1, count // 2)
-
-        # Exhausted all thresholds with no hits.
-        return {"hits": [], "final_count": None, "elapsed_total": total_elapsed}
+        return {
+            "hits": _parse_bin_log(log_file),
+            "max_reports": max_reports,
+            "elapsed_total": elapsed,
+        }
     finally:
         os.unlink(log_file)
         os.unlink(spec_file)
 
 
-def run_with_env(program_args: list, timeout: int, env: dict) -> float:
+def run_with_env(program_args: list, timeout: int, env: dict, check: bool = True) -> float:
     """Run the target program with the given environment. Returns wall-clock seconds."""
     start = time.monotonic()
     try:
         subprocess.run(
             program_args,
             env=env,
-            check=True,
+            check=check,
             timeout=timeout,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
@@ -252,6 +248,12 @@ def main() -> None:
         help="Time limit in seconds for the target program (default: 300)",
     )
     parser.add_argument(
+        "-m", "--max-reports",
+        type=int,
+        default=32,
+        help="Maximum extreme-value reports per kernel (default: 32)",
+    )
+    parser.add_argument(
         "command",
         nargs=argparse.REMAINDER,
         metavar="[-- PROGRAM [ARGS...]]",
@@ -279,7 +281,7 @@ def main() -> None:
     instrumented = run_instrumented(cmd, args.timeout, lib_path)
 
     # --- Step 3: Extreme-value (bin-threshold) detection ---
-    extremes = find_extreme_values(cmd, args.timeout, lib_path)
+    extremes = find_extreme_values(cmd, args.timeout, args.max_reports, lib_path)
 
     # --- Overall overhead calculation ---
     overhead_ms = (instrumented["elapsed"] - baseline["elapsed"]) * 1000
@@ -345,7 +347,7 @@ def main() -> None:
     if not extremes["hits"]:
         print("  No extreme exponent values detected in any regime.")
     else:
-        print(f"  Threshold reached at count = {extremes['final_count']}")
+        print(f"  Report cap per kernel: {extremes['max_reports']}")
         print(f"  Total scan time: {extremes['elapsed_total']:.3f}s")
         print()
         # Deduplicate by kernel, keeping the first hit's count.
