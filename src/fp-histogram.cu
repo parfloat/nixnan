@@ -214,7 +214,9 @@ void process_bin_spec(std::string function) {
         nnout() << "Invalid count threshold of " << count_threshold << " in bin specification file " << bin_spec_file << "\nExiting now.\n";
         exit(1);
     }
-    max_reports = bin_spec_json["max_reports"].get<unsigned long long int>();
+    if (bin_spec_json.contains("max_reports")) {
+        max_reports = bin_spec_json["max_reports"].get<unsigned long long int>();
+    }
     auto function_id = get_function_id(function);
     make_bins(bin_spec_json, function_id);
 }
