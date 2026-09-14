@@ -5,11 +5,12 @@ import argparse
 import json
 import os
 import re
+import shlex
 import subprocess
 import sys
 import tempfile
 import time
-from collections import OrderedDict
+from collections import Counter, OrderedDict
 
 # Exponent ranges per IEEE 754 format (excluding zero/inf).
 # (min_exp, max_exp) are the biased, signed values.
@@ -24,9 +25,12 @@ FP_FORMAT_RANGES = {
 # own timer, rather than the hard kill here, is what ends the run.
 TIMEOUT_GRACE = 30
 
-# Regex to match bin-threshold lines in the nixnan log.
+# Regex to match bin-threshold lines in the nixnan log, e.g.:
+#   #nixnan: f16 bin has reached threshold: function=test_add(...) range=[-14,-14] count=1
+# The function name is a full signature and may itself contain spaces and
+# commas, so it's captured non-greedily up to the trailing " range=[...]".
 BIN_REACHED_RE = re.compile(
-    r"^#nixnan:\s+(\w+)\s+bin has reached threshold:\s+kernel=(\S+)\s+range=\[(\S+),(\S+)\]\s+count=(\d+)"
+    r"^#nixnan:\s+(\w+)\s+bin has reached threshold:\s+function=(.+?)\s+range=\[([^,\]]+),([^,\]]+)\]\s+count=(\d+)"
 )
 
 
@@ -47,7 +51,8 @@ def _make_binspec(count: int, max_reports: int) -> dict:
 def _parse_bin_log(log_file: str) -> list[dict]:
     """Parse a nixnan log file for 'bin has reached threshold' lines.
 
-    Returns a list of dicts with keys: format, kernel, range_lo, range_hi, count.
+    Returns a list of dicts with keys: format, function, range_lo, range_hi, count.
+    Each dict corresponds to exactly one report line in the log.
     """
     results: list[dict] = []
     with open(log_file, "r") as fh:
@@ -57,7 +62,7 @@ def _parse_bin_log(log_file: str) -> list[dict]:
                 results.append(
                     {
                         "format": m.group(1),
-                        "kernel": m.group(2),
+                        "function": m.group(2),
                         "range_lo": m.group(3),
                         "range_hi": m.group(4),
                         "count": int(m.group(5)),
@@ -77,8 +82,16 @@ def find_extreme_values(
     up.  Uses the existing machinery from run_instrumented / collect_kernels
     (LD_PRELOAD, temp LOGFILE, run_with_env).
 
+    The target process ending is expected, not an error, regardless of which
+    of the following causes it:
+      - NIXNAN_TIMEOUT elapses and the instrumented process kills itself.
+      - max_reports is hit for some function and the process raises SIGTERM.
+      - The target program simply runs to completion on its own.
+
     Returns a dict with:
-      - hits: list of hit records (empty if no extreme values found)
+      - hits: list of report-line records (empty if no extreme values found)
+      - report_counts: Counter of function name -> number of report lines
+        found for that function in the log
       - max_reports: the per-kernel report cap used
       - elapsed_total: wall-clock seconds the run took
     """
@@ -92,7 +105,8 @@ def find_extreme_values(
         # Report on the first value landing in an extreme bin, up to
         # max_reports times per kernel.
         with open(spec_file, "w") as f:
-            json.dump(_make_binspec(1, max_reports), f)
+            bs = _make_binspec(1, max_reports)
+            json.dump(bs, f)
 
         env = os.environ.copy()
         env["LD_PRELOAD"] = lib_path
@@ -101,12 +115,27 @@ def find_extreme_values(
         env["NIXNAN_TIMEOUT"] = str(timeout)
         env["INSTRUMENT_EXCEPTIONS"] = "0"
 
-        # The in-process timer ends the target with SIGINT, so don't treat a
-        # non-zero exit as a failure; allow some slack before the hard kill.
+        # BIN_SPEC_FILE and LOGFILE are temp files removed once this function
+        # returns (see the `finally` block below), so this command is only
+        # valid to copy-paste while the run is in progress or just after.
+        # repro_env = ("LD_PRELOAD", "BIN_SPEC_FILE", "LOGFILE", "NIXNAN_TIMEOUT", "INSTRUMENT_EXCEPTIONS")
+        # repro_cmd = " ".join(
+        #     [f"{name}={shlex.quote(env[name])}" for name in repro_env]
+        #     + [shlex.quote(arg) for arg in program_args]
+        # )
+        # print(f"# To reproduce this run manually:\n{repro_cmd}", file=sys.stderr)
+
+        # The target may end via its own timer, a max_reports SIGTERM, or a
+        # normal exit; none of these are failures, so don't treat a non-zero
+        # exit as an error. Some slack is given before the hard kill below.
         elapsed = run_with_env(program_args, timeout + TIMEOUT_GRACE, env, check=False)
 
+        hits = _parse_bin_log(log_file)
+        report_counts = Counter(hit["function"] for hit in hits)
+
         return {
-            "hits": _parse_bin_log(log_file),
+            "hits": hits,
+            "report_counts": report_counts,
             "max_reports": max_reports,
             "elapsed_total": elapsed,
         }
@@ -278,17 +307,18 @@ def main() -> None:
     baseline = collect_kernels(cmd, args.timeout, lib_path)
 
     # --- Step 2: Instrumented run with kernel timing ---
-    instrumented = run_instrumented(cmd, args.timeout, lib_path)
+    # instrumented = run_instrumented(cmd, args.timeout, lib_path)
 
     # --- Step 3: Extreme-value (bin-threshold) detection ---
     extremes = find_extreme_values(cmd, args.timeout, args.max_reports, lib_path)
 
     # --- Overall overhead calculation ---
-    overhead_ms = (instrumented["elapsed"] - baseline["elapsed"]) * 1000
-    if baseline["elapsed"] > 0:
-        overhead_pct = ((instrumented["elapsed"] - baseline["elapsed"]) / baseline["elapsed"]) * 100
-    else:
-        overhead_pct = 0.0
+    # overhead_ms = (instrumented["elapsed"] - baseline["elapsed"]) * 1000
+    # if baseline["elapsed"] > 0:
+    #     overhead_pct = 0
+    #     overhead_pct = ((instrumented["elapsed"] - baseline["elapsed"]) / baseline["elapsed"]) * 100
+    # else:
+    #     overhead_pct = 0.0
 
     # --- Print results ---
     print("=" * 70)
@@ -300,38 +330,24 @@ def main() -> None:
     all_kernels: OrderedDict[str, None] = OrderedDict()
     for name in baseline["kernels_unique"]:
         all_kernels[name] = None
-    for name in instrumented["kernels_unique"]:
-        all_kernels[name] = None
+    # for name in instrumented["kernels_unique"]:
+    #     all_kernels[name] = None
 
     print(f"Unique Kernels ({len(all_kernels)}):")
     for name in all_kernels:
         b_info = baseline["kernels_unique"].get(name, {"count": 0, "total_time_us": 0.0})
-        i_info = instrumented["kernels_unique"].get(name, {"count": 0, "total_time_us": 0.0})
         b_count = b_info["count"]
         b_total = b_info["total_time_us"]
-        i_count = i_info["count"]
-        i_total = i_info["total_time_us"]
         b_avg = b_total / b_count if b_count > 0 else 0.0
-        i_avg = i_total / i_count if i_count > 0 else 0.0
-        # Slowdown factor: how much slower the instrumented kernel is
-        if b_avg > 0:
-            slowdown = i_avg / b_avg
-        else:
-            slowdown = 0.0
         print(f"  {name}")
         print(f"    baseline:    {b_count} call{'s' if b_count != 1 else ''}, {b_total:.0f} us total ({b_avg:.0f} us avg)")
-        print(f"    instrumented: {i_count} call{'s' if i_count != 1 else ''}, {i_total:.0f} us total ({i_avg:.0f} us avg)", end="")
-        if slowdown > 0:
-            print(f"  ({slowdown:.2f}x slowdown)")
-        else:
-            print()
     print()
 
     # Timing comparison
     print("Timing:")
     print(f"  Baseline:     {baseline['elapsed']:.3f}s")
-    print(f"  Instrumented: {instrumented['elapsed']:.3f}s")
-    print(f"  Overhead:     {overhead_ms:+.1f}ms ({overhead_pct:+.1f}%)")
+    # print(f"  Instrumented: {instrumented['elapsed']:.3f}s")
+    # print(f"  Overhead:     {overhead_ms:+.1f}ms ({overhead_pct:+.1f}%)")
     print()
 
     # Kernel call sequence (baseline)
@@ -347,23 +363,18 @@ def main() -> None:
     if not extremes["hits"]:
         print("  No extreme exponent values detected in any regime.")
     else:
-        print(f"  Report cap per kernel: {extremes['max_reports']}")
+        print(f"  Report cap per function: {extremes['max_reports']}")
         print(f"  Total scan time: {extremes['elapsed_total']:.3f}s")
         print()
-        # Deduplicate by kernel, keeping the first hit's count.
-        seen_kernels: OrderedDict[str, dict] = OrderedDict()
-        for hit in extremes["hits"]:
-            key = hit["kernel"]
-            if key not in seen_kernels:
-                seen_kernels[key] = hit
-        print(f"  Kernels with extreme exponents ({len(seen_kernels)}):")
-        for kernel, hit in seen_kernels.items():
-            print(
-                f"    {kernel}  "
-                f"format={hit['format']}  "
-                f"range=[{hit['range_lo']},{hit['range_hi']}]  "
-                f"count={hit['count']}"
-            )
+        report_counts = extremes["report_counts"]
+        top_n = 10
+        top_functions = report_counts.most_common(top_n)
+        print(
+            f"  Top {len(top_functions)} of {len(report_counts)} function(s) "
+            "with extreme exponents, by report count:"
+        )
+        for function_name, count in top_functions:
+            print(f"    {count:6d}  {function_name}")
 
 
 if __name__ == "__main__":
