@@ -376,7 +376,7 @@ void nvbit_at_cuda_event(CUcontext ctx, int is_exit, nvbit_api_cuda_t cbid,
         }
         ++analyzed_kernels[short_name];
       }
-      nvbit_enable_instrumented(ctx, p->f, enable_instr);
+      nvbit_enable_instrumented(ctx, p->f, true);
       /*------------ End of Instrumentation Logic ---------------*/
     } else {
       if (time_kernels || kernel_logging_enabled) {
