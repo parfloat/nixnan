@@ -1,7 +1,8 @@
 // Implementation for nnout() and set_out_file() using simple file-scope statics
-#include "nnout.hh"
+#include "nntools.hh"
 #include <fstream>
 #include <memory>
+#include <csignal>
 
 static std::ostream* g_nnout_stream = &std::cerr;
 static std::unique_ptr<std::ofstream> g_nnout_file;
@@ -22,4 +23,10 @@ void set_out_file(std::string& filename) {
     } else {
         nnout() << "failed to open log file '" << filename << "'" << std::endl;
     }
+}
+
+void nnterminate(const std::string& reason) {
+    nnout() << "Terminating early: " << reason << std::endl;
+    std::flush(*g_nnout_stream);
+    std::raise(SIGINT);
 }

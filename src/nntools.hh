@@ -21,4 +21,7 @@ std::ostream& nnout_stream();
 // Prototype required by user: void set_out_file(std::string& filename);
 void set_out_file(std::string& filename);
 
+// Terminate the program with an optional message.
+void nnterminate(const std::string& reason = "");
+
 #endif // NNOUT_HH

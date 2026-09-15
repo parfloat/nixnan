@@ -1,6 +1,7 @@
 #include "timer.h"
 #include <csignal>
 #include <thread>
+#include "nntools.hh"
 
 namespace nixnan{
 namespace timer {
@@ -15,7 +16,7 @@ namespace timer {
         if (timeout > 0) {
             timeout_thread = std::thread([=]() {
                 std::this_thread::sleep_for(std::chrono::seconds(timeout));
-                std::raise(SIGINT);
+                nnterminate("Timeout reached.");
             });
         }
     }

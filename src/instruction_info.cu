@@ -7,7 +7,7 @@
 #include <functional>
 #include <regex>
 #include <cmath>
-#include "nnout.hh"
+#include "nntools.hh"
 
 using InstrType::OperandType;
 

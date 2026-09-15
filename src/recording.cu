@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include "common.cuh"
 #include <signal.h>
-#include "nnout.hh"
+#include "nntools.hh"
 
 namespace nixnan {
     const char NOTYPE = 127;
