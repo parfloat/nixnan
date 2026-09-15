@@ -1,20 +1,199 @@
 # Nixnan Tutorial: Comprehensive Guide to GPU Floating-Point Exception Detection
 ### Authored by Claude (that might lie) with human edits (that could be fallible - tagged [HE])
 
+## NEW: Automated Triage with `bin/autonixnan` <a name="autonixnan"></a>
+
+Everything described in the rest of this tutorial can be driven by hand with
+`LD_PRELOAD` and a handful of environment variables. `bin/autonixnan` is a Python 3
+driver that makes the common case automatic: point it at a CUDA program and it runs
+nixnan in three phases, choosing the environment variables and synthesizing the
+binade specification for you, then prints one consolidated report.
+
+If you are new to nixnan, **start here** and reach for the manual environment
+variables once you know which kernel you care about.
+
+### Invocation
+
+```bash
+bin/autonixnan [-t SECONDS] [-m MAX_REPORTS] -- PROGRAM [ARGS...]
+```
+
+The `--` separator is required. Everything after it is the target program and its
+arguments, invoked exactly as you would run it normally.
+
+```bash
+# Simplest form: default 300s limit, 32 reports per kernel
+./bin/autonixnan -- ./my_cuda_program
+
+# Pass arguments through to the target
+./bin/autonixnan -- ./rd_nixnan --steps 4000
+
+# A PyTorch workload, capped at 120 seconds per phase
+./bin/autonixnan -t 120 -- python train.py --epochs 1
+
+# A long run: 10 minutes per phase, and allow more reports before self-terminating
+./bin/autonixnan -t 600 -m 128 -- ./big_solver
+```
+
+#### Options
+
+| Flag | Default | Meaning |
+|------|---------|---------|
+| `-t`, `--timeout` | 300 | Wall-clock limit in seconds for the target program in each phase. In the extreme-value phase this is passed to the instrumented process as `NIXNAN_TIMEOUT`, so the target ends *itself*; the driver only hard-kills it after an additional 30-second grace period |
+| `-m`, `--max-reports` | 32 | Maximum extreme-value reports per kernel. Passed as `max_reports` in the generated bin specification; once a kernel exceeds it, nixnan terminates the process |
+| `-h`, `--help` | — | Usage summary |
+
+#### Prerequisites
+
+- **Python 3.9 or newer** (the script uses built-in generic type annotations).
+- **A built `nixnan.so` in the repository root.** Run `make` first. The script resolves
+  the library as `<script dir>/../nixnan.so`, so run `bin/autonixnan` out of a
+  checkout you have built rather than copying the script elsewhere.
+- The same platform requirements as nixnan itself (Linux/x86_64, CUDA 12, compute
+  capability >= 8.6).
+
+### What the three phases do
+
+#### Phase 1 — Kernel inventory (uninstrumented)
+
+The target is run with `LOG_KERNELS` set to a temporary log file. `LOG_KERNELS`
+*disables* instrumentation, so this phase runs at roughly native speed and simply
+records the sequence of kernel launches. The driver parses lines of the form
+
+```
+#nixnan: Kernel [<name>] execution time: <N> microseconds
+```
+
+and reports:
+
+- every **unique kernel**, with its call count and total/average execution time,
+- the **wall-clock time** of the baseline run,
+- the **full kernel call sequence**, numbered in invocation order.
+
+This is the cheap map of the program: what runs, how often, and where the time goes.
+
+#### Phase 2 — Extreme-exponent scan
+
+The driver writes a temporary `BIN_SPEC_FILE` that it generates itself. For each IEEE
+754 format it takes the valid (biased, signed) exponent range, splits it into
+percentiles, and monitors the **bottom 5%** and the **top 5%** — that is, the binades
+closest to underflow and closest to overflow:
+
+| Format | Exponent range | Generated low bin | Generated high bin |
+|--------|----------------|-------------------|--------------------|
+| `f16`  | [-14, 15]      | [-14, -14]        | [15, 15]           |
+| `bf16` | [-126, 127]    | [-126, -115]      | [116, 127]         |
+| `f32`  | [-126, 127]    | [-126, -115]      | [116, 127]         |
+| `f64`  | [-1022, 1023]  | [-1022, -921]     | [922, 1023]        |
+
+The generated specification uses `"count": 1`, so the *very first* value that lands in
+an extreme binade is reported, and `"max_reports": <-m value>` to cap the volume. The
+phase runs with:
+
+- `INSTRUMENT_EXCEPTIONS=0` — NaN/INF/subnormal detection is switched off so the run
+  stays cheap and the report is purely about magnitudes,
+- `NIXNAN_TIMEOUT=<-t value>` — the instrumented process ends itself at the limit,
+- `LOGFILE` pointed at a temporary file the driver parses.
+
+Reports look like this in the log:
+
+```
+#nixnan: f32 bin has reached threshold: function=rd_step_fp32(float*, float*, int) range=[116,127] count=1
+```
+
+The driver counts report lines per function, then prints the **top 10 functions ranked
+by report count** — i.e. the kernels that most often produce near-overflow or
+near-underflow values, which are the kernels most likely to be the source of an
+eventual INF or subnormal.
+
+#### Phase 3 — Focused deep run
+
+The single highest-ranked function from phase 2 is written to a temporary file that is
+passed as `FUNCTION_WHITELIST`, and the program is re-run with instrumentation
+restricted to just that kernel. This run's stdout/stderr are passed straight through to
+your console, so you see nixnan's full report for the suspect kernel without paying the
+cost of instrumenting everything else.
+
+### Reading the report
+
+The output has two banner-delimited sections (illustrative shape, not real numbers):
+
+```
+======================================================================
+Auto-nixnan Kernel Report
+======================================================================
+
+Unique Kernels (3):
+  rd_step_fp32(float*, float*, int)
+    baseline:    2000 calls, 3444000 us total (1722 us avg)
+  rd_step_bf16(__nv_bfloat16*, __nv_bfloat16*, int)
+    baseline:    2000 calls, 2980000 us total (1490 us avg)
+  ...
+
+Timing:
+  Baseline:     12.412s
+
+Kernel Call Sequence (6000 calls):
+  0001. rd_step_fp32(float*, float*, int)
+  0002. rd_step_bf16(__nv_bfloat16*, __nv_bfloat16*, int)
+  ...
+
+======================================================================
+Extreme-Value Exponent Analysis
+======================================================================
+  Report cap per function: 32
+  Total scan time: 31.870s
+
+  Top 2 of 2 function(s) with extreme exponents, by report count:
+        33  rd_step_fp16(__half*, __half*, int)
+         7  rd_step_fp32(float*, float*, int)
+Running with full instrumentation of top function: rd_step_fp16(__half*, __half*, int)
+```
+
+If no kernel ever produced a value in an extreme binade, phase 2 prints
+
+```
+  No extreme exponent values detected in any regime.
+```
+
+and phase 3 is skipped — there is no suspect kernel to drill into.
+
+### Things to know
+
+- **Early termination is expected, not a failure.** In the scan phase, the target may
+  end because `NIXNAN_TIMEOUT` elapsed, because a kernel hit the `-m` report cap (nixnan
+  raises `SIGTERM` on itself), or because the program simply finished. None of these is
+  treated as an error, and a non-zero exit code from that phase is ignored.
+- **Phase 1 fails loudly.** Unlike the scan, the baseline inventory run *is* checked: if
+  your program exits non-zero without nixnan instrumentation, `autonixnan` reports the
+  exit code and stops. Make sure the program runs cleanly on its own first.
+- **All temporary files are cleaned up.** The generated bin specification, log files and
+  whitelist file live in `$TMPDIR` only for the duration of the run, so the exact
+  commands `autonixnan` issues are not reproducible after the fact. To iterate on a
+  finding, re-create the specification by hand following
+  [Understanding Binades and Adaptive Threshold Doubling](#understanding-binades-and-adaptive-threshold-doubling) below.
+- **Whole-program runs, three times over.** The target is executed up to three times.
+  For a program with a long start-up cost, use `-t` to bound each phase.
+- **Function names are full signatures.** Ranking and whitelisting both key on the
+  demangled signature, so overloads are tracked separately.
+
+---
+
 ## Table of Contents
 
-1. [Introduction](#introduction)
-2. [Background: Why Floating-Point Exception Detection Matters](#background)
-3. [System Requirements](#system-requirements)
-4. [Installation](#installation)
-5. [Basic Usage](#basic-usage)
-6. [Environment Variables Reference](#environment-variables-reference)
-7. [Advanced Features](#advanced-features)
-8. [Understanding the Output](#understanding-the-output)
-9. [Case Studies and Debugging Workflows](#case-studies)
-10. [Performance Considerations](#performance-considerations)
-11. [Troubleshooting](#troubleshooting)
-12. [References](#references)
+1. [Automated Triage with `bin/autonixnan`](#autonixnan)
+2. [Introduction](#introduction)
+3. [Background: Why Floating-Point Exception Detection Matters](#background)
+4. [System Requirements](#system-requirements)
+5. [Installation](#installation)
+6. [Basic Usage](#basic-usage)
+7. [Environment Variables Reference](#environment-variables-reference)
+8. [Advanced Features](#advanced-features)
+9. [Understanding the Output](#understanding-the-output)
+10. [Case Studies and Debugging Workflows](#case-studies)
+11. [Performance Considerations](#performance-considerations)
+12. [Troubleshooting](#troubleshooting)
+13. [References](#references)
 
 ---
 
