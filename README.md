@@ -4,6 +4,69 @@
 
 Nixnan is a binary instrumentation tool for detecting floating-point exceptional values (NaN, Infinity, Subnormals, Division-by-Zero) in NVIDIA CUDA programs. It provides runtime detection without requiring source code modification or recompilation.
 
+## NEW: `bin/autonixnan` — One-Command Automated Triage
+
+`bin/autonixnan` is a Python 3 driver that runs nixnan for you in three phases and
+prints one consolidated report. Use it as the *first* thing you try on an unfamiliar
+CUDA program: it discovers which kernels exist, finds which of them produce extreme
+floating-point magnitudes, and then re-runs the worst offender under full
+instrumentation — without you hand-writing a bin specification file or choosing
+environment variables.
+
+### Invocation
+
+```bash
+bin/autonixnan [-t SECONDS] [-m MAX_REPORTS] -- PROGRAM [ARGS...]
+```
+
+The `--` separator is required; everything after it is the target program and its
+arguments, invoked exactly as you would run it normally.
+
+```bash
+# Simplest form
+./bin/autonixnan -- ./my_cuda_program
+
+# A PyTorch workload, capped at 120 seconds per phase
+./bin/autonixnan -t 120 -- python train.py --epochs 1
+
+# Allow more extreme-value reports per kernel before the scan self-terminates
+./bin/autonixnan -t 600 -m 128 -- ./rd_nixnan
+```
+
+| Flag | Default | Meaning |
+|------|---------|---------|
+| `-t`, `--timeout` | 300 | Wall-clock limit in seconds for the target program in each phase |
+| `-m`, `--max-reports` | 32 | Maximum extreme-value reports per kernel before the scan stops itself |
+
+**Requirements:** Python 3.9+ and a built `nixnan.so` in the repository root (run
+`make`). The script resolves the library as `<script dir>/../nixnan.so`, so invoke
+it from a checkout you have built.
+
+### What it does
+
+1. **Kernel inventory (uninstrumented).** Runs the target with `LOG_KERNELS` pointed
+   at a temporary log. Instrumentation is off, so this phase runs at roughly native
+   speed. It reports every unique kernel with its call count and total/average
+   execution time, plus the full kernel call sequence in invocation order.
+2. **Extreme-exponent scan.** Synthesizes a `BIN_SPEC_FILE` on the fly covering the
+   *bottom 5%* and *top 5%* of the valid exponent range of each format (`f16`,
+   `bf16`, `f32`, `f64`) — the near-underflow and near-overflow binades — with a bin
+   count threshold of 1, so the very first value landing in an extreme binade is
+   reported. Exception instrumentation is disabled (`INSTRUMENT_EXCEPTIONS=0`) to
+   keep this phase cheap, and `NIXNAN_TIMEOUT` bounds the run from inside the
+   instrumented process. Functions are then ranked by how many extreme-value reports
+   they produced, and the top 10 are printed.
+3. **Focused deep run.** The single highest-ranked function is written to a temporary
+   `FUNCTION_WHITELIST`, and the program is re-run with instrumentation restricted to
+   that one kernel, its output passed straight through to your console.
+
+The target process ending early is normal in phases 2 and 3: it may hit
+`NIXNAN_TIMEOUT`, hit the `-m` report cap (nixnan terminates itself), or simply run to
+completion. A non-zero exit from those phases is therefore not treated as an error.
+
+Everything `autonixnan` does can also be done by hand with the environment variables
+documented below; it just picks sensible defaults for you.
+
 ## Quick Start
 
 ### Requirements
