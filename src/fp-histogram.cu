@@ -1,7 +1,7 @@
 #include "fp-histogram.cuh"
 #include "common.cuh"
 #include "instruction_info.cuh"
-#include "nnout.hh"
+#include "nntools.hh"
 #include "utils/channel.hpp"
 #include <thread>
 #include <atomic>
@@ -230,8 +230,7 @@ if (histogram_enabled) {
                                   auto id = data->kernel_id();
                                   report_counts[id]++;
                                   if (max_reports > 0 && report_counts[id] > max_reports) {
-                                      nnout() << std::flush;
-                                      std::raise(SIGTERM);
+                                      nnterminate("max_reports limit reached.");
                                   }
                                   unsigned char fmt = data->format();
                                   std::string fmt_str = type_to_string.at(fmt);

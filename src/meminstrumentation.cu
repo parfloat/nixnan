@@ -1,7 +1,7 @@
 #include "nvbit.h"
 #include "meminstrumentation.cuh"
 #include "common.cuh"
-#include "nnout.hh"
+#include "nntools.hh"
 #include "utils/channel.hpp"
 #include "instruction_info.cuh"
 

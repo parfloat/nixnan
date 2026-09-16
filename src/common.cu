@@ -1,5 +1,5 @@
 #include "common.cuh"
-#include "nnout.hh"
+#include "nntools.hh"
 
 std::unordered_set<std::string> read_from_file(std::string filename) {
     try {
