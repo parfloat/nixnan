@@ -345,11 +345,19 @@ def main() -> None:
     # for name in instrumented["kernels_unique"]:
     #     all_kernels[name] = None
 
-    print(f"Unique Kernels ({len(all_kernels)}):")
+    kernel_rows = []
     for name in all_kernels:
         b_info = baseline["kernels_unique"].get(name, {"count": 0, "total_time_us": 0.0})
-        b_count = b_info["count"]
-        b_total = b_info["total_time_us"]
+        kernel_rows.append((name, b_info["count"], b_info["total_time_us"]))
+    kernel_rows.sort(key=lambda row: row[2], reverse=True)
+
+    top_n_kernels = 25
+    shown_kernels = kernel_rows[:top_n_kernels]
+    if len(kernel_rows) > top_n_kernels:
+        print(f"Unique Kernels ({len(all_kernels)}, top {top_n_kernels} by total time, longest to shortest):")
+    else:
+        print(f"Unique Kernels ({len(all_kernels)}, longest to shortest):")
+    for name, b_count, b_total in shown_kernels:
         b_avg = b_total / b_count if b_count > 0 else 0.0
         print(f"  {name}")
         print(f"    baseline:    {b_count} call{'s' if b_count != 1 else ''}, {b_total:.0f} us total ({b_avg:.0f} us avg)")
@@ -363,9 +371,20 @@ def main() -> None:
     print()
 
     # Kernel call sequence (baseline)
-    print(f"Kernel Call Sequence ({len(baseline['kernels_seq'])} calls):")
-    for idx, name in enumerate(baseline["kernels_seq"], start=1):
-        print(f"  {idx:04d}. {name}")
+    kernel_seq = baseline["kernels_seq"]
+    print(f"Kernel Call Sequence ({len(kernel_seq)} calls):")
+    seq_edge = 25
+    if len(kernel_seq) > 2 * seq_edge:
+        for idx, name in enumerate(kernel_seq[:seq_edge], start=1):
+            print(f"  {idx:04d}. {name}")
+        omitted = len(kernel_seq) - 2 * seq_edge
+        print(f"  ... ({omitted} call{'s' if omitted != 1 else ''} omitted) ...")
+        tail_start = len(kernel_seq) - seq_edge + 1
+        for idx, name in enumerate(kernel_seq[-seq_edge:], start=tail_start):
+            print(f"  {idx:04d}. {name}")
+    else:
+        for idx, name in enumerate(kernel_seq, start=1):
+            print(f"  {idx:04d}. {name}")
 
     extremes = find_extreme_values(cmd, args.timeout, args.max_reports, lib_path)
 
