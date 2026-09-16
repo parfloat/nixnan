@@ -1,0 +1,131 @@
+------------- NVBit (NVidia Binary Instrumentation Tool v1.8) Loaded --------------
+NVBit core environment variables (mostly for nvbit-devs):
+ACK_CTX_INIT_LIMITATION = 0 - if set, no warning will be printed for nvbit_at_ctx_init()
+            NVDISASM = nvdisasm - override default nvdisasm found in PATH
+            NOBANNER = 0 - if set, does not print this banner
+       NO_EAGER_LOAD = 1 - lazy module loading is now turned on by default. If you see deadlocks in your tool, set NO_EAGER_LOAD to 0
+---------------------------------------------------------------------------------
+         INSTR_BEGIN = 0 - Beginning of the instruction interval where to apply instrumentation
+           INSTR_END = 4294967295 - End of the instruction interval where to apply instrumentation
+        TOOL_VERBOSE = 0 - Enable verbosity inside the tool
+   ENABLE_FUN_DETAIL = 0 - Enable detailed function information for kernel
+     PRINT_ILL_INSTR = 0 - Print the instruction which caused the exception
+            SAMPLING = 0 - Instrument a repeat kernel every SAMPLING times
+           INSTR_MEM = 0 - Instrument memory instructions for NaN/Inf detection
+           HISTOGRAM = 0 - Enable FP exponent histogramming
+       BIN_SPEC_FILE =  - Specification for which exponent ranges to report. If the file does not exist, a template specification will be created.
+For example:
+{
+    "count": 128,
+    "doublings": 0,
+    "bf16": [],
+    "f16": [[0,5],[-4,-1]],
+    "f32": [],
+    "f64": []
+}
+will report every 128 occurrences of exponents in the ranges 0 to 5 and -4 to -1 for f16 numbers.
+
+If `doublings=-N`, where `N` is positive, then each bucket will begin with a
+size of `count`. When a bucket reaches the count threshold, it will double the
+threshold and report. This doubling will continue until one bucket has been
+doubled N times, then all buckets are reset to `count`.
+             LOGFILE =  - Path to the optional log file. Default is to print to stderr. This is useful for the case when an instrumented program is capturing stderr.
+           LINE_INFO = 1 - Disable debug information for source code locations. Having this enabled may cause crashes, so set this to 0 if you encounter issues.
+#nixnan: ----------------------------------------------------------------------------------
+WARNING: Do not call CUDA memory allocation in nvbit_at_ctx_init(). It will cause deadlocks. Do them in nvbit_tool_init(). If you encounter deadlocks, remove CUDA API calls to debug.
+#nixnan: Initializing GPU context...
+#nixnan: Could not open kernel_whitelist.txt!
+#nixnan: Could not open kernel_blacklist.txt!
+#nixnan: Instrumenting all kernels
+#nixnan: running kernel [generate_seed_pseudo] ...
+#nixnan: #nixnan: warning: Infinite immediate found in operand 3 of @P1 DFMA R44, R50, R44, +INF  ;
+#nixnan: #nixnan: warning: Infinite immediate found in operand 3 of @P1 DFMA R44, R56, R44, +INF  ;
+#nixnan: running kernel [void gen_sequenced_Philox] ...
+#nixnan: running kernel [copy_info_kernel] ...
+#nixnan: running kernel [void geqr2_smem_domino_fast] ...
+#nixnan: error [div0] detected in operand 1 of instruction MUFU.RSQ64H R19, R27 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 2 of instruction DMUL R10, R18, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DMUL R10, R18, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 2 of instruction DFMA R10, R26, -R10, 1 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 1 of instruction DMUL R10, R18, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DFMA R16, R10, R16, 0.5 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DFMA R10, R26, -R10, 1 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 1 of instruction DFMA R16, R10, R16, 0.5 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 1 of instruction DMUL R10, R18, R10 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 2 of instruction DMUL R10, R18, R10 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DMUL R10, R18, R10 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 2 of instruction DFMA R10, R16, R10, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [infinity] detected in operand 0 of instruction MUFU.RSQ64H R19, R27 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 1 of instruction DFMA R10, R16, R10, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DFMA R10, R16, R10, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 3 of instruction DFMA R10, R16, R10, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 2 of instruction DMUL R24, R26, R10 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DMUL R24, R26, R10 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 1 of instruction DFMA R20, R24, -R24, R26 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DFMA R20, R24, -R24, R26 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DFMA R8, R20, R16, R24 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 3 of instruction DFMA R8, R20, R16, R24 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 1 of instruction DFMA R8, R20, R16, R24 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 2 of instruction DFMA R20, R24, -R24, R26 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: running kernel [void orgqr_step1_kernel] ...
+#nixnan: running kernel [void cutlass::Kernel2] ...
+#nixnan: running kernel [void larft_T_64_batch] ...
+#nixnan: running kernel [void batch_eye_kernel] ...
+#nixnan: running kernel [void lacpy_kernel] ...
+#nixnan: running kernel [k_colscale] ...
+#nixnan: running kernel [k_d2s] ...
+#nixnan: running kernel [k_s2d] ...
+#nixnan: running kernel [void gemv2N_kernel] ...
+#nixnan: running kernel [xxtrf4_set_info_ker] ...
+#nixnan: running kernel [void kernel] ...
+#nixnan: running kernel [dtrsv_init] ...
+#nixnan: running kernel [void trsv_ln_exec] ...
+#nixnan: running kernel [dtrsv_init_up] ...
+#nixnan: running kernel [void trsv_lt_exec] ...
+#nixnan: running kernel [void iamax_kernel] ...
+#nixnan: running kernel [void scal_kernel_val] ...
+#nixnan: running kernel [k_scan_nonfinite] ...
+#nixnan: running kernel [void axpy_kernel_val] ...
+iter=0 dt_ms=4358.251 err=1.382e-05 exc=0
+RESULT config=TF32 n=256 kappa=1.00e+03 seed=0 status=converged niter=1 t_fact_ms=673.51 t_loop_ms=4359.50 t_per_iter_ms=4359.501 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=TF32 t_total_ms=5033.01 (= t_fact + t_loop)
+#nixnan: Finalizing GPU context...
+
+#nixnan: ------------ nixnan Report -----------
+
+#nixnan: --- FP16 Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- BF16 Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- FP32 Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- FP64 Operations ---
+#nixnan: NaN:                   22 (154 repeats)
+#nixnan: Infinity:               1 (7 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          1 (8 repeats)
+
+#nixnan: --- FP16 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- BF16 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- FP32 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- FP64 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)

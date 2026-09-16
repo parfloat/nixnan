@@ -1,0 +1,146 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{enumitem}
+\setlist[enumerate]{leftmargin=*,itemsep=0.25em,topsep=0.4em}
+
+\title{Solving Linear Systems with QR and Cholesky Factorizations}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Solving a Linear System Using QR Decomposition}
+
+Consider the system
+\[
+Ax=b.
+\]
+The QR method proceeds as follows.
+\begin{enumerate}
+  \item Compute the QR decomposition $A=QR$.
+  \item The columns of $Q$ are orthonormal, so $Q^TQ=I$.
+  \item The matrix $R$ is upper triangular.
+  \item Substitute $A=QR$ into the system to obtain $QRx=b$.
+  \item Multiply by $Q^T$: $Q^TQRx=Q^Tb$.
+  \item Since $Q^TQ=I$, this becomes $Rx=Q^Tb$.
+  \item Define $y=Q^Tb$.
+  \item The remaining system is the upper-triangular system $Rx=y$.
+  \item Solve it for $x$ by back substitution.
+  \item If $A$ is rectangular with full column rank, the same procedure gives the least-squares solution minimizing $\lVert Ax-b\rVert_2$.
+\end{enumerate}
+
+\section{A Cholesky Example}
+
+Solve
+\[
+\begin{bmatrix}4&2\\2&3\end{bmatrix}
+\begin{bmatrix}x_1\\x_2\end{bmatrix}
+=
+\begin{bmatrix}6\\7\end{bmatrix}.
+\]
+Let $A=LL^T$, where
+\[
+L=\begin{bmatrix}l_{11}&0\\l_{21}&l_{22}\end{bmatrix}.
+\]
+Then
+\[
+LL^T=
+\begin{bmatrix}
+l_{11}^2 & l_{11}l_{21}\\
+l_{11}l_{21} & l_{21}^2+l_{22}^2
+\end{bmatrix}.
+\]
+Comparing entries with $A$ gives
+\[
+l_{11}=2,\qquad l_{21}=1,\qquad l_{22}=\sqrt{2},
+\]
+and hence
+\[
+L=\begin{bmatrix}2&0\\1&\sqrt{2}\end{bmatrix}.
+\]
+First solve $Ly=b$:
+\[
+2y_1=6,\qquad y_1+\sqrt{2}y_2=7,
+\]
+so
+\[
+y_1=3,\qquad y_2=2\sqrt{2}.
+\]
+Next solve $L^Tx=y$:
+\[
+\sqrt{2}x_2=2\sqrt{2},\qquad 2x_1+x_2=3.
+\]
+Thus
+\[
+x_2=2,\qquad x_1=\frac12,
+\qquad
+x=\begin{bmatrix}\frac12\\2\end{bmatrix}.
+\]
+Indeed,
+\[
+Ax=
+\begin{bmatrix}4(1/2)+2(2)\\2(1/2)+3(2)\end{bmatrix}
+=\begin{bmatrix}6\\7\end{bmatrix}=b.
+\]
+
+\section{The Cholesky Method in Algebraic Form}
+
+Let $A\in\mathbb{R}^{n\times n}$ be symmetric positive definite.  To solve $Ax=b$:
+\begin{enumerate}
+  \item Compute the Cholesky factorization $A=LL^T$, where $L$ is lower triangular.
+  \item For $j=1,\ldots,n$, compute the diagonal entries
+  \[
+  l_{jj}=\sqrt{a_{jj}-\sum_{k=1}^{j-1}l_{jk}^2}.
+  \]
+  \item For $i=j+1,\ldots,n$, compute the entries below the diagonal
+  \[
+  l_{ij}=\frac{a_{ij}-\sum_{k=1}^{j-1}l_{ik}l_{jk}}{l_{jj}}.
+  \]
+  \item Substitute the factorization into the system: $LL^Tx=b$.
+  \item Introduce the intermediate vector $y=L^Tx$.
+  \item Solve the lower-triangular system $Ly=b$ by forward substitution:
+  \[
+  y_i=\frac{b_i-\sum_{j=1}^{i-1}l_{ij}y_j}{l_{ii}},
+  \qquad i=1,\ldots,n.
+  \]
+  \item Solve the upper-triangular system $L^Tx=y$ by back substitution:
+  \[
+  x_i=\frac{y_i-\sum_{j=i+1}^{n}l_{ji}x_j}{l_{ii}},
+  \qquad i=n,n-1,\ldots,1.
+  \]
+  \item The resulting vector $x$ is the unique solution of $Ax=b$.
+\end{enumerate}
+
+\section{Symmetric Positive-Definite Matrices}
+
+\subsection{Definition and meaning}
+\begin{enumerate}
+  \item A real square matrix $A$ is \emph{symmetric} if $A=A^T$.
+  \item It is \emph{positive definite} if $x^TAx>0$ for every nonzero $x\in\mathbb{R}^n$.
+  \item The scalar $x^TAx$ is the quadratic form associated with $A$.
+  \item The word \emph{positive} is crucial: the quadratic form is strictly positive in every nonzero direction.
+  \item Geometrically, $f(x)=x^TAx$ is an upward-curving bowl with its unique minimum at $x=0$.
+  \item Every eigenvalue of a symmetric positive-definite matrix is strictly positive.
+  \item Equivalently, $A=Q\Lambda Q^T$, where $Q$ is orthogonal and every diagonal entry of $\Lambda$ is positive.
+  \item Positive definiteness is stronger than positive semidefiniteness, which requires only $x^TAx\geq 0$.
+  \item For example, $\begin{bmatrix}2&1\\1&2\end{bmatrix}$ is positive definite because its eigenvalues are $1$ and $3$.
+  \item A symmetric positive-definite matrix is commonly called an SPD matrix.
+\end{enumerate}
+
+\subsection{Why positive definiteness matters}
+\begin{enumerate}
+  \item Since all eigenvalues of an SPD matrix are positive, none is zero.
+  \item Therefore, $A$ is invertible and $Ax=b$ has exactly one solution for every $b$.
+  \item Positive definiteness guarantees the existence and uniqueness of the Cholesky factorization $A=LL^T$ with positive diagonal entries in $L$.
+  \item Each diagonal entry of $L$ is obtained by taking a square root.
+  \item Positive definiteness guarantees that the quantity under every such square root is positive.
+  \item It also ensures that no diagonal entry $l_{ii}$ is zero.
+  \item Consequently, the divisions in forward and back substitution are well defined.
+  \item Cholesky uses roughly half the arithmetic and storage of a general LU factorization.
+  \item In optimization, an SPD Hessian makes a quadratic objective strictly convex and gives it a unique minimizer.
+  \item Thus positive definiteness supplies existence, uniqueness, and an efficient method for solving the system.
+\end{enumerate}
+
+\end{document}

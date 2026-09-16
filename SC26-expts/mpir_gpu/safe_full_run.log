@@ -1,0 +1,455 @@
+make: Nothing to be done for 'all'.
+== Safe convergence sweep (n=256, κ∈{10,30,100,300,1000}) ==
+RESULT config=F32 n=256 kappa=1.00e+01 seed=0 status=converged niter=0 t_fact_ms=0.41 t_loop_ms=0.61 t_per_iter_ms=0.000 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F32 t_total_ms=1.02 (= t_fact + t_loop)
+RESULT config=TF32 n=256 kappa=1.00e+01 seed=0 status=converged niter=0 t_fact_ms=0.31 t_loop_ms=0.09 t_per_iter_ms=0.000 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=TF32 t_total_ms=0.40 (= t_fact + t_loop)
+iter=0 dt_ms=0.169 err=1.386e-03 exc=0
+iter=1 dt_ms=0.165 err=1.387e-06 exc=0
+RESULT config=F16 n=256 kappa=1.00e+01 seed=0 status=converged niter=2 t_fact_ms=0.32 t_loop_ms=0.44 t_per_iter_ms=0.220 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F16 t_total_ms=0.76 (= t_fact + t_loop)
+iter=0 dt_ms=0.164 err=7.701e-03 exc=0
+iter=1 dt_ms=0.163 err=7.597e-05 exc=0
+RESULT config=B16T n=256 kappa=1.00e+01 seed=0 status=converged niter=2 t_fact_ms=0.31 t_loop_ms=0.43 t_per_iter_ms=0.217 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=B16T t_total_ms=0.74 (= t_fact + t_loop)
+iter=0 dt_ms=0.368 err=7.459e-02 exc=0
+iter=1 dt_ms=0.357 err=1.815e-03 exc=0
+iter=2 dt_ms=0.356 err=4.390e-05 exc=0
+iter=3 dt_ms=0.360 err=1.214e-06 exc=0
+RESULT config=B16S n=256 kappa=1.00e+01 seed=0 status=converged niter=4 t_fact_ms=0.35 t_loop_ms=1.76 t_per_iter_ms=0.440 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=B16S t_total_ms=2.11 (= t_fact + t_loop)
+iter=0 dt_ms=0.701 err=1.102e-06 exc=0
+RESULT config=F32 n=256 kappa=3.00e+01 seed=0 status=converged niter=1 t_fact_ms=0.41 t_loop_ms=0.82 t_per_iter_ms=0.820 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F32 t_total_ms=1.23 (= t_fact + t_loop)
+iter=0 dt_ms=0.158 err=1.102e-06 exc=0
+RESULT config=TF32 n=256 kappa=3.00e+01 seed=0 status=converged niter=1 t_fact_ms=0.30 t_loop_ms=0.26 t_per_iter_ms=0.258 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=TF32 t_total_ms=0.56 (= t_fact + t_loop)
+iter=0 dt_ms=0.163 err=1.795e-03 exc=0
+iter=1 dt_ms=0.167 err=3.305e-06 exc=0
+RESULT config=F16 n=256 kappa=3.00e+01 seed=0 status=converged niter=2 t_fact_ms=0.32 t_loop_ms=0.44 t_per_iter_ms=0.219 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F16 t_total_ms=0.76 (= t_fact + t_loop)
+iter=0 dt_ms=0.157 err=1.439e-02 exc=0
+iter=1 dt_ms=0.160 err=1.578e-04 exc=0
+iter=2 dt_ms=0.165 err=2.652e-06 exc=0
+RESULT config=B16T n=256 kappa=3.00e+01 seed=0 status=converged niter=3 t_fact_ms=0.31 t_loop_ms=0.59 t_per_iter_ms=0.198 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=B16T t_total_ms=0.90 (= t_fact + t_loop)
+iter=0 dt_ms=0.362 err=9.195e-02 exc=0
+iter=1 dt_ms=0.360 err=2.398e-03 exc=0
+iter=2 dt_ms=0.357 err=7.332e-05 exc=0
+iter=3 dt_ms=0.365 err=2.509e-06 exc=0
+RESULT config=B16S n=256 kappa=3.00e+01 seed=0 status=converged niter=4 t_fact_ms=0.34 t_loop_ms=1.76 t_per_iter_ms=0.440 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=B16S t_total_ms=2.10 (= t_fact + t_loop)
+iter=0 dt_ms=0.709 err=2.611e-06 exc=0
+RESULT config=F32 n=256 kappa=1.00e+02 seed=0 status=converged niter=1 t_fact_ms=0.41 t_loop_ms=0.83 t_per_iter_ms=0.828 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F32 t_total_ms=1.24 (= t_fact + t_loop)
+iter=0 dt_ms=0.161 err=2.611e-06 exc=0
+RESULT config=TF32 n=256 kappa=1.00e+02 seed=0 status=converged niter=1 t_fact_ms=0.30 t_loop_ms=0.26 t_per_iter_ms=0.262 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=TF32 t_total_ms=0.57 (= t_fact + t_loop)
+iter=0 dt_ms=0.165 err=3.821e-03 exc=0
+iter=1 dt_ms=0.164 err=7.569e-06 exc=0
+RESULT config=F16 n=256 kappa=1.00e+02 seed=0 status=converged niter=2 t_fact_ms=0.33 t_loop_ms=0.44 t_per_iter_ms=0.219 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F16 t_total_ms=0.77 (= t_fact + t_loop)
+iter=0 dt_ms=0.163 err=2.889e-02 exc=0
+iter=1 dt_ms=0.164 err=4.992e-04 exc=0
+iter=2 dt_ms=0.162 err=1.683e-05 exc=0
+RESULT config=B16T n=256 kappa=1.00e+02 seed=0 status=converged niter=3 t_fact_ms=0.31 t_loop_ms=0.60 t_per_iter_ms=0.200 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=B16T t_total_ms=0.91 (= t_fact + t_loop)
+iter=0 dt_ms=0.364 err=1.681e-01 exc=0
+iter=1 dt_ms=0.361 err=5.878e-03 exc=0
+iter=2 dt_ms=0.364 err=3.245e-04 exc=0
+iter=3 dt_ms=0.362 err=2.118e-05 exc=0
+RESULT config=B16S n=256 kappa=1.00e+02 seed=0 status=converged niter=4 t_fact_ms=0.34 t_loop_ms=1.77 t_per_iter_ms=0.442 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=B16S t_total_ms=2.11 (= t_fact + t_loop)
+iter=0 dt_ms=0.712 err=5.590e-06 exc=0
+RESULT config=F32 n=256 kappa=3.00e+02 seed=0 status=converged niter=1 t_fact_ms=0.41 t_loop_ms=0.83 t_per_iter_ms=0.827 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F32 t_total_ms=1.23 (= t_fact + t_loop)
+iter=0 dt_ms=0.158 err=5.590e-06 exc=0
+RESULT config=TF32 n=256 kappa=3.00e+02 seed=0 status=converged niter=1 t_fact_ms=0.30 t_loop_ms=0.26 t_per_iter_ms=0.258 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=TF32 t_total_ms=0.56 (= t_fact + t_loop)
+iter=0 dt_ms=0.162 err=7.884e-03 exc=0
+iter=1 dt_ms=0.170 err=5.415e-05 exc=0
+RESULT config=F16 n=256 kappa=3.00e+02 seed=0 status=converged niter=2 t_fact_ms=0.32 t_loop_ms=0.44 t_per_iter_ms=0.219 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F16 t_total_ms=0.76 (= t_fact + t_loop)
+iter=0 dt_ms=0.163 err=8.019e-02 exc=0
+iter=1 dt_ms=0.163 err=2.918e-03 exc=0
+iter=2 dt_ms=0.169 err=1.985e-04 exc=0
+iter=3 dt_ms=0.162 err=1.761e-05 exc=0
+iter=4 dt_ms=0.162 err=1.235e-06 exc=0
+RESULT config=B16T n=256 kappa=3.00e+02 seed=0 status=converged niter=5 t_fact_ms=0.31 t_loop_ms=0.94 t_per_iter_ms=0.189 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=B16T t_total_ms=1.25 (= t_fact + t_loop)
+iter=0 dt_ms=0.367 err=2.992e-01 exc=0
+iter=1 dt_ms=0.362 err=1.471e-02 exc=0
+iter=2 dt_ms=0.366 err=2.217e-03 exc=0
+iter=3 dt_ms=0.362 err=1.235e-04 exc=0
+iter=4 dt_ms=0.360 err=1.315e-05 exc=0
+iter=5 dt_ms=0.362 err=1.112e-06 exc=0
+RESULT config=B16S n=256 kappa=3.00e+02 seed=0 status=converged niter=6 t_fact_ms=0.35 t_loop_ms=2.51 t_per_iter_ms=0.418 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=B16S t_total_ms=2.85 (= t_fact + t_loop)
+iter=0 dt_ms=0.703 err=1.382e-05 exc=0
+RESULT config=F32 n=256 kappa=1.00e+03 seed=0 status=converged niter=1 t_fact_ms=0.41 t_loop_ms=0.82 t_per_iter_ms=0.820 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F32 t_total_ms=1.23 (= t_fact + t_loop)
+iter=0 dt_ms=0.154 err=1.382e-05 exc=0
+RESULT config=TF32 n=256 kappa=1.00e+03 seed=0 status=converged niter=1 t_fact_ms=0.30 t_loop_ms=0.25 t_per_iter_ms=0.255 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=TF32 t_total_ms=0.56 (= t_fact + t_loop)
+iter=0 dt_ms=0.158 err=2.261e-02 exc=0
+iter=1 dt_ms=0.161 err=4.090e-04 exc=0
+iter=2 dt_ms=0.156 err=1.031e-05 exc=0
+RESULT config=F16 n=256 kappa=1.00e+03 seed=0 status=converged niter=3 t_fact_ms=0.33 t_loop_ms=0.59 t_per_iter_ms=0.196 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F16 t_total_ms=0.92 (= t_fact + t_loop)
+iter=0 dt_ms=0.159 err=2.155e-01 exc=0
+iter=1 dt_ms=0.171 err=3.340e-02 exc=0
+iter=2 dt_ms=0.161 err=8.427e-03 exc=0
+iter=3 dt_ms=0.160 err=2.413e-03 exc=0
+iter=4 dt_ms=0.161 err=7.747e-04 exc=0
+iter=5 dt_ms=0.159 err=2.546e-04 exc=0
+iter=6 dt_ms=0.161 err=8.154e-05 exc=0
+iter=7 dt_ms=0.171 err=2.650e-05 exc=0
+iter=8 dt_ms=0.161 err=8.568e-06 exc=0
+iter=9 dt_ms=0.160 err=2.938e-06 exc=0
+RESULT config=B16T n=256 kappa=1.00e+03 seed=0 status=converged niter=10 t_fact_ms=0.31 t_loop_ms=1.78 t_per_iter_ms=0.178 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=B16T t_total_ms=2.09 (= t_fact + t_loop)
+iter=0 dt_ms=0.362 err=7.158e-01 exc=0
+iter=1 dt_ms=0.357 err=1.172e-01 exc=0
+iter=2 dt_ms=0.365 err=3.405e-02 exc=0
+iter=3 dt_ms=0.358 err=1.177e-02 exc=0
+iter=4 dt_ms=0.356 err=3.889e-03 exc=0
+iter=5 dt_ms=0.357 err=1.437e-03 exc=0
+iter=6 dt_ms=0.358 err=4.118e-04 exc=0
+iter=7 dt_ms=0.357 err=1.567e-04 exc=0
+iter=8 dt_ms=0.358 err=4.631e-05 exc=0
+iter=9 dt_ms=0.359 err=1.695e-05 exc=0
+iter=10 dt_ms=0.357 err=5.121e-06 exc=0
+iter=11 dt_ms=0.364 err=1.673e-06 exc=0
+RESULT config=B16S n=256 kappa=1.00e+03 seed=0 status=converged niter=12 t_fact_ms=0.33 t_loop_ms=4.67 t_per_iter_ms=0.389 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=B16S t_total_ms=5.01 (= t_fact + t_loop)
+== Safe convergence with Nix-Nan instrumentation ==
+#nixnan: ------------- NVBit (NVidia Binary Instrumentation Tool v1.8) Loaded --------------
+NVBit core environment variables (mostly for nvbit-devs):
+ACK_CTX_INIT_LIMITATION = 0 - if set, no warning will be printed for nvbit_at_ctx_init()
+            NVDISASM = nvdisasm - override default nvdisasm found in PATH
+            NOBANNER = 0 - if set, does not print this banner
+       NO_EAGER_LOAD = 1 - lazy module loading is now turned on by default. If you see deadlocks in your tool, set NO_EAGER_LOAD to 0
+---------------------------------------------------------------------------------
+         INSTR_BEGIN = 0 - Beginning of the instruction interval where to apply instrumentation
+           INSTR_END = 4294967295 - End of the instruction interval where to apply instrumentation
+        TOOL_VERBOSE = 0 - Enable verbosity inside the tool
+   ENABLE_FUN_DETAIL = 0 - Enable detailed function information for kernel
+     PRINT_ILL_INSTR = 0 - Print the instruction which caused the exception
+            SAMPLING = 0 - Instrument a repeat kernel every SAMPLING times
+           INSTR_MEM = 0 - Instrument memory instructions for NaN/Inf detection
+           HISTOGRAM = 0 - Enable FP exponent histogramming
+       BIN_SPEC_FILE =  - Specification for which exponent ranges to report. If the file does not exist, a template specification will be created.
+For example:
+{
+    "count": 128,
+    "doublings": 0,
+    "bf16": [],
+    "f16": [[0,5],[-4,-1]],
+    "f32": [],
+    "f64": []
+}
+will report every 128 occurrences of exponents in the ranges 0 to 5 and -4 to -1 for f16 numbers.
+
+If `doublings=-N`, where `N` is positive, then each bucket will begin with a
+size of `count`. When a bucket reaches the count threshold, it will double the
+threshold and report. This doubling will continue until one bucket has been
+doubled N times, then all buckets are reset to `count`.
+             LOGFILE =  - Path to the optional log file. Default is to print to stderr. This is useful for the case when an instrumented program is capturing stderr.
+           LINE_INFO = 1 - Disable debug information for source code locations. Having this enabled may cause crashes, so set this to 0 if you encounter issues.
+----------------------------------------------------------------------------------
+WARNING: Do not call CUDA memory allocation in nvbit_at_ctx_init(). It will cause deadlocks. Do them in nvbit_tool_init(). If you encounter deadlocks, remove CUDA API calls to debug.
+#nixnan: Initializing GPU context...
+#nixnan: Could not open kernel_whitelist.txt!
+#nixnan: Could not open kernel_blacklist.txt!
+#nixnan: Instrumenting all kernels
+#nixnan: running kernel [generate_seed_pseudo] ...
+#nixnan: #nixnan: warning: Infinite immediate found in operand 3 of @P1 DFMA R44, R50, R44, +INF  ;
+#nixnan: #nixnan: warning: Infinite immediate found in operand 3 of @P1 DFMA R44, R56, R44, +INF  ;
+#nixnan: running kernel [void gen_sequenced_Philox] ...
+#nixnan: running kernel [copy_info_kernel] ...
+#nixnan: running kernel [void geqr2_smem_domino_fast] ...
+#nixnan: error [div0] detected in operand 1 of instruction MUFU.RSQ64H R19, R27 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DMUL R10, R18, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 2 of instruction DFMA R10, R26, -R10, 1 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DFMA R16, R10, R16, 0.5 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 2 of instruction DMUL R10, R18, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [infinity] detected in operand 0 of instruction MUFU.RSQ64H R19, R27 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DFMA R10, R26, -R10, 1 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 1 of instruction DMUL R10, R18, R10 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 1 of instruction DFMA R16, R10, R16, 0.5 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 1 of instruction DMUL R10, R18, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 2 of instruction DMUL R10, R18, R10 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 1 of instruction DFMA R10, R16, R10, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DFMA R10, R16, R10, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DMUL R10, R18, R10 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 2 of instruction DFMA R10, R16, R10, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 3 of instruction DFMA R10, R16, R10, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DMUL R24, R26, R10 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 2 of instruction DMUL R24, R26, R10 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 1 of instruction DFMA R20, R24, -R24, R26 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DFMA R20, R24, -R24, R26 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 2 of instruction DFMA R20, R24, -R24, R26 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 1 of instruction DFMA R8, R20, R16, R24 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DFMA R8, R20, R16, R24 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 3 of instruction DFMA R8, R20, R16, R24 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: running kernel [void orgqr_step1_kernel] ...
+#nixnan: running kernel [void cutlass::Kernel2] ...
+#nixnan: running kernel [void larft_T_64_batch] ...
+#nixnan: running kernel [void batch_eye_kernel] ...
+#nixnan: running kernel [void lacpy_kernel] ...
+#nixnan: running kernel [k_colscale] ...
+#nixnan: running kernel [k_d2s] ...
+#nixnan: running kernel [k_s2d] ...
+#nixnan: running kernel [void gemv2N_kernel] ...
+#nixnan: running kernel [xxtrf4_set_info_ker] ...
+#nixnan: running kernel [void kernel] ...
+#nixnan: running kernel [dtrsv_init] ...
+#nixnan: running kernel [void trsv_ln_exec] ...
+#nixnan: running kernel [dtrsv_init_up] ...
+#nixnan: running kernel [void trsv_lt_exec] ...
+#nixnan: running kernel [void iamax_kernel] ...
+#nixnan: running kernel [void scal_kernel_val] ...
+#nixnan: running kernel [k_scan_nonfinite] ...
+#nixnan: running kernel [void axpy_kernel_val] ...
+#nixnan: running kernel [k_round16_sub] ...
+iter=0 dt_ms=4286.546 err=2.611e-06 exc=0
+RESULT config=F32 n=256 kappa=1.00e+02 seed=0 status=converged niter=1 t_fact_ms=667.79 t_loop_ms=4287.84 t_per_iter_ms=4287.836 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F32 t_total_ms=4955.62 (= t_fact + t_loop)
+iter=0 dt_ms=104.072 err=2.611e-06 exc=0
+RESULT config=TF32 n=256 kappa=1.00e+02 seed=0 status=converged niter=1 t_fact_ms=96.12 t_loop_ms=105.49 t_per_iter_ms=105.487 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=TF32 t_total_ms=201.61 (= t_fact + t_loop)
+#nixnan: running kernel [k_round16_vec] ...
+#nixnan: running kernel [k_s2bf] ...
+iter=0 dt_ms=92.115 err=3.821e-03 exc=0
+iter=1 dt_ms=83.089 err=7.569e-06 exc=0
+RESULT config=F16 n=256 kappa=1.00e+02 seed=0 status=converged niter=2 t_fact_ms=368.48 t_loop_ms=176.39 t_per_iter_ms=88.195 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F16 t_total_ms=544.87 (= t_fact + t_loop)
+iter=0 dt_ms=84.835 err=2.889e-02 exc=0
+iter=1 dt_ms=83.959 err=4.992e-04 exc=0
+iter=2 dt_ms=84.930 err=1.683e-05 exc=0
+RESULT config=B16T n=256 kappa=1.00e+02 seed=0 status=converged niter=3 t_fact_ms=96.17 t_loop_ms=255.06 t_per_iter_ms=85.018 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=B16T t_total_ms=351.22 (= t_fact + t_loop)
+#nixnan: running kernel [k_bfpanel2s] ...
+#nixnan: running kernel [k_spanel2bf] ...
+#nixnan: warning: NaN immediate found in operand 1 of MUFU.RSQ R12, -QNAN  ;
+#nixnan: running kernel [k_bf_trsv] ...
+#nixnan: running kernel [k_bf2s] ...
+#nixnan: Finalizing GPU context...
+
+#nixnan: ------------ nixnan Report -----------
+
+#nixnan: --- FP16 Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- BF16 Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+iter=0 dt_ms=144.211 err=1.681e-01 exc=0
+iter=1 dt_ms=133.964 err=5.878e-03 exc=0
+iter=2 dt_ms=134.473 err=3.245e-04 exc=0
+iter=3 dt_ms=134.910 err=2.118e-05 exc=0
+RESULT config=B16S n=256 kappa=1.00e+02 seed=0 status=converged niter=4 t_fact_ms=920.75 t_loop_ms=548.97 t_per_iter_ms=137.243 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=B16S t_total_ms=1469.72 (= t_fact + t_loop)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- FP32 Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- FP64 Operations ---
+#nixnan: NaN:                   22 (154 repeats)
+#nixnan: Infinity:               1 (7 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          1 (8 repeats)
+
+#nixnan: --- FP16 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- BF16 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- FP32 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- FP64 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+------------- NVBit (NVidia Binary Instrumentation Tool v1.8) Loaded --------------
+NVBit core environment variables (mostly for nvbit-devs):
+ACK_CTX_INIT_LIMITATION = 0 - if set, no warning will be printed for nvbit_at_ctx_init()
+            NVDISASM = nvdisasm - override default nvdisasm found in PATH
+            NOBANNER = 0 - if set, does not print this banner
+       NO_EAGER_LOAD = 1 - lazy module loading is now turned on by default. If you see deadlocks in your tool, set NO_EAGER_LOAD to 0
+---------------------------------------------------------------------------------
+         INSTR_BEGIN = 0 - Beginning of the instruction interval where to apply instrumentation
+           INSTR_END = 4294967295 - End of the instruction interval where to apply instrumentation
+#nixnan: ----------------------------------------------------------------------------------
+        TOOL_VERBOSE = 0 - Enable verbosity inside the tool
+   ENABLE_FUN_DETAIL = 0 - Enable detailed function information for kernel
+     PRINT_ILL_INSTR = 0 - Print the instruction which caused the exception
+            SAMPLING = 0 - Instrument a repeat kernel every SAMPLING times
+           INSTR_MEM = 0 - Instrument memory instructions for NaN/Inf detection
+           HISTOGRAM = 0 - Enable FP exponent histogramming
+       BIN_SPEC_FILE =  - Specification for which exponent ranges to report. If the file does not exist, a template specification will be created.
+For example:
+{
+    "count": 128,
+    "doublings": 0,
+    "bf16": [],
+    "f16": [[0,5],[-4,-1]],
+    "f32": [],
+    "f64": []
+}
+will report every 128 occurrences of exponents in the ranges 0 to 5 and -4 to -1 for f16 numbers.
+
+If `doublings=-N`, where `N` is positive, then each bucket will begin with a
+size of `count`. When a bucket reaches the count threshold, it will double the
+threshold and report. This doubling will continue until one bucket has been
+doubled N times, then all buckets are reset to `count`.
+             LOGFILE =  - Path to the optional log file. Default is to print to stderr. This is useful for the case when an instrumented program is capturing stderr.
+           LINE_INFO = 1 - Disable debug information for source code locations. Having this enabled may cause crashes, so set this to 0 if you encounter issues.
+WARNING: Do not call CUDA memory allocation in nvbit_at_ctx_init(). It will cause deadlocks. Do them in nvbit_tool_init(). If you encounter deadlocks, remove CUDA API calls to debug.
+#nixnan: Initializing GPU context...
+#nixnan: Could not open kernel_whitelist.txt!
+#nixnan: Could not open kernel_blacklist.txt!
+#nixnan: Instrumenting all kernels
+#nixnan: running kernel [generate_seed_pseudo] ...
+#nixnan: #nixnan: warning: Infinite immediate found in operand 3 of @P1 DFMA R44, R50, R44, +INF  ;
+#nixnan: #nixnan: warning: Infinite immediate found in operand 3 of @P1 DFMA R44, R56, R44, +INF  ;
+#nixnan: running kernel [void gen_sequenced_Philox] ...
+#nixnan: running kernel [copy_info_kernel] ...
+#nixnan: running kernel [void geqr2_smem_domino_fast] ...
+#nixnan: error [div0] detected in operand 1 of instruction MUFU.RSQ64H R19, R27 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [infinity] detected in operand 0 of instruction MUFU.RSQ64H R19, R27 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DFMA R16, R10, R16, 0.5 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 2 of instruction DFMA R10, R26, -R10, 1 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 1 of instruction DFMA R16, R10, R16, 0.5 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 1 of instruction DMUL R10, R18, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DMUL R10, R18, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 2 of instruction DMUL R10, R18, R10 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 1 of instruction DMUL R10, R18, R10 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 2 of instruction DMUL R10, R18, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 2 of instruction DFMA R10, R16, R10, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DFMA R10, R26, -R10, 1 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DMUL R10, R18, R10 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 1 of instruction DFMA R10, R16, R10, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DFMA R10, R16, R10, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 3 of instruction DFMA R10, R16, R10, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 2 of instruction DMUL R24, R26, R10 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DMUL R24, R26, R10 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 1 of instruction DFMA R20, R24, -R24, R26 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DFMA R20, R24, -R24, R26 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 1 of instruction DFMA R8, R20, R16, R24 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 2 of instruction DFMA R20, R24, -R24, R26 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DFMA R8, R20, R16, R24 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 3 of instruction DFMA R8, R20, R16, R24 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: running kernel [void orgqr_step1_kernel] ...
+#nixnan: running kernel [void cutlass::Kernel2] ...
+#nixnan: running kernel [void larft_T_64_batch] ...
+#nixnan: running kernel [void batch_eye_kernel] ...
+#nixnan: running kernel [void lacpy_kernel] ...
+#nixnan: running kernel [k_colscale] ...
+#nixnan: running kernel [k_d2s] ...
+#nixnan: running kernel [k_s2d] ...
+#nixnan: running kernel [void gemv2N_kernel] ...
+#nixnan: running kernel [xxtrf4_set_info_ker] ...
+#nixnan: running kernel [void kernel] ...
+#nixnan: running kernel [dtrsv_init] ...
+#nixnan: running kernel [void trsv_ln_exec] ...
+#nixnan: running kernel [dtrsv_init_up] ...
+#nixnan: running kernel [void trsv_lt_exec] ...
+#nixnan: running kernel [void iamax_kernel] ...
+#nixnan: running kernel [void scal_kernel_val] ...
+#nixnan: running kernel [k_scan_nonfinite] ...
+#nixnan: running kernel [void axpy_kernel_val] ...
+#nixnan: running kernel [k_round16_sub] ...
+iter=0 dt_ms=4252.408 err=1.382e-05 exc=0
+RESULT config=F32 n=256 kappa=1.00e+03 seed=0 status=converged niter=1 t_fact_ms=658.14 t_loop_ms=4253.66 t_per_iter_ms=4253.664 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F32 t_total_ms=4911.81 (= t_fact + t_loop)
+iter=0 dt_ms=103.443 err=1.382e-05 exc=0
+RESULT config=TF32 n=256 kappa=1.00e+03 seed=0 status=converged niter=1 t_fact_ms=96.12 t_loop_ms=104.76 t_per_iter_ms=104.756 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=TF32 t_total_ms=200.88 (= t_fact + t_loop)
+#nixnan: running kernel [k_round16_vec] ...
+#nixnan: running kernel [k_s2bf] ...
+iter=0 dt_ms=91.620 err=2.261e-02 exc=0
+iter=1 dt_ms=84.705 err=4.090e-04 exc=0
+iter=2 dt_ms=83.344 err=1.031e-05 exc=0
+RESULT config=F16 n=256 kappa=1.00e+03 seed=0 status=converged niter=3 t_fact_ms=367.34 t_loop_ms=260.84 t_per_iter_ms=86.945 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=F16 t_total_ms=628.18 (= t_fact + t_loop)
+iter=0 dt_ms=86.082 err=2.155e-01 exc=0
+iter=1 dt_ms=83.875 err=3.340e-02 exc=0
+iter=2 dt_ms=84.391 err=8.427e-03 exc=0
+iter=3 dt_ms=85.281 err=2.413e-03 exc=0
+iter=4 dt_ms=84.074 err=7.747e-04 exc=0
+iter=5 dt_ms=82.717 err=2.546e-04 exc=0
+iter=6 dt_ms=82.720 err=8.154e-05 exc=0
+iter=7 dt_ms=82.736 err=2.650e-05 exc=0
+iter=8 dt_ms=82.963 err=8.568e-06 exc=0
+iter=9 dt_ms=83.040 err=2.938e-06 exc=0
+RESULT config=B16T n=256 kappa=1.00e+03 seed=0 status=converged niter=10 t_fact_ms=96.15 t_loop_ms=839.11 t_per_iter_ms=83.911 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=B16T t_total_ms=935.27 (= t_fact + t_loop)
+#nixnan: running kernel [k_bfpanel2s] ...
+#nixnan: running kernel [k_spanel2bf] ...
+#nixnan: warning: NaN immediate found in operand 1 of MUFU.RSQ R12, -QNAN  ;
+#nixnan: running kernel [k_bf_trsv] ...
+#nixnan: running kernel [k_bf2s] ...
+#nixnan: Finalizing GPU context...
+
+#nixnan: ------------ nixnan Report -----------
+
+#nixnan: --- FP16 Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- BF16 Operations ---
+#nixnan: iter=0 dt_ms=157.805 err=7.158e-01 exc=0
+iter=1 dt_ms=135.222 err=1.172e-01 exc=0
+iter=2 dt_ms=135.080 err=3.405e-02 exc=0
+iter=3 dt_ms=136.656 err=1.177e-02 exc=0
+iter=4 dt_ms=116.966 err=3.889e-03 exc=0
+iter=5 dt_ms=121.994 err=1.437e-03 exc=0
+iter=6 dt_ms=119.164 err=4.118e-04 exc=0
+iter=7 dt_ms=119.886 err=1.567e-04 exc=0
+iter=8 dt_ms=117.169 err=4.631e-05 exc=0
+iter=9 dt_ms=118.054 err=1.695e-05 exc=0
+iter=10 dt_ms=116.198 err=5.121e-06 exc=0
+iter=11 dt_ms=116.532 err=1.673e-06 exc=0
+RESULT config=B16S n=256 kappa=1.00e+03 seed=0 status=converged niter=12 t_fact_ms=879.71 t_loop_ms=1511.91 t_per_iter_ms=125.992 first_exc_iter=-1 first_exc_ms=-1.000
+TOTAL config=B16S t_total_ms=2391.61 (= t_fact + t_loop)
+NaN:                    0 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- FP32 Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- FP64 Operations ---
+#nixnan: NaN:                   22 (154 repeats)
+#nixnan: Infinity:               1 (7 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          1 (8 repeats)
+
+#nixnan: --- FP16 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- BF16 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- FP32 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- FP64 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)

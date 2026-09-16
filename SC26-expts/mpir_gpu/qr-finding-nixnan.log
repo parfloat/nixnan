@@ -1,0 +1,57 @@
+#nixnan: error [div0] detected in operand 1 of instruction MUFU.RSQ64H R19, R27 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 1 of instruction DMUL R10, R18, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 2 of instruction DMUL R10, R18, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [infinity] detected in operand 0 of instruction MUFU.RSQ64H R19, R27 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DMUL R10, R18, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [div0] detected in operand 1 of instruction MUFU.RSQ64H R19, R27 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 1 of instruction DMUL R10, R18, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 2 of instruction DFMA R10, R26, -R10, 1 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 2 of instruction DMUL R10, R18, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [infinity] detected in operand 0 of instruction MUFU.RSQ64H R19, R27 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [div0] detected in operand 1 of instruction MUFU.RSQ64H R19, R27 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 2 of instruction DMUL R10, R18, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DMUL R10, R18, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 2 of instruction DFMA R10, R26, -R10, 1 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 1 of instruction DMUL R10, R18, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [div0] detected in operand 1 of instruction MUFU.RSQ64H R19, R27 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [infinity] detected in operand 0 of instruction MUFU.RSQ64H R19, R27 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DMUL R10, R18, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 1 of instruction DMUL R10, R18, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 1 of instruction DFMA R16, R10, R16, 0.5 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [div0] detected in operand 1 of instruction MUFU.RSQ64H R19, R27 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 2 of instruction DMUL R10, R18, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DFMA R16, R10, R16, 0.5 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DFMA R10, R26, -R10, 1 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 1 of instruction DMUL R10, R18, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [div0] detected in operand 1 of instruction MUFU.RSQ64H R19, R27 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DMUL R10, R18, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 1 of instruction DFMA R16, R10, R16, 0.5 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [infinity] detected in operand 0 of instruction MUFU.RSQ64H R19, R27 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DFMA R16, R10, R16, 0.5 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [div0] detected in operand 1 of instruction MUFU.RSQ64H R19, R27 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 2 of instruction DMUL R10, R18, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 2 of instruction DFMA R10, R26, -R10, 1 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DMUL R10, R18, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 1 of instruction DFMA R16, R10, R16, 0.5 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [div0] detected in operand 1 of instruction MUFU.RSQ64H R19, R27 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 1 of instruction DMUL R10, R18, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 1 of instruction DFMA R16, R10, R16, 0.5 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 2 of instruction DFMA R10, R26, -R10, 1 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [infinity] detected in operand 0 of instruction MUFU.RSQ64H R19, R27 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [div0] detected in operand 1 of instruction MUFU.RSQ64H R19, R27 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DMUL R10, R18, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 2 of instruction DMUL R10, R18, R18 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [infinity] detected in operand 0 of instruction MUFU.RSQ64H R19, R27 ; in function void geqr2_smem_domino_fast of type f64
+#nixnan: error [NaN] detected in operand 2 of instruction DFMA R10, R26, -R10, 1 ; in function void geqr2_smem_domino_fast of type f64
+
+=== QR Factorization Exception Summary ===
+Phase 8 discovered exceptions in cuSOLVER's geqr2 QR factorization kernels
+at κ >= 1000 (well-conditioned regime).
+
+Exception types detected:
+- [div0]: Division by zero in reciprocal square root (RSQ64H)
+- [NaN]: NaN propagation from invalid operations (sqrt negative, etc)
+- [infinity]: Overflow to infinity in QR preprocessing
+
+These occur in double-precision workspace (geqr2_smem_domino_fast type f64)
+but do NOT prevent convergence of the iterative refinement algorithm.
