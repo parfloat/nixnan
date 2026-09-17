@@ -44,6 +44,7 @@ using nixnan::exception_info;
 #include "nntools.hh"
 #include "meminstrumentation.cuh"
 #include "fp-histogram.cuh"
+#include "timer.h"
 #include <signal.h>
 #include <map>
 #include <chrono>
@@ -105,6 +106,7 @@ void nvbit_at_init() {
   GET_VAR_INT(instrument_mem, "INSTR_MEM", 0,
               "Instrument memory instructions for NaN/Inf detection");
   nixnan::fp_histogram::init();
+  nixnan::timer::init();
   std::string filename;
   GET_VAR_STR(
     filename,
@@ -437,6 +439,7 @@ void nvbit_tool_init(CUcontext ctx) {
   channel_host.init(0, CHANNEL_SIZE, &channel_dev, NULL);
   recv_thread = std::thread(recv_thread_fun, recorder, channel_host);
   nixnan::fp_histogram::tool_init(ctx);
+  nixnan::timer::tool_init(ctx);
 }
 
 void nvbit_at_ctx_term(CUcontext ctx) {
@@ -518,4 +521,5 @@ void nvbit_at_ctx_term(CUcontext ctx) {
     print_type_exceptions("FP64", FP64, is_mem);
   }
   nixnan::fp_histogram::term(ctx);
+  nixnan::timer::term(ctx);
 }

@@ -28,5 +28,5 @@ void set_out_file(std::string& filename) {
 void nnterminate(const std::string& reason) {
     nnout() << "Terminating early: " << reason << std::endl;
     std::flush(*g_nnout_stream);
-    std::raise(SIGINT);
+    std::raise(SIGTERM);
 }
