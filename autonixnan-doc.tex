@@ -1,0 +1,711 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{parskip}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{amsmath}
+
+\hypersetup{colorlinks=true, linkcolor=blue, urlcolor=blue, citecolor=blue}
+
+\definecolor{codebg}{rgb}{0.96,0.96,0.96}
+\lstset{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{codebg},
+  breaklines=true,
+  columns=fullflexible,
+  keywordstyle=\color{blue!70!black}\bfseries,
+  commentstyle=\color{green!40!black},
+  stringstyle=\color{purple},
+  frame=single,
+  framesep=3pt,
+  xleftmargin=3pt,
+  xrightmargin=3pt,
+  tabsize=2,
+}
+\lstdefinelanguage{PyShort}{language=Python}
+
+\title{How AutoNixNan Works: A Code-Level Account}
+\author{ganesh@cs.utah.edu \\ \small (written with Claude Code)}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This document explains, from the source code, how \texttt{bin/autonixnan}
+(``AutoNixNan'') and the \texttt{nixnan.so} NVBit tool it drives actually
+work. It is not a user guide; it is a line-level account of the
+mechanism, written after reading every file involved
+(\texttt{bin/autonixnan}, \texttt{src/nixnan.cu}, and the eleven
+supporting headers/translation units under \texttt{src/}), and after
+empirically exercising the tool against several real CUDA programs. Where
+the code's behavior diverges from what its own comments or the project
+README claim, that divergence is called out explicitly and is backed by
+a repeatable observation, not speculation.
+\end{abstract}
+
+\tableofcontents
+
+\section{The Big Picture}
+
+AutoNixNan is not one program; it is two, layered:
+
+\begin{enumerate}
+\item \textbf{\texttt{nixnan.so}} (source: \texttt{src/*.cu}, \texttt{src/*.cuh},
+  \texttt{src/*.h}) --- an NVBit tool. NVBit (NVIDIA Binary Instrumentation
+  Tool) is preloaded into a CUDA process via \texttt{LD\_PRELOAD} and gets
+  callbacks whenever the process launches a kernel, before that kernel's
+  SASS (compiled machine code) ever executes on the GPU. \texttt{nixnan.so}
+  uses those callbacks to rewrite each kernel's SASS, inserting calls to
+  its own device-side functions after (and sometimes before) every
+  floating-point instruction, so it can inspect the actual bits flowing
+  through the GPU's registers at run time.
+\item \textbf{\texttt{bin/autonixnan}} (a 420-line Python 3 script) --- a
+  wrapper that never touches SASS or the GPU directly. It only launches
+  the target program multiple times, each time with a different
+  combination of environment variables that steer \texttt{nixnan.so},
+  and stitches the resulting log files into one report.
+\end{enumerate}
+
+Everything \texttt{autonixnan} does, it does by shelling out to the
+target program with \texttt{LD\_PRELOAD=nixnan.so} and a specific
+environment. There is no IPC between the Python process and the GPU
+process beyond environment variables in and a text log file out. This
+matters: every quirk of \texttt{autonixnan}'s behavior traces back to
+either (a) what environment variable combination it chose to set for a
+given phase, or (b) what \texttt{nixnan.so} actually does --- which is
+sometimes \emph{not} what its own \texttt{--help} banner or
+\texttt{autonixnan}'s comments say it does (Section~\ref{sec:timeout-dead}).
+
+\section{Part I --- \texttt{nixnan.so}}
+
+\subsection{Initialization: \texttt{nvbit\_at\_init}}
+
+NVBit calls \texttt{nvbit\_at\_init()} once, before the target's
+\texttt{main()} runs, but after CUDA driver initialization has begun
+enough that reading environment variables is possible. \texttt{nixnan.cu}
+uses this hook to read every environment variable it supports via the
+NVBit-provided \texttt{GET\_VAR\_INT}/\texttt{GET\_VAR\_STR} macros
+(defined in \texttt{nvbit\_release/core/nvbit.h}). Each call to one of
+these macros \emph{also prints a banner line} to the log stream --- this
+is the ``NVBit core environment variables'' banner every instrumented run
+of this session emitted. That banner is not decorative: it is a direct
+enumeration of every env var the running binary actually reads, in the
+order it reads them. \textbf{If a variable does not appear in the banner,
+the running binary does not consult it, full stop} --- this becomes the
+key diagnostic in Section~\ref{sec:timeout-dead}.
+
+Table~\ref{tab:envvars} lists every variable read by \texttt{nixnan.cu}
+itself, in banner order, plus two read by a header it includes
+(\texttt{fp-histogram.cu}) during \texttt{nvbit\_at\_init}'s call to
+\texttt{nixnan::fp\_histogram::init()}.
+
+\begin{longtable}{p{3.2cm}p{2.3cm}p{8.2cm}}
+\toprule
+\textbf{Variable} & \textbf{Default} & \textbf{Effect} \\
+\midrule
+\endhead
+\texttt{INSTR\_BEGIN} / \texttt{INSTR\_END} & 0 / UINT32\_MAX & Instruction-index interval to instrument (unused by autonixnan). \\
+\texttt{TOOL\_VERBOSE} & 0 & Extra diagnostic printing during instrumentation setup. \\
+\texttt{ENABLE\_FUN\_DETAIL} & 0 & Print the full mangled kernel name every time a kernel re-runs, not just the first time. \\
+\texttt{PRINT\_ILL\_INSTR} & 0 & (declared, not read further in the code paths exercised here). \\
+\texttt{SAMPLING} & 0 & Instrument only every $N$th launch of a repeated kernel. \\
+\texttt{INSTRUMENT\_EXCEPTIONS} & 1 & Master switch for the NaN/Inf/Subnormal/Div-by-0 instrumentation described in Section~\ref{sec:exceptions}. \\
+\texttt{INSTR\_MEM} & 0 & Also instrument 32/64/128-bit global-memory stores (\texttt{STG}) for NaN, Section~\ref{sec:memcheck}. \\
+\texttt{HISTOGRAM} & 0 & Set implicitly to 1 if \texttt{BIN\_SPEC\_FILE} is non-empty; enables the exponent-histogram/bin-threshold mechanism, Section~\ref{sec:histogram}. \\
+\texttt{BIN\_SPEC\_FILE} & (empty) & Path to a JSON file describing which exponent ranges, per format, should be watched; auto-created as a template and the process exits if the file does not yet exist. \\
+\texttt{LOGFILE} & (empty) & Redirect all \texttt{nnout()} output (everything prefixed \texttt{\#nixnan:}) from \texttt{stderr} to this file. \\
+\texttt{LINE\_INFO} & 1 & Attempt to resolve source file:line for each instrumented instruction (wrapped in a \texttt{SIGSEGV} handler --- see \texttt{recording.cu}). \\
+\texttt{LOG\_KERNELS} & (empty) & Path to a log file; if set, \textbf{disables all instrumentation} and instead just logs every kernel launch and its wall-clock execution time. Section~\ref{sec:logkernels}. \\
+\texttt{MAX\_ERRORS} & 0 (unlimited) & Self-terminate (\texttt{SIGINT} via \texttt{nnterminate}) after this many exception reports. \\
+\texttt{TIME\_KERNELS} & 0 & Print a ``Kernel [\ldots] execution time: N microseconds'' line for every kernel launch, independent of \texttt{LOG\_KERNELS}. \\
+\texttt{FUNCTION\_WHITELIST} & (empty) & Path to a newline-separated file of function names; only these are instrumented. \\
+\texttt{FUNCTION\_BLACKLIST} & (empty) & Complement of the above; mutually exclusive with it (the process exits with an error if both are set). \\
+\bottomrule
+\caption{Environment variables consulted by the running \texttt{nixnan.so} binary, in the order \texttt{nvbit\_at\_init} reads them. Absence from this table (e.g.\ \texttt{NIXNAN\_TIMEOUT}) means the variable is \emph{not currently wired up} -- see Section~\ref{sec:timeout-dead}.}
+\label{tab:envvars}
+\end{longtable}
+
+\subsection{Deciding what to instrument}
+
+For every kernel launch, NVBit calls
+\texttt{nvbit\_at\_cuda\_event(ctx, is\_exit, cbid, \ldots)}, once on entry
+and once on exit, for the CUDA driver calls that launch work
+(\texttt{cuLaunchKernel} and its cooperative variants). On entry
+(\texttt{is\_exit == false}):
+
+\begin{lstlisting}[language=C++]
+bool enable_instr = instrument_function(ctx, p->f);
+if (enable_instr) {
+  int count = analyzed_kernels[short_name]++;
+  if (count == 0) nnout() << "running kernel [" << short_name << "] ...";
+}
+nvbit_enable_instrumented(ctx, p->f, true);
+\end{lstlisting}
+
+\texttt{instrument\_function} walks the kernel plus every ``related
+function'' NVBit knows it might call (\texttt{nvbit\_get\_related\_functions}
+--- this includes every template instantiation the compiler linked in as a
+\emph{possible} callee, which is why a single cuBLAS \texttt{nrm2\_kernel}
+launch can enumerate dozens of unrelated-looking function names; see
+Section~\ref{sec:logkernels}). For each such function it calls
+\texttt{should\_instrument}, which is where whitelist/blacklist filtering,
+sampling, and --- critically --- \texttt{LOG\_KERNELS} mode all converge:
+
+\begin{lstlisting}[language=C++]
+bool should_instrument(CUcontext ctx, CUfunction f) {
+  ...
+  enable_instr &= !kernel_logging_enabled;   // <-- LOG_KERNELS forces this to false
+  if (sampling != 0 && analyzed_kernels.count(func_name)) {
+    if (analyzed_kernels[func_name] % sampling != 0) enable_instr = false;
+  }
+  return enable_instr;
+}
+\end{lstlisting}
+
+So \texttt{LOG\_KERNELS} does not merely add logging on top of the normal
+instrumentation --- it hard-disables \texttt{should\_instrument} for
+\emph{every} function, meaning \texttt{instrument\_function} inserts zero
+device-side calls anywhere, and the ``running kernel [\ldots]'' print above
+never fires either (since \texttt{enable\_instr} is false). The kernel
+still runs, at essentially native speed, because
+\texttt{nvbit\_enable\_instrumented} is called unconditionally and simply
+makes NVBit run the (uninstrumented, in this case identical-to-original)
+version.
+
+For every instruction NVBit hands back for a function that \emph{is}
+selected, \texttt{instruction\_info::get\_reginfo(instr)} decides whether
+the instruction is floating-point-interesting at all, and if so, what its
+operands look like.
+
+\subsection{The opcode-to-operand table}
+
+\texttt{get\_reginfo} (in \texttt{instruction\_info.cu}) matches the
+instruction's opcode string against a table of regex patterns baked into
+the binary as \texttt{src/instructions.h} --- a byte array
+(\texttt{instructions\_json}, 5{,}433 bytes) that is really just a JSON
+document, embedded at compile time and parsed once at first use with
+\texttt{nlohmann::json}. Two representative entries:
+
+\begin{lstlisting}
+"HMMA.16816.F16": {
+  "registers": [
+    {"type": "f16", "count": 4},
+    {"type": "f16", "count": 8},
+    {"type": "f16", "count": 4},
+    {"type": "f16", "count": 4}
+  ],
+  "description": "Half-precision matrix multiply accumulate into half-precision accumulator"
+},
+"DFMA(\\.RZ|\\.RP|\\.RM)?(\\.FTZ)?(?:\\.(RP|RM|RZ))?(?:\\.SAT)?": {
+  "registers": [
+    {"type": "f64", "count": 1},
+    {"type": "f64", "count": 1},
+    {"type": "f64", "count": 1}
+  ],
+  "description": ""
+}
+\end{lstlisting}
+
+Each entry says, per operand position, which floating-point format the
+operand is (\texttt{f16}/\texttt{bf16}/\texttt{f32}/\texttt{f64}) and how
+many scalar values are packed into it (e.g.\ a tensor-core \texttt{HMMA}
+operand carrying 8 packed half-precision values). For each such operand,
+\texttt{get\_regs} figures out \emph{how} to actually read the value at
+instrumentation-insertion time --- a register, a uniform register, or a
+constant-bank (\texttt{cbank}) immediate --- and builds a list of
+zero-argument closures (\texttt{reginsertion}, i.e.\
+\texttt{std::function<void()>}) that, when called later, will emit the
+NVBit call
+(\texttt{nvbit\_add\_call\_arg\_reg\_val}/\texttt{\_ureg\_val}/\texttt{\_cbank\_val})
+that actually smuggles that operand's bits into the injected device
+function call. A literal double/float immediate operand
+(\texttt{IMM\_DOUBLE}) is instead classified right there at instrumentation
+time via host-side \texttt{fpclassify} and, if already NaN/Inf/subnormal,
+produces an immediate warning line rather than a runtime check (there is
+nothing to check at run time --- the value never changes).
+
+This table is also where the 24-line \texttt{is\_f64high} check matters:
+some SASS forms split a 64-bit double across two 32-bit registers and
+give the \emph{high} half its own opcode suffix (\texttt{...64H}); the
+table's register-start-offset logic (\texttt{reg\_start = op->u.reg.num -
+(f64high ? 1 : 0)}) exists purely to correctly pair the two halves back
+into one 64-bit value.
+
+\subsection{Exception detection, end to end}
+\label{sec:exceptions}
+
+For every FP-classified instruction (and \texttt{INSTRUMENT\_EXCEPTIONS} is
+1 by default), \texttt{instrument\_function} in \texttt{nixnan.cu} inserts
+\emph{two} calls to the same device function, \texttt{nixnan\_check\_regs}
+(defined in \texttt{inject\_funs.cu}): once \texttt{IPOINT\_AFTER} (reading
+the operand \emph{after} it takes its post-instruction guard-predicate
+value --- effectively the output/destination operands) and once
+\texttt{IPOINT\_BEFORE} (the input operands). Each call carries, as
+variadic arguments, a packed \texttt{reginfo} struct (a bit-packed 32-bit
+struct --- \texttt{count:6, type:4, half\_h0:1, half\_h1:1, div0:1,
+operand:2, num\_regs:4, f64high:1}, statically asserted to fit in one
+\texttt{int32\_t}) followed by the actual register values.
+
+\texttt{nixnan\_check\_regs} then, per operand, classifies the raw bits
+using the IEEE-754 bit-pattern predicates in \texttt{fp\_utils.cuh}
+(\texttt{half\_is\_nan}, \texttt{float\_is\_inf}, \texttt{double\_is\_subnorm},
+etc. --- pure exponent/mantissa bit masking, no floating-point arithmetic
+at all, so this cannot itself introduce rounding artifacts):
+
+\begin{lstlisting}[language=C++]
+uint32_t float_is_nan(uint32_t f) {
+  return (float_exp(f) == 0xFF && float_mant(f) != 0) ? E_NAN : 0;
+}
+uint32_t float_is_inf(uint32_t f) {
+  return (float_exp(f) == 0xFF && float_mant(f) == 0) ? sgninf(f) : 0;
+}
+\end{lstlisting}
+
+The five exception bits are \texttt{E\_NAN}, \texttt{E\_INF},
+\texttt{E\_NINF} (negative infinity, reported separately from positive),
+\texttt{E\_SUB} (subnormal), and \texttt{E\_DIV0} --- the last of which is
+really just ``this operand is exactly zero'', only checked for operands
+the instruction table flags with \texttt{"div0": true} (i.e.\ divisor
+operands of division-shaped instructions). \texttt{half2}/\texttt{bf162}
+variants unpack two packed half-precision lanes from one 32-bit register
+before classifying each.
+
+The per-lane exception bitmask is then combined across the whole warp with
+a \texttt{\_\_shfl\_sync} reduction (any lane's exception counts for the
+warp), and only the warp's first active lane does the recording, to avoid
+32-way redundant writes:
+
+\begin{lstlisting}[language=C++]
+if (first_laneid == laneid) {
+  for (int op = 0; op < OPERANDS; op++) {
+    uint32_t exce = exces[op];
+    if (exce != 0) {
+      uint32_t num_exceptions = recorder.record(inst_id, exce, op);
+      if (num_exceptions == 0) {
+        // first time this (instruction, operand) pair has ever
+        // hit this exact exception -- push a live report
+        for (int skip = 0; skip < 2; skip++) {
+          exception_info ei(get_ctaid(), get_warpid(), inst_id, exce, op, UNKNOWN, skip);
+          channel_dev->push(&ei, sizeof(exception_info));
+        }
+      }
+    }
+  }
+}
+\end{lstlisting}
+
+\texttt{recorder.record} (\texttt{device\_recorder::record},
+\texttt{recording.h}) is an \texttt{atomicAdd} into a flat device array,
+indexed by \texttt{(instruction id, operand, exception bitmask)}. This is
+the counter that \textbf{every} occurrence increments, whether or not a
+message is pushed anywhere --- it is the source of the ``repeats'' numbers
+in the final report. The channel push, by contrast, only happens the
+\emph{first} time a given \texttt{(instruction, operand, exception-bits)}
+triple is ever seen (\texttt{num\_exceptions == 0} means this was the very
+first increment) --- this is what produces the live
+\texttt{\#nixnan: error [\ldots] detected in operand \ldots} lines this
+session saw streamed to the console, and it happens exactly once per
+distinct site, no matter how many times that site actually fires.
+
+\subsubsection*{The channel and receiver thread}
+
+NVBit tools cannot easily do host-side I/O from device code, so
+\texttt{nixnan.so} uses NVBit's lock-free \texttt{ChannelDev}/\texttt{ChannelHost}
+ring buffer: device code \texttt{push}es fixed-size \texttt{exception\_info}
+records; a dedicated host \texttt{std::thread} (\texttt{recv\_thread\_fun}
+in \texttt{nixnan.cu}) polls \texttt{channel\_host.recv} and, for each
+record, looks up the recorded instruction's SASS text, function name, and
+source location (all previously stashed by \texttt{recorder::mk\_entry} at
+instrumentation time) and prints the formatted error line. Every push
+happens \emph{twice}, with a ``skip'' flag on the second copy --- this is
+an NVBit idiom to guarantee the channel has fully drained even if the
+consuming thread is mid-poll (\texttt{to\_skip()} entries are silently
+discarded by the receiver).
+
+\subsubsection*{The final aggregate report}
+
+At context teardown (\texttt{nvbit\_at\_ctx\_term}), the device-side error
+array is copied back to the host and folded into per-\texttt{(format,
+is\_memory)} totals. For each of the five exception kinds, the code
+computes \emph{two} numbers from the same per-instruction/operand counter
+table:
+
+\begin{lstlisting}[language=C++]
+if (exce & error) {
+  std::get<0>(exception_counts[{type, is_mem}][index]) += errors;   // total occurrences (repeats, so far)
+  if (errors > 0) std::get<1>(exception_counts[{type, is_mem}][index])++;  // one more distinct site
+}
+...
+// later: subtract the per-format unique-site count out of the running total
+std::get<0>(exception_counts[{ftype, is_mem}][i]) -= std::get<1>(exception_counts[{ftype, is_mem}][i]);
+\end{lstlisting}
+
+That subtraction is exactly why the printed report reads
+\texttt{NaN: 22 (154 repeats)}: 22 is the number of distinct
+(instruction, operand) sites that ever produced a NaN even once, and 154
+is \emph{additional} occurrences beyond each site's first (i.e.\ total
+occurrences minus the 22 ``first hits'' already counted once each in the
+unique-site tally) --- so \texttt{unique + repeats} is the true total
+number of times that exception fired, summed over every site. This is
+the exact metric this session used to compare \texttt{rd\_nixnan.cu}
+against its 10x-grid-point variant: unique-site count is a static
+property of the kernel's source code and stays fixed as the problem
+scales, while repeats measures how much bad floating-point behavior an
+actual run produced, and that number does scale with problem size.
+
+\subsection{Memory-instruction checking}
+\label{sec:memcheck}
+
+If \texttt{INSTR\_MEM=1}, every global-memory store (\texttt{STG}, any
+width) additionally gets a call to \texttt{nixnan\_check\_nans}
+(\texttt{memcheck.cu}) inserted \texttt{IPOINT\_BEFORE}.
+\texttt{meminstrumentation.cu} first has to work out \emph{what type} is
+being stored, since a raw \texttt{STG} instruction's operand is just an
+untyped register: it walks backwards through the current basic block
+looking for the most recent instruction that wrote that register and
+reuses \emph{that} instruction's already-known operand type
+(\texttt{find\_type}). If no typed producer is found, the store is
+skipped rather than guessed at. Unlike the exception path above, the
+memory-instruction checker only ever reports \texttt{NaN} (not
+Inf/Subnormal/Div0) --- this is why every ``\texttt{\ldots Memory
+Operations}'' block in the report only ever prints a \texttt{NaN:} line.
+
+\subsection{The exponent-histogram / bin-threshold mechanism}
+\label{sec:histogram}
+
+This is the machinery behind \texttt{HISTOGRAM}/\texttt{BIN\_SPEC\_FILE},
+and it is what \texttt{autonixnan}'s ``extreme-value scan'' phase
+(Section~\ref{sec:phase2}) is actually built on. It runs as a
+\emph{parallel, independent} instrumentation pass alongside the exception
+checker above --- every FP instruction that gets a
+\texttt{nixnan\_check\_regs} call also, unconditionally, gets a call to
+\texttt{nixnan\_fp\_histogram\_counter} inserted (\texttt{fp-histogram.cu});
+whether that call does anything is gated at run time by
+\texttt{histogram\_enabled} (true if \texttt{HISTOGRAM=1} or
+\texttt{BIN\_SPEC\_FILE} is set).
+
+\texttt{BIN\_SPEC\_FILE} is a small JSON document naming, per format, a
+list of \texttt{[lower, upper]} \emph{unbiased signed exponent} ranges to
+watch, plus a \texttt{count} (report every \texttt{count}-th value landing
+in a watched bin) and optional \texttt{max\_reports} (self-terminate a
+kernel-function's reporting after this many). If the named file does not
+exist, \texttt{nixnan.so} writes an empty template there and
+\texttt{exit(0)}s --- by design, the first invocation with a
+not-yet-existing spec file is a no-op setup step, not a real run.
+
+At run time, \texttt{record()} (in \texttt{fp-fun.cu}) does two things
+for every FP value seen: it always \texttt{atomicAdd}s into a flat
+\texttt{[format][exponent]} histogram array (this is what powers the
+``Exponent range for f16: [-14, 15]'' summary line printed at
+\texttt{term()}, when \texttt{HISTOGRAM=1} is used directly rather than
+through \texttt{autonixnan}), and, if that exponent falls in one of the
+function's configured bins, increments a per-bin counter and --- every
+\texttt{count}-th time --- pushes a \texttt{bin has reached threshold}
+report through its own separate channel/receiver-thread pair
+(structurally identical to the exception path, but entirely separate
+state). \textbf{Crucially, the valid exponent range for each format
+explicitly excludes zero and infinity} (see \texttt{FP\_FORMAT\_RANGES} in
+\texttt{bin/autonixnan}, and \texttt{bin\_from\_json}'s range validation in
+\texttt{fp-histogram.cu}, which rejects any bin touching the
+all-zeros/all-ones exponent encodings) --- \textbf{a value that jumps
+straight from a normal, finite magnitude to \texttt{Inf} in a single
+instruction never lands in any bin at all, and is therefore invisible to
+this mechanism.} This is exactly what this session found empirically
+with the mixed-precision-Cholesky Phase-D overflow experiment
+(Section~\ref{sec:limitations}): the scan flagged an unrelated fp64 QR
+kernel while missing the real, program-confirmed FP16 overflow entirely,
+because that overflow was a one-step jump to \texttt{Inf} with no
+gradually-climbing finite exponent trail leading up to it.
+
+\subsection{\texttt{LOG\_KERNELS} mode}
+\label{sec:logkernels}
+
+As established above, \texttt{LOG\_KERNELS} disables all instrumentation.
+What it \emph{does} do: at kernel-exit time,
+\texttt{nvbit\_at\_cuda\_event} prints
+\texttt{Kernel [name] execution time: N microseconds} for every launch
+(gated on \texttt{time\_kernels || kernel\_logging\_enabled}, so this
+line's presence does not actually require \texttt{TIME\_KERNELS=1} once
+\texttt{LOG\_KERNELS} is set --- \texttt{autonixnan}'s
+\texttt{collect\_kernels()} relies on exactly this). Separately,
+\texttt{instrument\_function} also prints one
+\texttt{Function [related] of kernel [top-level]} line for \emph{every}
+NVBit-enumerated related function of a kernel, which for a library-heavy
+binary (cuBLAS/cuSOLVER template instantiations) can be enormous --- an
+n=4096 cuSOLVER Cholesky factorization run in this session produced over
+10{,}000 such lines, none of which match \texttt{autonixnan}'s
+\texttt{\#nixnan: Kernel [\ldots] execution time:} parser regex and are
+therefore silently ignored by \texttt{\_parse\_kernel\_log}. They are
+harmless noise from \texttt{autonixnan}'s point of view, but they do
+inflate the log file and are worth knowing about if reading a
+\texttt{LOG\_KERNELS} log by hand.
+
+\subsection{The (currently) dead \texttt{NIXNAN\_TIMEOUT}}
+\label{sec:timeout-dead}
+
+\texttt{src/timer.h}/\texttt{timer.cu} implement a self-contained,
+graceful internal timeout: \texttt{nixnan::timer::init()} reads
+\texttt{NIXNAN\_TIMEOUT} (default 0, meaning disabled), and
+\texttt{nixnan::timer::tool\_init(ctx)}, if the timeout is positive,
+spawns a background thread that sleeps for that many seconds and then
+calls \texttt{nnterminate("Timeout reached.")} --- a graceful,
+in-process \texttt{SIGINT} to itself, flushing the log first.
+
+\textbf{This code is never called.} A full read of \texttt{nixnan.cu}'s
+\texttt{nvbit\_at\_init}, \texttt{nvbit\_tool\_init}, and
+\texttt{nvbit\_at\_ctx\_term} --- the only three places that call into
+any other \texttt{namespace}'s \texttt{init}/\texttt{tool\_init}/\texttt{term}
+--- shows calls into \texttt{nixnan::fp\_histogram::\{init,tool\_init,term\}}
+only. There is no call anywhere in the tree into
+\texttt{nixnan::timer::\{init,tool\_init,term\}}. This was confirmed two
+independent ways during this session:
+
+\begin{itemize}
+\item \texttt{grep -rn "timer::" src/} outside of \texttt{timer.cu} itself
+  returns nothing.
+\item The \texttt{GET\_VAR\_INT} macro used to read \texttt{NIXNAN\_TIMEOUT}
+  \emph{always} prints a banner line when it runs, regardless of the
+  value found. Every banner captured this session (which comes from
+  \texttt{nvbit\_at\_init}, run unconditionally) lists
+  \texttt{INSTR\_BEGIN} through \texttt{FUNCTION\_BLACKLIST} --- and never
+  \texttt{NIXNAN\_TIMEOUT}. If the variable were actually being read, its
+  banner line would be there.
+\end{itemize}
+
+The practical consequence: \texttt{bin/autonixnan}'s
+\texttt{find\_extreme\_values()} sets \texttt{NIXNAN\_TIMEOUT} and
+documents (in its own docstring) that this is what lets ``the target's
+own timer, rather than the hard kill here'' end a long-running scan
+gracefully. In the currently built \texttt{nixnan.so}, that never
+happens --- \texttt{NIXNAN\_TIMEOUT} is silently ignored, and \emph{every}
+timeout this session observed (``\texttt{Error: target program exceeded
+Ns timeout}'') was Python's own \texttt{subprocess.run(timeout=\ldots)}
+hard-killing the child with \texttt{SIGKILL} after the full
+\texttt{args.timeout + TIMEOUT\_GRACE} (30s) window, not a graceful
+internal exit. This does not make \texttt{autonixnan} incorrect --- the
+external kill still bounds run time correctly --- but it does mean the
+30-second grace period is not, in practice, ``slack given in case the
+internal timer is a little late''; it is dead weight, since nothing
+internal is ever going to fire first.
+
+\section{Part II --- \texttt{bin/autonixnan}}
+
+\texttt{autonixnan} runs three phases against the same target command,
+in sequence, unconditionally launching the target process fresh each
+time (there is no persistent daemon or warm cache between phases).
+
+\subsection{Phase 1: \texttt{collect\_kernels()} --- the baseline}
+
+\begin{lstlisting}[language=Python]
+env["LD_PRELOAD"] = lib_path
+env["LOG_KERNELS"] = log_file
+elapsed = run_with_env(program_args, timeout, env)
+\end{lstlisting}
+
+This runs the target with instrumentation fully disabled (Section
+\ref{sec:logkernels}), so wall time here is close to native (modulo the
+overhead of NVBit's own related-function enumeration and the
+\texttt{"Function [\ldots] of kernel [\ldots]"} print spam for
+library-heavy binaries, which this session measured at 10-17s for a
+cuSOLVER-based binary that runs in under 2s uninstrumented). The
+\texttt{-t}/\texttt{--timeout} value is used \emph{directly, with no
+grace period}, as the hard \texttt{subprocess.run} timeout for this
+phase --- a target that is merely slow to start (library init, matrix
+setup) can therefore fail here even though nothing is actually being
+instrumented, which this session hit directly with a cuSOLVER-heavy
+binary whose factorization setup alone exceeded a naively small
+\texttt{-t}.
+
+The resulting log is parsed by \texttt{\_parse\_kernel\_log}, which only
+matches lines starting \texttt{"\#nixnan: Kernel ["} --- ignoring the
+\texttt{"Function [\ldots] of kernel [\ldots]"} noise described above ---
+extracting the kernel name and, if present, its microsecond execution
+time, and building both an in-order call sequence and a
+name~$\to$~\{count, total\_time\} table.
+
+\subsection{Report assembly (between phases 1 and 2)}
+
+Before running Phase 2, \texttt{main()} prints the ``Unique Kernels''
+table (sorted by total time descending, truncated to the top 25 when
+there are more), the baseline wall-clock time, and the full kernel call
+sequence --- elided to the first and last 25 calls with a
+\texttt{"(\ldots calls omitted)"} marker in between when there are more
+than 50 total, so an n=4096 factorization's 900+ launches do not flood
+the terminal.
+
+\subsection{Phase 2: \texttt{find\_extreme\_values()} --- the exponent scan}
+\label{sec:phase2}
+
+\begin{lstlisting}[language=Python]
+bs = _make_binspec(1, max_reports)   # count=1: report every single hit, capped at max_reports/kernel
+env["BIN_SPEC_FILE"] = spec_file
+env["LOGFILE"] = log_file
+env["NIXNAN_TIMEOUT"] = str(timeout)      # see Sec 2.9 -- currently a no-op
+env["INSTRUMENT_EXCEPTIONS"] = "0"        # exception checker off; histogram checker still runs
+elapsed = run_with_env(program_args, timeout + TIMEOUT_GRACE, env, check=False)
+\end{lstlisting}
+
+\texttt{\_make\_binspec} auto-generates a \texttt{BIN\_SPEC\_FILE} that
+watches the top 5\% and bottom 5\% of \emph{every} format's valid
+(finite, non-zero) exponent range, for \emph{every} function --- since
+the spec file has no per-function key, \texttt{fp-histogram.cu}'s
+\texttt{process\_bin\_spec} applies the same global spec to whichever
+function it is asked about, so in effect every instrumented kernel is
+watched. This is a real, full NVBit exception-instrumentation-grade pass
+over the entire binary (with the exception checker itself switched off
+via \texttt{INSTRUMENT\_EXCEPTIONS=0}, leaving only the histogram
+counter active) and is therefore subject to the same heavy per-distinct-kernel
+overhead as any other full instrumentation run --- this session measured
+it taking well over a minute for a cuSOLVER/cutlass-heavy binary with
+hundreds of distinct kernel templates, versus milliseconds for a
+handful of custom kernels called thousands of times.
+
+\texttt{run\_with\_env} is called with \texttt{check=False}, so a
+non-zero exit (which is the \emph{expected}, normal outcome here --- the
+target hits \texttt{max\_reports} for some kernel and \texttt{nnterminate}s
+itself with \texttt{SIGINT}) is not treated as an error; only an actual
+\texttt{subprocess.TimeoutExpired} (after \texttt{timeout + 30}s) is
+fatal to this phase.
+
+The resulting log is scanned by \texttt{BIN\_REACHED\_RE} for
+\texttt{"\#nixnan: <fmt> bin has reached threshold: function=\ldots
+range=[lo,hi] count=N"} lines, tallied per function name, and the single
+function with the most such reports across the whole run is chosen as
+``the'' function of interest.
+
+\subsection{Phase 3: \texttt{run\_instrumented()} --- the deep dive}
+
+If Phase 2 found anything, \texttt{autonixnan} runs the target one final
+time, with \texttt{LD\_PRELOAD} set and \emph{no other environment
+variable} beyond a \texttt{FUNCTION\_WHITELIST} file containing exactly
+the one function name Phase 2 flagged:
+
+\begin{lstlisting}[language=Python]
+env["LD_PRELOAD"] = lib_path
+if whitelist_file:
+    env["FUNCTION_WHITELIST"] = whitelist_file
+elapsed = run_with_env(program_args, timeout, env, quiet=False)
+\end{lstlisting}
+
+Because no other variables are set, this run gets \texttt{INSTRUMENT\_EXCEPTIONS}'s
+\emph{default} of 1 (full exception checking, Section~\ref{sec:exceptions})
+and \texttt{HISTOGRAM}'s default of 0 (no histogram) --- but scoped, via
+the whitelist, to \emph{only} the one function Phase 2 flagged (plus, per
+\texttt{should\_instrument}, any function whose \emph{exact} name appears
+in that whitelist; unrelated kernels are left completely uninstrumented,
+running at native speed). \texttt{quiet=False} means this is the one
+phase whose child process's \texttt{stdout}/\texttt{stderr} are not
+suppressed --- this is why the live \texttt{\#nixnan: error [\ldots]}
+lines and the final \texttt{------------ nixnan Report -----------}
+aggregate (Section~\ref{sec:exceptions}) appear directly in
+\texttt{autonixnan}'s own output during this phase and nowhere else.
+
+This phase's own log file is opened and unconditionally
+\texttt{os.unlink}ed in a \texttt{finally} block \emph{without ever being
+read} --- \texttt{LOGFILE} is never set for this call (it is commented out
+in the source), so the target's \texttt{nnout()} output goes to
+\texttt{stderr}, which \texttt{quiet=False} already passes through to the
+console directly; the temp file exists only so \texttt{tempfile.mkstemp}
+has something to clean up, and \texttt{run\_instrumented}'s returned
+\texttt{kernels\_seq}/\texttt{kernels\_unique} are consequently always
+empty and are not used by \texttt{main()}.
+
+\textbf{This is also the phase where the exponent-scan/exception-checker
+scope mismatch documented in Section~\ref{sec:histogram} bites hardest}:
+if the real fault is a hard jump straight to \texttt{Inf} (rather than a
+gradual climb through extreme-but-finite exponents), Phase 2 will not
+flag the kernel where it actually happens, so Phase 3's whitelist will
+scope full exception-instrumentation to the \emph{wrong} kernel, and the
+final aggregate report can show all-zero counts in every format even
+though the target program's own internal exception detection (if it has
+any) clearly fired. Section~\ref{sec:limitations} gives the exact
+reproduction from this session.
+
+\subsection{Timeout semantics, summarized}
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Phase & Hard kill after & Notes \\
+\midrule
+1: baseline & \texttt{-t} exactly & No grace period; catches slow startup too. \\
+2: exponent scan & \texttt{-t + 30s} & Grace period, currently pointless (Sec.~\ref{sec:timeout-dead}). \\
+3: deep dive & \texttt{-t} exactly & Same value re-used; not separately configurable. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Every phase re-uses the \emph{same} \texttt{-t} value from the command
+line; there is no way to give the baseline phase a short budget and the
+scan phase a long one from the CLI as it stands.
+
+\section{Empirically Observed Limitations}
+\label{sec:limitations}
+
+These are not code-reading conclusions but things directly reproduced
+against real binaries this session, cross-checked against the source
+above.
+
+\begin{enumerate}
+\item \textbf{Hard overflow jumps are invisible to the extreme-value
+  scan.} Running a mixed-precision Cholesky iterative-refinement solver
+  (\texttt{SC26-expts/mpir\_gpu}) with its documented overflow-forcing
+  flags (\texttt{--noscale --bscale 1e5}) produced a program-confirmed
+  FP16 overflow (\texttt{nonfinite=256} from the target's own internal
+  check) on the very first iteration. \texttt{autonixnan}'s Phase 2 never
+  flagged the kernel responsible; it flagged an unrelated fp64 QR kernel
+  used only during test-matrix generation, and Phase 3's whitelisted
+  full-instrumentation pass consequently reported zero FP16 exceptions.
+  Running \texttt{nixnan.so} directly (no \texttt{autonixnan}, no
+  whitelist, default \texttt{INSTRUMENT\_EXCEPTIONS=1}) against the same
+  invocation found the real exceptions immediately --- filed under the
+  \texttt{FP32} bucket, not \texttt{FP16}, because that solver
+  configuration only rounds values into fp16's representable range via a
+  cast; the arithmetic that actually overflows executes as native FP32
+  SASS instructions. Neither of these is a nixnan bug: the histogram
+  mechanism's zero/inf exclusion is by design (Section~\ref{sec:histogram}),
+  and the FP32 attribution is simply an accurate report of which SASS
+  instruction type executed on the bad value.
+\item \textbf{The dead internal timeout} (Section~\ref{sec:timeout-dead})
+  means every \texttt{-t} this session used was enforced purely
+  externally, with a pointless 30s grace period tacked onto the scan
+  phase.
+\item \textbf{\texttt{LOG\_KERNELS} noise scales with library surface
+  area, not with actual kernel diversity.} A cuSOLVER/cuBLAS-heavy binary
+  produced 10{,}000+ log lines from related-function enumeration alone,
+  none of which affect \texttt{autonixnan}'s parsed output but which do
+  make the raw log file unwieldy to read by hand.
+\end{enumerate}
+
+\section{Practical Summary}
+
+To reproduce any given phase by hand outside \texttt{autonixnan}, the
+minimal commands are:
+
+\begin{lstlisting}[language=bash]
+# Phase 1 equivalent -- kernel catalog, no instrumentation
+LD_PRELOAD=./nixnan.so LOG_KERNELS=/tmp/k.log ./target [args...]
+
+# Phase 2 equivalent -- exponent-extreme scan, exceptions off
+LD_PRELOAD=./nixnan.so BIN_SPEC_FILE=/tmp/spec.json LOGFILE=/tmp/scan.log \
+  INSTRUMENT_EXCEPTIONS=0 ./target [args...]
+
+# Phase 3 equivalent, or a direct full exception run (no whitelist
+# needed if the binary is small/fast enough to instrument in full)
+LD_PRELOAD=./nixnan.so ./target [args...]
+\end{lstlisting}
+
+The last form -- direct, unwhitelisted \texttt{nixnan.so}, no
+\texttt{autonixnan} involved -- is the one to reach for whenever a target
+is small enough to instrument in full and the exponent-scan's blind spot
+(hard overflow jumps) is a concern, since it is the only one of the three
+that does not depend on Phase 2 having correctly identified the kernel of
+interest.
+
+\end{document}
