@@ -161,9 +161,9 @@ bool should_instrument(CUcontext ctx, CUfunction f) {
   enable_instr &= !kernel_logging_enabled;
   if (sampling != 0 && analyzed_kernels.count(func_name)) {
     if (analyzed_kernels[func_name] % sampling != 0) {
-      ++analyzed_kernels[func_name];
       enable_instr = false;
     }
+    ++analyzed_kernels[func_name];
   }
   return enable_instr;
 }
@@ -358,7 +358,6 @@ void nvbit_at_cuda_event(CUcontext ctx, int is_exit, nvbit_api_cuda_t cbid,
     if (!is_exit) {
       /*----- Instrumentation Logic --------- */
       std::string kernel_name = nvbit_get_func_name(ctx, p->f);
-      std::string short_name = cut_kernel_name(kernel_name);
       if (time_kernels || kernel_logging_enabled) {
         kernel_start_times[ctx] = std::chrono::high_resolution_clock::now();
         // nnout() << "Kernel [" << kernel_name << "] started." << std::endl;
@@ -368,14 +367,13 @@ void nvbit_at_cuda_event(CUcontext ctx, int is_exit, nvbit_api_cuda_t cbid,
       bool enable_instr = instrument_function(ctx, p->f);
       // Initialize kernel count if not present, then increment
       if (enable_instr) {
-        int count = analyzed_kernels[short_name]++;
+        int count = analyzed_kernels[kernel_name];
         if (count == 0) {
-          nnout() << "running kernel [" << short_name << "] ..." << std::endl;
+          nnout() << "running kernel [" << kernel_name << "] ..." << std::endl;
         } else if (func_details) {
           nnout() << "running kernel [" << kernel_name << "] ..."
                     << std::endl;
         }
-        ++analyzed_kernels[short_name];
       }
       nvbit_enable_instrumented(ctx, p->f, true);
       /*------------ End of Instrumentation Logic ---------------*/
