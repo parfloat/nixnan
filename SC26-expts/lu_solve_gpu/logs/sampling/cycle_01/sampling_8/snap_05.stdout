@@ -1,0 +1,80 @@
+------------- NVBit (NVidia Binary Instrumentation Tool v1.8) Loaded --------------
+NVBit core environment variables (mostly for nvbit-devs):
+ACK_CTX_INIT_LIMITATION = 0 - if set, no warning will be printed for nvbit_at_ctx_init()
+            NVDISASM = nvdisasm - override default nvdisasm found in PATH
+            NOBANNER = 0 - if set, does not print this banner
+       NO_EAGER_LOAD = 1 - lazy module loading is now turned on by default. If you see deadlocks in your tool, set NO_EAGER_LOAD to 0
+---------------------------------------------------------------------------------
+         INSTR_BEGIN = 0 - Beginning of the instruction interval where to apply instrumentation
+           INSTR_END = 4294967295 - End of the instruction interval where to apply instrumentation
+        TOOL_VERBOSE = 0 - Enable verbosity inside the tool
+   ENABLE_FUN_DETAIL = 0 - Enable detailed function information for kernel
+     PRINT_ILL_INSTR = 0 - Print the instruction which caused the exception
+            SAMPLING = 8 - Instrument a repeat kernel every SAMPLING times
+INSTRUMENT_EXCEPTIONS = 1 - Enable instrumentation of exceptions
+           INSTR_MEM = 0 - Instrument memory instructions for NaN/Inf detection
+           HISTOGRAM = 0 - Enable FP exponent histogramming
+       BIN_SPEC_FILE =  - Specification for which exponent ranges to report. If the file does not exist, a template specification will be created.
+For example:
+{
+    "count": 128,
+    "bf16": [],
+    "f16": [[0,5],[-4,-1]],
+    "f32": [],
+    "f64": []
+}
+will report every 128 occurrences of exponents in the ranges 0 to 5 and -4 to -1 for f16 numbers.
+             LOGFILE = ./logs/sampling/cycle_01/sampling_8/snap_05.log - Path to the optional log file. Default is to print to stderr. This is useful for the case when an instrumented program is capturing stderr.
+           LINE_INFO = 1 - Disable debug information for source code locations. Having this enabled may cause crashes, so set this to 0 if you encounter issues.
+         LOG_KERNELS =  - Path to a log file containing the sequence of kernel invocations. When set, this will disable instrumentation; instead the program will be allowed to run normally so interesting kernels can be identified. The log file will contain the sequence of kernel invocations
+          MAX_ERRORS = 0 - Maximum number of errors to report before stopping the program. Default is 0, which means no limit.
+        TIME_KERNELS = 0 - Enable timing of kernel execution. This will print the execution time of each kernel to the log file.
+  FUNCTION_WHITELIST =  - Path to a file containing a line-separated list of function names to whitelist for instrumentation.
+  FUNCTION_BLACKLIST =  - Path to a file containing a line-separated list of function names to blacklist for instrumentation.
+Loading matrix A:
+2	-1	0.5	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	
+-1	2	-1	0.5	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	
+0.5	-1	2	-1	0.5	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	
+0	0.5	-1	2	-1	0.5	0	0	0	0	0	0	0	0	0	0	0	0	0	0	
+0	0	0.5	-0.999998	0.552381	-1	0.5	0	0	0	0	0	0	0	0	0	0	0	0	0	
+0	0	0	0.499999	-0.257143	2	-1	0.5	0	0	0	0	0	0	0	0	0	0	0	0	
+0	0	0	0	0	-1	2	-1	0.5	0	0	0	0	0	0	0	0	0	0	0	
+0	0	0	0	0	0.500001	-0.999998	2	-1	0.5	0	0	0	0	0	0	0	0	0	0	
+0	0	0	0	0	0	0.499998	-1	2	-1	0.5	0	0	0	0	0	0	0	0	0	
+0	0	0	0	0	0	0	0.500002	-0.999998	0.55496	-1	0.5	0	0	0	0	0	0	0	0	
+0	0	0	0	0	0	0	0	0.499998	-0.257058	2	-1	0.5	0	0	0	0	0	0	0	
+0	0	0	0	0	0	0	0	0	0	-0.999998	2	-1	0.5	0	0	0	0	0	0	
+0	0	0	0	0	0	0	0	0	0	0.499999	-1	2	-1	0.5	0	0	0	0	0	
+0	0	0	0	0	0	0	0	0	0	0	0.5	-1	2	-1	0.5	0	0	0	0	
+0	0	0	0	0	0	0	0	0	0	0	0	0.500001	-1	2	-1	0.5	0	0	0	
+0	0	0	0	0	0	0	0	0	0	0	0	0	0.500001	-1	2	-1	0.5	0	0	
+0	0	0	0	0	0	0	0	0	0	0	0	0	0	0.500001	-1	2	-1	0.5	0	
+0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0.500001	-1	2	-1	0.5	
+0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0.500001	-1	2	-1	
+0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0.500001	-1	2	
+
+-----------------------------------------------------------
+WARNING: Do not call CUDA memory allocation in nvbit_at_ctx_init(). It will cause deadlocks. Do them in nvbit_tool_init(). If you encounter deadlocks, remove CUDA API calls to debug.
+Solution x:
+x[0]: -nan
+x[1]: -nan
+x[2]: -nan
+x[3]: -nan
+x[4]: -nan
+x[5]: -nan
+x[6]: -nan
+x[7]: -nan
+x[8]: -nan
+x[9]: -nan
+x[10]: -nan
+x[11]: -nan
+x[12]: -nan
+x[13]: -nan
+x[14]: -nan
+x[15]: -nan
+x[16]: -nan
+x[17]: -nan
+x[18]: -nan
+x[19]: -nan
+-----------------------------------------------------------
+Residual norm ||Ax - b||: -nan
