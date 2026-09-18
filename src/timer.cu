@@ -25,10 +25,10 @@ namespace timer {
         return;
     }
 
-    void term() {
-        if (timeout_thread.joinable()) {
-            timeout_thread.join();
-        }
+    void term(CUcontext ctx) {
+        // if (timeout_thread.joinable()) {
+        //     timeout_thread.join();
+        // }
         return;
     }
 }
