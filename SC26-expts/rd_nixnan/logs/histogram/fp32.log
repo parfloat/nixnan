@@ -1,0 +1,218 @@
+#nixnan: ----------------------------------------------------------------------------------
+#nixnan: Initializing GPU context...
+#nixnan: Instrumenting all functions
+#nixnan: running kernel [max_reduce_kernel] ...
+#nixnan: running kernel [rd_step_kernel] ...
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[-2,1] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[2,5] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[-10,-7] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[2,5] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[6,9] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[6,9] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[-2,1] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[10,13] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[10,13] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[2,5] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[-10,-7] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[14,17] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[14,17] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[6,9] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[18,21] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[18,21] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[10,13] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[-10,-7] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[22,25] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[22,25] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[14,17] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[26,29] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[26,29] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[18,21] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[30,33] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[-10,-7] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[30,33] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[22,25] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[34,37] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[34,37] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[26,29] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[38,41] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[-10,-7] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[38,41] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[30,33] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[42,45] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[42,45] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[34,37] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[46,49] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[46,49] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[38,41] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[-10,-7] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[50,53] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[50,53] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[42,45] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[54,57] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[54,57] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[46,49] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[-10,-7] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[58,61] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[58,61] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[50,53] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[62,65] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[62,65] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[54,57] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[66,69] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[-10,-7] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[66,69] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[58,61] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[70,73] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[70,73] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[62,65] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[74,77] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[-10,-7] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[74,77] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[66,69] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[78,81] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[78,81] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[70,73] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[82,85] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[82,85] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[74,77] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[-10,-7] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[86,89] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[86,89] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[78,81] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[90,93] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[90,93] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[82,85] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[-10,-7] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[94,97] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[94,97] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[86,89] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[98,101] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[98,101] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[90,93] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[102,105] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[-10,-7] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[102,105] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[94,97] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[106,109] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[106,109] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[98,101] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[110,113] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[110,113] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[-10,-7] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[102,105] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[114,117] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[114,117] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[106,109] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[118,121] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[118,121] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[110,113] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[-10,-7] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[122,125] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[122,125] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[114,117] count=1000000
+#nixnan: error [infinity] detected in operand 0 of instruction FADD R7, R0, R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [infinity] detected in operand 2 of instruction FADD R6, R6, -R7 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [-infinity] detected in operand 0 of instruction FADD R6, R6, -R7 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [-infinity] detected in operand 1 of instruction FADD R9, R6, R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [-infinity] detected in operand 0 of instruction FADD R9, R6, R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [-infinity] detected in operand 1 of instruction FFMA R9, R9, c[0x0][0x174], R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [-infinity] detected in operand 0 of instruction FFMA R9, R9, c[0x0][0x174], R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [-infinity] detected in operand 3 of instruction FFMA R9, R0, c[0x0][0x178], R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [-infinity] detected in operand 0 of instruction FFMA R9, R0, c[0x0][0x178], R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [-infinity] detected in operand 1 of instruction FADD R7, R0, R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [-infinity] detected in operand 2 of instruction FADD R7, R0, R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [infinity] detected in operand 0 of instruction FADD R7, R0, R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [-infinity] detected in operand 1 of instruction FADD R6, R6, -R7 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [infinity] detected in operand 2 of instruction FADD R6, R6, -R7 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [infinity] detected in operand 0 of instruction FADD R6, R6, -R7 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [infinity] detected in operand 1 of instruction FADD R9, R6, R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [-infinity] detected in operand 2 of instruction FADD R9, R6, R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [infinity] detected in operand 0 of instruction FADD R9, R6, R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [infinity] detected in operand 1 of instruction FFMA R9, R9, c[0x0][0x174], R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [-infinity] detected in operand 3 of instruction FFMA R9, R9, c[0x0][0x174], R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [NaN,-infinity] detected in operand 0 of instruction FFMA R9, R9, c[0x0][0x174], R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [-infinity] detected in operand 1 of instruction FFMA R9, R0, c[0x0][0x178], R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [NaN,-infinity] detected in operand 3 of instruction FFMA R9, R0, c[0x0][0x178], R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [NaN,-infinity] detected in operand 0 of instruction FFMA R9, R0, c[0x0][0x178], R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [NaN] detected in operand 1 of instruction STG.E [R2.64], R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [NaN,-infinity] detected in operand 1 of instruction FADD R7, R0, R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN,-infinity] detected in operand 2 of instruction FADD R7, R0, R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN,infinity] detected in operand 0 of instruction FADD R7, R0, R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN,-infinity] detected in operand 1 of instruction FADD R6, R6, -R7 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN,infinity] detected in operand 2 of instruction FADD R6, R6, -R7 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN,infinity] detected in operand 0 of instruction FADD R6, R6, -R7 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN,infinity] detected in operand 1 of instruction FADD R9, R6, R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN,-infinity] detected in operand 2 of instruction FADD R9, R6, R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN,-infinity] detected in operand 0 of instruction FADD R9, R6, R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN,-infinity] detected in operand 1 of instruction FFMA R9, R9, c[0x0][0x174], R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [NaN,-infinity] detected in operand 3 of instruction FFMA R9, R9, c[0x0][0x174], R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [NaN,-infinity] detected in operand 1 of instruction FFMA R9, R0, c[0x0][0x178], R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [NaN,-infinity] detected in operand 0 of instruction FADD R7, R0, R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN,-infinity] detected in operand 2 of instruction FADD R6, R6, -R7 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [-infinity] detected in operand 0 of instruction FADD R7, R0, R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [-infinity] detected in operand 2 of instruction FADD R6, R6, -R7 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN,-infinity] detected in operand 0 of instruction FADD R6, R6, -R7 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [infinity] detected in operand 0 of instruction FADD R6, R6, -R7 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN,-infinity] detected in operand 1 of instruction FADD R9, R6, R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [infinity] detected in operand 1 of instruction FADD R9, R6, R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN,infinity] detected in operand 0 of instruction FADD R6, R6, -R7 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN,infinity] detected in operand 1 of instruction FADD R9, R6, R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN] detected in operand 1 of instruction FADD R6, R6, -R7 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN] detected in operand 0 of instruction FADD R6, R6, -R7 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN] detected in operand 1 of instruction FADD R9, R6, R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN] detected in operand 0 of instruction FADD R9, R6, R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN] detected in operand 1 of instruction FFMA R9, R9, c[0x0][0x174], R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [NaN] detected in operand 0 of instruction FFMA R9, R9, c[0x0][0x174], R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [NaN] detected in operand 3 of instruction FFMA R9, R0, c[0x0][0x178], R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [NaN] detected in operand 0 of instruction FFMA R9, R0, c[0x0][0x178], R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [NaN] detected in operand 1 of instruction FADD R7, R0, R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN] detected in operand 2 of instruction FADD R7, R0, R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN] detected in operand 0 of instruction FADD R7, R0, R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN] detected in operand 2 of instruction FADD R6, R6, -R7 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN] detected in operand 3 of instruction FFMA R9, R9, c[0x0][0x174], R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [NaN] detected in operand 1 of instruction FFMA R9, R0, c[0x0][0x178], R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [NaN] detected in operand 2 of instruction FADD R9, R6, R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[-10,-7] count=1000000
+#nixnan: f32 bin has reached threshold: function=rd_step_kernel(float const*, float*, int, float, float) range=[-10,-7] count=1000000
+#nixnan: Finalizing GPU context...
+
+#nixnan: ------------ nixnan Report -----------
+
+#nixnan: --- FP16 Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- BF16 Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- FP32 Operations ---
+#nixnan: NaN:                   36 (553859 repeats)
+#nixnan: Infinity:              16 (92 repeats)
+#nixnan: -Infinity:             40 (1176 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- FP64 Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- FP16 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- BF16 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- FP32 Memory  Operations ---
+#nixnan: NaN:                    1 (36928 repeats)
+#nixnan: --- FP64 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- FP exponent ranges --- 
+#nixnan: Exponent range for f32: [zero, inf]

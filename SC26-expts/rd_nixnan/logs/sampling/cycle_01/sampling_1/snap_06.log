@@ -1,0 +1,107 @@
+#nixnan: ----------------------------------------------------------------------------------
+#nixnan: Initializing GPU context...
+#nixnan: Instrumenting all functions
+#nixnan: running kernel [max_reduce_kernel] ...
+#nixnan: running kernel [rd_step_kernel] ...
+#nixnan: error [infinity] detected in operand 0 of instruction FADD R7, R0, R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [infinity] detected in operand 2 of instruction FADD R6, R6, -R7 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [-infinity] detected in operand 0 of instruction FADD R6, R6, -R7 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [-infinity] detected in operand 1 of instruction FADD R9, R6, R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [-infinity] detected in operand 0 of instruction FADD R9, R6, R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [-infinity] detected in operand 1 of instruction FFMA R9, R9, c[0x0][0x174], R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [-infinity] detected in operand 0 of instruction FFMA R9, R9, c[0x0][0x174], R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [-infinity] detected in operand 3 of instruction FFMA R9, R0, c[0x0][0x178], R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [-infinity] detected in operand 0 of instruction FFMA R9, R0, c[0x0][0x178], R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [-infinity] detected in operand 1 of instruction FADD R7, R0, R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [-infinity] detected in operand 2 of instruction FADD R7, R0, R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [infinity] detected in operand 0 of instruction FADD R7, R0, R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [-infinity] detected in operand 1 of instruction FADD R6, R6, -R7 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [infinity] detected in operand 2 of instruction FADD R6, R6, -R7 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [infinity] detected in operand 0 of instruction FADD R6, R6, -R7 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [infinity] detected in operand 1 of instruction FADD R9, R6, R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [-infinity] detected in operand 2 of instruction FADD R9, R6, R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [infinity] detected in operand 0 of instruction FADD R9, R6, R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [infinity] detected in operand 1 of instruction FFMA R9, R9, c[0x0][0x174], R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [-infinity] detected in operand 3 of instruction FFMA R9, R9, c[0x0][0x174], R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [NaN,-infinity] detected in operand 0 of instruction FFMA R9, R9, c[0x0][0x174], R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [-infinity] detected in operand 1 of instruction FFMA R9, R0, c[0x0][0x178], R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [NaN,-infinity] detected in operand 3 of instruction FFMA R9, R0, c[0x0][0x178], R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [NaN,-infinity] detected in operand 0 of instruction FFMA R9, R0, c[0x0][0x178], R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [NaN] detected in operand 1 of instruction STG.E [R2.64], R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [NaN,-infinity] detected in operand 1 of instruction FADD R7, R0, R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN,-infinity] detected in operand 2 of instruction FADD R7, R0, R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN,infinity] detected in operand 0 of instruction FADD R7, R0, R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN,-infinity] detected in operand 1 of instruction FADD R6, R6, -R7 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN,infinity] detected in operand 2 of instruction FADD R6, R6, -R7 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN,infinity] detected in operand 0 of instruction FADD R6, R6, -R7 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN,infinity] detected in operand 1 of instruction FADD R9, R6, R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN,-infinity] detected in operand 2 of instruction FADD R9, R6, R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN,-infinity] detected in operand 0 of instruction FADD R9, R6, R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN,-infinity] detected in operand 1 of instruction FFMA R9, R9, c[0x0][0x174], R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [NaN,-infinity] detected in operand 3 of instruction FFMA R9, R9, c[0x0][0x174], R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [NaN,-infinity] detected in operand 1 of instruction FFMA R9, R0, c[0x0][0x178], R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [NaN,-infinity] detected in operand 0 of instruction FADD R7, R0, R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN,-infinity] detected in operand 2 of instruction FADD R6, R6, -R7 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [-infinity] detected in operand 0 of instruction FADD R7, R0, R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN,-infinity] detected in operand 0 of instruction FADD R6, R6, -R7 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [-infinity] detected in operand 2 of instruction FADD R6, R6, -R7 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN,-infinity] detected in operand 1 of instruction FADD R9, R6, R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [infinity] detected in operand 0 of instruction FADD R6, R6, -R7 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [infinity] detected in operand 1 of instruction FADD R9, R6, R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN,infinity] detected in operand 0 of instruction FADD R6, R6, -R7 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN,infinity] detected in operand 1 of instruction FADD R9, R6, R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN] detected in operand 1 of instruction FADD R6, R6, -R7 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN] detected in operand 0 of instruction FADD R6, R6, -R7 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN] detected in operand 1 of instruction FADD R9, R6, R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN] detected in operand 0 of instruction FADD R9, R6, R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN] detected in operand 1 of instruction FFMA R9, R9, c[0x0][0x174], R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [NaN] detected in operand 0 of instruction FFMA R9, R9, c[0x0][0x174], R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [NaN] detected in operand 3 of instruction FFMA R9, R0, c[0x0][0x178], R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [NaN] detected in operand 0 of instruction FFMA R9, R0, c[0x0][0x178], R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [NaN] detected in operand 1 of instruction FADD R7, R0, R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN] detected in operand 2 of instruction FADD R7, R0, R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN] detected in operand 0 of instruction FADD R7, R0, R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN] detected in operand 2 of instruction FADD R6, R6, -R7 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: error [NaN] detected in operand 3 of instruction FFMA R9, R9, c[0x0][0x174], R0 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [NaN] detected in operand 1 of instruction FFMA R9, R0, c[0x0][0x178], R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:66 of type f32
+#nixnan: error [NaN] detected in operand 2 of instruction FADD R9, R6, R9 ; in function rd_step_kernel at /home/ganesh/repos/nixnan/SC26-expts/rd_nixnan/reaction_diffusion_gpu.cu:64 of type f32
+#nixnan: Finalizing GPU context...
+
+#nixnan: ------------ nixnan Report -----------
+
+#nixnan: --- FP16 Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- BF16 Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- FP32 Operations ---
+#nixnan: NaN:                   36 (553859 repeats)
+#nixnan: Infinity:              16 (92 repeats)
+#nixnan: -Infinity:             40 (1176 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- FP64 Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: Infinity:               0 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- FP16 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- BF16 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)
+#nixnan: --- FP32 Memory  Operations ---
+#nixnan: NaN:                    1 (36928 repeats)
+#nixnan: --- FP64 Memory  Operations ---
+#nixnan: NaN:                    0 (0 repeats)

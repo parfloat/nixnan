@@ -1,0 +1,94 @@
+------------- NVBit (NVidia Binary Instrumentation Tool v1.8) Loaded --------------
+NVBit core environment variables (mostly for nvbit-devs):
+ACK_CTX_INIT_LIMITATION = 0 - if set, no warning will be printed for nvbit_at_ctx_init()
+            NVDISASM = nvdisasm - override default nvdisasm found in PATH
+            NOBANNER = 0 - if set, does not print this banner
+       NO_EAGER_LOAD = 1 - lazy module loading is now turned on by default. If you see deadlocks in your tool, set NO_EAGER_LOAD to 0
+---------------------------------------------------------------------------------
+         INSTR_BEGIN = 0 - Beginning of the instruction interval where to apply instrumentation
+           INSTR_END = 4294967295 - End of the instruction interval where to apply instrumentation
+        TOOL_VERBOSE = 0 - Enable verbosity inside the tool
+   ENABLE_FUN_DETAIL = 0 - Enable detailed function information for kernel
+     PRINT_ILL_INSTR = 0 - Print the instruction which caused the exception
+            SAMPLING = 0 - Instrument a repeat kernel every SAMPLING times
+INSTRUMENT_EXCEPTIONS = 1 - Enable instrumentation of exceptions
+           INSTR_MEM = 0 - Instrument memory instructions for NaN/Inf detection
+           HISTOGRAM = 1 - Enable FP exponent histogramming
+       BIN_SPEC_FILE = ./bin_spec.json - Specification for which exponent ranges to report. If the file does not exist, a template specification will be created.
+For example:
+{
+    "count": 128,
+    "bf16": [],
+    "f16": [[0,5],[-4,-1]],
+    "f32": [],
+    "f64": []
+}
+will report every 128 occurrences of exponents in the ranges 0 to 5 and -4 to -1 for f16 numbers.
+      NIXNAN_TIMEOUT = 0 - Timeout for the nixnan instrumented process in seconds.
+             LOGFILE = ./logs/histogram/fp64.log - Path to the optional log file. Default is to print to stderr. This is useful for the case when an instrumented program is capturing stderr.
+           LINE_INFO = 1 - Disable debug information for source code locations. Having this enabled may cause crashes, so set this to 0 if you encounter issues.
+         LOG_KERNELS =  - Path to a log file containing the sequence of kernel invocations. When set, this will disable instrumentation; instead the program will be allowed to run normally so interesting kernels can be identified. The log file will contain the sequence of kernel invocations
+          MAX_ERRORS = 0 - Maximum number of errors to report before stopping the program. Default is 0, which means no limit.
+        TIME_KERNELS = 0 - Enable timing of kernel execution. This will print the execution time of each kernel to the log file.
+  FUNCTION_WHITELIST =  - Path to a file containing a line-separated list of function names to whitelist for instrumentation.
+  FUNCTION_BLACKLIST =  - Path to a file containing a line-separated list of function names to blacklist for instrumentation.
+Precision: FP64
+Stability criterion satisfied: 5e-05 <= 0.00444444
+Solving 1D Reaction-Diffusion PDE: du/dt = D*d2u/dx2 + lambda*u
+Parameters: L=1, T=4, N=101, M=80000, D=0.01, lambda=25
+Derived: dx=0.01, dt=5e-05
+WARNING: Do not call CUDA memory allocation in nvbit_at_ctx_init(). It will cause deadlocks. Do them in nvbit_tool_init(). If you encounter deadlocks, remove CUDA API calls to debug.
+At time t = 0.000000, Maximum value of u = 1.0000000000e+00
+At time t = 0.080000, Maximum value of u = 7.3218706133e+00
+At time t = 0.160000, Maximum value of u = 5.3609789277e+01
+At time t = 0.240000, Maximum value of u = 3.9252394069e+02
+At time t = 0.320000, Maximum value of u = 2.8740095063e+03
+At time t = 0.400000, Maximum value of u = 2.1043125747e+04
+At time t = 0.480000, Maximum value of u = 1.5407504402e+05
+At time t = 0.560000, Maximum value of u = 1.1281175370e+06
+At time t = 0.640000, Maximum value of u = 8.2599306426e+06
+At time t = 0.720000, Maximum value of u = 6.0478143439e+07
+At time t = 0.800000, Maximum value of u = 4.4281314119e+08
+At time t = 0.880000, Maximum value of u = 3.2422205257e+09
+At time t = 0.960000, Maximum value of u = 2.3739119189e+10
+At time t = 1.040000, Maximum value of u = 1.7381475917e+11
+At time t = 1.120000, Maximum value of u = 1.2726491773e+12
+At time t = 1.200000, Maximum value of u = 9.3181726124e+12
+At time t = 1.280000, Maximum value of u = 6.8226454220e+13
+At time t = 1.360000, Maximum value of u = 4.9954527020e+14
+At time t = 1.440000, Maximum value of u = 3.6576058339e+15
+At time t = 1.520000, Maximum value of u = 2.6780516670e+16
+At time t = 1.600000, Maximum value of u = 1.9608347801e+17
+At time t = 1.680000, Maximum value of u = 1.4356978554e+18
+At time t = 1.760000, Maximum value of u = 1.0511993937e+19
+At time t = 1.840000, Maximum value of u = 7.6967459494e+19
+At time t = 1.920000, Maximum value of u = 5.6354577985e+20
+At time t = 2.000000, Maximum value of u = 4.1262092847e+21
+At time t = 2.080000, Maximum value of u = 3.0211570506e+22
+At time t = 2.160000, Maximum value of u = 2.2120521027e+23
+At time t = 2.240000, Maximum value of u = 1.6196359285e+24
+At time t = 2.320000, Maximum value of u = 1.1858764709e+25
+At time t = 2.400000, Maximum value of u = 8.6828340835e+25
+At time t = 2.480000, Maximum value of u = 6.3574587716e+26
+At time t = 2.560000, Maximum value of u = 4.6548490554e+27
+At time t = 2.640000, Maximum value of u = 3.4082202508e+28
+At time t = 2.720000, Maximum value of u = 2.4954547698e+29
+At time t = 2.800000, Maximum value of u = 1.8271396946e+30
+At time t = 2.880000, Maximum value of u = 1.3378080436e+31
+At time t = 2.960000, Maximum value of u = 9.7952574006e+31
+At time t = 3.040000, Maximum value of u = 7.1719607310e+32
+At time t = 3.120000, Maximum value of u = 5.2512168516e+33
+At time t = 3.200000, Maximum value of u = 3.8448730350e+34
+At time t = 3.280000, Maximum value of u = 2.8151662886e+35
+At time t = 3.360000, Maximum value of u = 2.0612283320e+36
+At time t = 3.440000, Maximum value of u = 1.5092047151e+37
+At time t = 3.520000, Maximum value of u = 1.1050201653e+38
+At time t = 3.600000, Maximum value of u = 8.0908146755e+38
+At time t = 3.680000, Maximum value of u = 5.9239898210e+39
+At time t = 3.760000, Maximum value of u = 4.3374686983e+40
+At time t = 3.840000, Maximum value of u = 3.1758384598e+41
+At time t = 3.920000, Maximum value of u = 2.3253078291e+42
+At time t = 4.000000, Maximum value of u = 1.7025603061e+43
+
+Simulation finished.
+
