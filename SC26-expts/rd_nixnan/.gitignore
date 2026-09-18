@@ -1,0 +1,5 @@
+reaction_diffusion_gpu_fp64
+reaction_diffusion_gpu_fp32
+*.aux
+rd_nixnan_report.log
+rd_nixnan_report.out
