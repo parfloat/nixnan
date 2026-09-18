@@ -1,0 +1,338 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{array}
+\usepackage{mathptmx}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\geometry{margin=1in}
+
+\definecolor{codebg}{gray}{0.95}
+\lstset{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{codebg},
+  breaklines=true,
+  frame=single,
+  columns=fullflexible,
+  showstringspaces=false
+}
+
+\title{Running a Reaction-Diffusion GPU Solver under Nixnan\\
+\large FP64 vs FP32 Dynamic Range, Exp-Binade Histogramming, and an
+Exponential \texttt{SAMPLING} Sweep}
+\author{SC26 Tutorial / Nixnan Experiments}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Executive Summary}
+
+This report documents \texttt{reaction\_diffusion\_gpu}, a CUDA port of the
+1D reaction-diffusion solver from the FPChecker tutorial
+(\texttt{tutorial/example\_2/reaction\_diffusion.cpp} in the sibling
+\texttt{SC26-Tutorial-NixNan} repository), run under nixnan
+(\url{https://github.com/parfloat/nixnan}) on an NVIDIA RTX 3090. It
+replaces the repository's prior ad-hoc \texttt{rd\_nixnan.cu} example
+(which used its own invented FP16/BF16/FP32 comparison and parameters) with
+a solver that follows the tutorial's PDE and parameters exactly, and reuses
+the exp-binade histogram / exponential \texttt{SAMPLING} experiment pattern
+established for \texttt{lu\_solve\_gpu}
+(\texttt{../lu\_solve\_gpu/lu\_solve\_gpu\_report.tex}). Key results:
+
+\begin{enumerate}
+  \item \textbf{FP64 vs FP32 dynamic range}: with $\lambda=25$ amplifying
+    the solution as $\sim e^{\lambda t}$, the growth factor by $t=4$ is
+    $e^{100}\approx 2.7\times10^{43}$ -- inside FP64's range but well past
+    FP32's ($\approx 3.4\times10^{38}$). The FP64 build completes cleanly
+    (max $1.70\times10^{43}$ at $t=4$, zero exceptions); the FP32 build
+    overflows to Infinity between $t=3.52$ and $t=3.60$, and the resulting
+    NaN then propagates for the rest of the run -- reproducing the CPU
+    tutorial's central lesson (``this case should remain in FP64'') on the
+    GPU.
+  \item \textbf{A silent-failure wrinkle}: the GPU port's max-reduction
+    mirrors the CPU version's \texttt{std::max\_element}, including its
+    NaN-comparison hazard. In this program that hazard goes one step
+    further than the CPU tutorial's own commentary anticipates: it does
+    not just report a misleading value, it makes the reported max
+    \emph{look finite} (literally \texttt{0.0}) from the moment of overflow
+    onward, silently defeating the program's own \texttt{std::isfinite()}
+    check. nixnan, which instruments individual FADD/FFMA instructions and
+    never looks at the reduction's output, catches the real Infinity and
+    NaN regardless (Section~\ref{sec:silent-failure}).
+  \item \textbf{Same tool-level findings as \texttt{lu\_solve\_gpu}
+    reproduce here}: the \texttt{SAMPLING} sweep again shows byte-identical
+    logs across levels $1,2,4,8$, consistent with the key-mismatch bug
+    documented in \texttt{../lu\_solve\_gpu/lu\_solve\_gpu\_report.tex}
+    (Section~\ref{sec:sampling}).
+  \item \textbf{Two additional nixnan features}, not exercised in the
+    \texttt{lu\_solve\_gpu} experiment, are demonstrated here:
+    \texttt{PRINT\_ILL\_INSTR}+\texttt{MAX\_ERRORS} source/SASS-attributed
+    diagnostics, and \texttt{INSTR\_MEM} memory instrumentation
+    (Section~\ref{sec:stage3}).
+\end{enumerate}
+
+\section{Provenance and Algorithm}
+
+\texttt{reaction\_diffusion\_gpu.cu} solves the 1D linear reaction-diffusion
+equation
+\[
+\frac{\partial u}{\partial t} = D\,\frac{\partial^2 u}{\partial x^2} + \lambda u,
+\qquad u(0,t)=u(L,t)=0, \qquad u(x,0)=\sin\!\left(\frac{\pi x}{L}\right),
+\]
+with an explicit finite-difference (FTCS) update, using exactly the
+parameters from \texttt{tutorial/example\_2/reaction\_diffusion.cpp}:
+$L=1$, $T=4$, $N=101$ spatial points, $D=0.01$, $\lambda=25$, $M=80000$
+time steps ($dt = T/M = 5\times10^{-5}$). One CUDA kernel
+(\texttt{rd\_step\_kernel}) performs the update for all interior points in
+parallel each step; a second kernel (\texttt{max\_reduce\_kernel}) computes
+the running maximum, launched every $M/50 = 1600$ steps to match the CPU
+version's print cadence.
+
+Precision is a compile-time macro (\texttt{RD\_USE\_FLOAT}) rather than the
+CPU tutorial's hand-edited \texttt{typedef}, so both variants exist as
+separate binaries (\texttt{reaction\_diffusion\_gpu\_fp64},
+\texttt{reaction\_diffusion\_gpu\_fp32}) built from the same source by the
+\texttt{Makefile} -- this is what \texttt{run\_nixnan\_experiment.sh}
+automates instead of requiring a manual edit-and-rebuild cycle per
+precision.
+
+\subsection{Build and Environment}
+\begin{itemize}
+  \item \textbf{GPU}: NVIDIA GeForce RTX 3090, compute capability 8.6
+  \item \textbf{Compilation}: \texttt{nvcc -std=c++17 -g -O2 -lineinfo -arch=sm\_86}
+  \item \textbf{Instrumentation}: \texttt{LD\_PRELOAD=../../nixnan.so}
+\end{itemize}
+
+\section{FP64 vs FP32: Dynamic Range}
+\label{sec:dynamic-range}
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{lrr}
+\toprule
+& FP64 & FP32 \\
+\midrule
+Max $|u|$ at $t=3.52$ & $1.11\times10^{38}$ & $1.10\times10^{38}$ \\
+Max $|u|$ at $t=3.60$ & $8.09\times10^{38}$ & \texttt{0.0} (see \S\ref{sec:silent-failure}) \\
+Max $|u|$ at $t=4.00$ & $1.70\times10^{43}$ & \texttt{0.0} \\
+First non-finite reported by the program itself & never & never (masked) \\
+FP32/FP64 exceptions (nixnan, Stage 1) & 0/0/0 & 36 NaN / 16 Inf / 40 $-$Inf \\
+\bottomrule
+\end{tabular}
+\caption{From \texttt{logs/baseline/\{fp64,fp32\}.log} and
+\texttt{logs/histogram/\{fp64,fp32\}.log}. FP32's reported maxima are the
+reduction's output, not the true array contents -- see
+Section~\ref{sec:silent-failure}.}
+\label{tab:dynamic-range}
+\end{table}
+
+Both builds agree closely up through $t=3.52$ (max $\approx1.1\times10^{38}$,
+just below FP32's ceiling of $\approx3.4\times10^{38}$). By the next printed
+sample, $t=3.60$, FP32 has overflowed to Infinity while FP64 continues to
+grow smoothly; FP64 finishes the full simulation at $1.70\times10^{43}$,
+comfortably inside its $\approx1.8\times10^{308}$ range. This is exactly the
+tutorial's intended lesson, now demonstrated on the GPU: a workload that
+"looks fine" while values stay under $\sim10^{38}$ becomes numerically
+unsafe in FP32 the moment it doesn't.
+
+\section{A Silent-Failure Wrinkle in the GPU Port}
+\label{sec:silent-failure}
+
+The CPU version's \texttt{print\_max\_value} uses \texttt{std::max\_element},
+whose pairwise comparisons are all \texttt{false} once a NaN is involved (a
+NaN is neither greater than nor less than anything, including itself).
+\texttt{max\_reduce\_kernel} in this port intentionally mirrors that logic
+(\texttt{v > best}) rather than "fixing" it with e.g.\ \texttt{fmax}, in
+order to carry the same authentic hazard onto the GPU.
+
+In this program, however, the hazard manifests more severely than a merely
+misleading value. \texttt{logs/baseline/fp32.log} shows the reported
+maximum becoming exactly
+
+\begin{lstlisting}
+At time t = 3.600000, Maximum value of u = 0.0000000000e+00
+At time t = 3.680000, Maximum value of u = 0.0000000000e+00
+...
+At time t = 4.000000, Maximum value of u = 0.0000000000e+00
+\end{lstlisting}
+
+\noindent from $t=3.60$ onward -- not \texttt{nan}, not \texttt{inf}, but a
+literal, plausible-looking, finite \texttt{0.0}. The mechanism: the
+reduction seeds \texttt{best} from \texttt{u[0]} (a boundary point, pinned
+to exactly \texttt{0.0} by the Dirichlet condition) and only updates it via
+\texttt{v > best}. Once the array's interior values become
+Infinity/NaN, none of those comparisons succeed, so \texttt{best} never
+leaves its seed value of \texttt{0.0}.
+
+This has a second-order consequence: \texttt{reaction\_diffusion\_gpu.cu}
+also contains a self-check --
+
+\begin{lstlisting}[language=C++]
+if (!reported_nonfinite && !std::isfinite((double)max_val))
+{
+    reported_nonfinite = true;
+    std::cerr << "first non-finite reported max at step " << ...
+}
+\end{lstlisting}
+
+\noindent This message never appears in \texttt{logs/baseline/fp32.log}'s
+stderr, because \texttt{max\_val} itself is \texttt{0.0} -- perfectly
+finite by the check's own definition -- even though the array it was
+reduced from genuinely contains Infinity and NaN. A monitoring strategy
+built entirely on top of this program's own reported summary statistic
+would conclude, incorrectly, that nothing ever went wrong.
+
+nixnan is unaffected by this because it does not consume the reduction's
+output at all: it instruments every \texttt{FADD}/\texttt{FFMA} as it
+executes, inside \texttt{rd\_step\_kernel} itself, before the corrupted
+value ever reaches \texttt{max\_reduce\_kernel}. \texttt{logs/histogram/fp32.log}
+and \texttt{logs/memory/fp32.log} both report the real counts (36 NaN, 16
+Infinity, 40 $-$Infinity in registers; 1 NaN value, 36{,}928 repeats,
+actually written to global memory) that the program's own console output
+never shows. This is, in miniature, the argument for binary-level
+floating-point exception instrumentation: a program's own summary
+statistics can be fooled by exactly the kind of comparison logic that
+silently ignores non-finite values, while instruction-level instrumentation
+cannot.
+
+\section{Stage 1: Exp-Binade Histogram Gathering}
+\label{sec:histogram}
+
+\texttt{bin\_spec.json} (generated by \texttt{gen\_bin\_spec.py}) populates
+\emph{both} \texttt{f32} and \texttt{f64} -- unlike \texttt{lu\_solve\_gpu},
+where only one precision existed per build, here both formats are
+genuinely present across the two binaries that share this one spec file.
+Each format's full valid exponent range is tiled in buckets of width 4
+(the same "bucket size 4" convention as
+\texttt{../lu\_solve\_gpu/gen\_bin\_spec.py}): \texttt{f32}
+$\in[-126,127]$ (64 buckets), \texttt{f64}$\in[-1022,1023]$ (512 buckets).
+\texttt{f16}/\texttt{bf16} are left empty; this program never uses them.
+
+The report-threshold \texttt{count} required re-tuning for this workload.
+$M=80000$ steps over $\sim$99 interior points produce roughly $1000\times$
+more instrumented FP-op instances than \texttt{lu\_solve\_gpu}'s one-shot
+$20\times20$ solve; reusing \texttt{lu\_solve\_gpu}'s \texttt{count: 128}
+produced $\sim$950,000 report lines here (Table~\ref{tab:count-tuning}).
+\texttt{count: 1{,}000{,}000} was chosen empirically to land back in the
+same "nice" $\sim$100--150-reports-per-run range.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrr}
+\toprule
+\texttt{count} & FP64 reports & FP32 reports \\
+\midrule
+128 & 1{,}050{,}603 & 943{,}683 \\
+100{,}000 & 1{,}339 & 1{,}203 \\
+1{,}000{,}000 (chosen) & 121 & 109 \\
+\bottomrule
+\end{tabular}
+\caption{Report-line volume for a single run at three candidate
+\texttt{count} thresholds (measured during tuning; not stored under
+\texttt{logs/}).}
+\label{tab:count-tuning}
+\end{table}
+
+\section{Stage 2: Exponential \texttt{SAMPLING} Sweep}
+\label{sec:sampling}
+
+The same schedule as \texttt{../lu\_solve\_gpu/run\_nixnan\_experiment.sh}
+was applied to \texttt{reaction\_diffusion\_gpu\_fp32}: \texttt{SAMPLING}
+$\in\{1,2,4,8\}$, 16 process launches ("snaps") per level, then reset back
+to \texttt{1} -- 64 whole-program runs, stored under
+\texttt{logs/sampling/cycle\_01/sampling\_\{1,2,4,8\}/snap\_\{01..16\}}.
+\texttt{rd\_step\_kernel} is launched 80{,}000 times per run, so
+\texttt{SAMPLING} has far more opportunity here than in
+\texttt{lu\_solve\_gpu} (19 launches per kernel) to visibly change
+instrumentation coverage if it worked. It still does not:
+\texttt{sampling\_1/snap\_01.log} and \texttt{sampling\_8/snap\_01.log} are
+byte-identical, consistent with the key-mismatch bug documented in
+\texttt{../lu\_solve\_gpu/lu\_solve\_gpu\_report.tex}
+(Section~4.2 there: \texttt{should\_instrument()} looks up the per-kernel
+invocation counter by the full mangled signature, while
+\texttt{nvbit\_at\_cuda\_event()} increments it under the name truncated by
+\texttt{cut\_kernel\_name()}, so the two keys never match). This report does
+not re-derive that finding in full; see the earlier report for the code
+excerpts.
+
+\section{Stage 3: Interesting Exception Settings}
+\label{sec:stage3}
+
+Two nixnan features not exercised in the \texttt{lu\_solve\_gpu} experiment:
+
+\subsection{3a: \texttt{PRINT\_ILL\_INSTR} + \texttt{MAX\_ERRORS}}
+
+Run with \texttt{PRINT\_ILL\_INSTR=1 MAX\_ERRORS=20}, nixnan prints the
+exact offending SASS instruction for each exception and terminates the
+process once 20 have been reported. On \texttt{reaction\_diffusion\_gpu\_fp32}
+this cap is reached almost immediately after the overflow at $t\approx3.6$;
+of the 20 reported errors, 14 are attributed to
+\texttt{reaction\_diffusion\_gpu.cu:64} (the diffusion-term computation,
+\texttt{D\_dt\_over\_dx2 * (u[i+1] - 2*u[i] + u[i-1])}) and 6 to
+\texttt{reaction\_diffusion\_gpu.cu:66} (the state update,
+\texttt{u\_next[i] = u[i] + diffusion\_term + reaction\_term}) --
+consistent with $\text{Inf} - 2\cdot\text{Inf} + \text{Inf} = \text{NaN}$
+occurring right where the stencil combines three already-overflowed
+neighbors. \texttt{reaction\_diffusion\_gpu\_fp64} never reaches the cap
+and runs to completion (\texttt{logs/diagnostic/fp64.log} has zero error
+lines).
+
+\subsection{3b: \texttt{INSTR\_MEM}}
+
+Run with \texttt{INSTR\_MEM=1}, nixnan additionally instruments memory
+store instructions. \texttt{logs/memory/fp32.log} shows
+
+\begin{lstlisting}
+#nixnan: --- FP32 Memory  Operations ---
+#nixnan: NaN:                    1 (36928 repeats)
+\end{lstlisting}
+
+\noindent confirming that NaN is not merely a transient register value but
+is actually written to \texttt{u\_next} in GPU global memory, repeatedly,
+for the remainder of the run (80{,}000 total steps, overflow first appears
+around step 72{,}000 at $t\approx3.6$, so on the order of $8000\times$
+99 $\approx 800{,}000$ store opportunities remain -- 36{,}928 of the
+distinct memory NaN events were captured). \texttt{logs/memory/fp64.log}
+shows zero, as expected.
+
+\section{Conclusions}
+
+\begin{enumerate}
+  \item The GPU port reproduces the CPU tutorial's central lesson exactly:
+    FP64 is safe for this workload's full time horizon; FP32 is not, and
+    fails via the textbook overflow-then-NaN-propagation path.
+  \item The port's naive max-reduction (chosen deliberately to mirror
+    \texttt{std::max\_element}'s NaN hazard) turns out to hide the FP32
+    overflow from the program's own console output and its own
+    finiteness self-check -- a instructive illustration of why
+    instruction-level exception detection is valuable independent of
+    whatever a program's own diagnostics report.
+  \item The \texttt{SAMPLING} key-mismatch bug found while working on
+    \texttt{lu\_solve\_gpu} reproduces here under a workload with $1000\times$
+    more kernel launches, reinforcing that it is a property of nixnan
+    itself and not an artifact of the smaller LU experiment.
+  \item \texttt{PRINT\_ILL\_INSTR}+\texttt{MAX\_ERRORS} and
+    \texttt{INSTR\_MEM} both worked as documented and produced exactly the
+    kind of source-line- and memory-level evidence the CPU tutorial's own
+    \texttt{fpc-create-report} is meant to provide, here on the GPU build.
+\end{enumerate}
+
+\section*{Reproduction}
+
+\begin{lstlisting}
+cd ~/repos/nixnan/SC26-expts/rd_nixnan
+./run_nixnan_experiment.sh
+\end{lstlisting}
+
+\noindent Requires a built \texttt{../../nixnan.so}. See \texttt{README.md}
+in this directory for file-by-file documentation and override variables
+(\texttt{NIXNAN\_SO}, \texttt{CYCLES}, \texttt{SAMPLING\_EXE}).
+
+\end{document}
