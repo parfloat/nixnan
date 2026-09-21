@@ -59,12 +59,19 @@ AutoNixNan is not one program; it is two, layered:
 \item \textbf{\texttt{nixnan.so}} (source: \texttt{src/*.cu}, \texttt{src/*.cuh},
   \texttt{src/*.h}) --- an NVBit tool. NVBit (NVIDIA Binary Instrumentation
   Tool) is preloaded into a CUDA process via \texttt{LD\_PRELOAD} and gets
-  callbacks whenever the process launches a kernel, before that kernel's
-  SASS (compiled machine code) ever executes on the GPU. \texttt{nixnan.so}
-  uses those callbacks to rewrite each kernel's SASS, inserting calls to
-  its own device-side functions after (and sometimes before) every
-  floating-point instruction, so it can inspect the actual bits flowing
-  through the GPU's registers at run time.
+  a callback on \emph{every} kernel launch, before that kernel's SASS
+  (compiled machine code) ever executes on the GPU. But the SASS rewrite
+  itself is not per-launch: \texttt{instrument\_function} (\texttt{src/nixnan.cu})
+  guards it with an \texttt{std::unordered\_set<CUfunction>} of functions
+  already seen, so it inserts calls to its own device-side functions after
+  (and sometimes before) every floating-point instruction only the
+  \emph{first} time a given kernel function is launched. Every later
+  launch of that same kernel hits the callback again, but
+  \texttt{instrument\_function} short-circuits immediately and NVBit just
+  runs the already-instrumented SASS via \texttt{nvbit\_enable\_instrumented}
+  --- no re-rewriting occurs. This is how nixnan.so inspects the actual
+  bits flowing through the GPU's registers at run time without paying the
+  instrumentation cost on every single launch.
 \item \textbf{\texttt{bin/autonixnan}} (a 420-line Python 3 script) --- a
   wrapper that never touches SASS or the GPU directly. It only launches
   the target program multiple times, each time with a different
