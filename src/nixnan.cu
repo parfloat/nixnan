@@ -359,8 +359,7 @@ void nvbit_at_cuda_event(CUcontext ctx, int is_exit, nvbit_api_cuda_t cbid,
       if (time_kernels || kernel_logging_enabled) {
         kernel_start_times[ctx] = std::chrono::high_resolution_clock::now();
         nnout() << "Kernel [" << kernel_name << "] started." << std::endl;
-      }
-      else if (analyzed_kernels[kernel_name] == 0 || func_details) {
+      } else if (analyzed_kernels[kernel_name] == 0 || func_details) {
         nnout() << "Running kernel [" << kernel_name << "] ..." << std::endl;
       }
       
