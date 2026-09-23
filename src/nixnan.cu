@@ -351,21 +351,17 @@ void nvbit_at_cuda_event(CUcontext ctx, int is_exit, nvbit_api_cuda_t cbid,
 
     if (!is_exit) {
       /*----- Instrumentation Logic --------- */
-      std::string kernel_name = nvbit_get_func_name(ctx, p->f);
-      if (time_kernels || kernel_logging_enabled) {
-        kernel_start_times[ctx] = std::chrono::high_resolution_clock::now();
-        // nnout() << "Kernel [" << kernel_name << "] started." << std::endl;
-      }
       recv_thread_receiving = true;
 
       bool enable_instr = instrument_function(ctx, p->f);
       // Initialize kernel count if not present, then increment
-
-      if (analyzed_kernels[kernel_name] == 0) {
-        nnout() << "running kernel [" << kernel_name << "] ..." << std::endl;
-      } else if (func_details) {
-        nnout() << "running kernel [" << kernel_name << "] ..."
-                  << std::endl;
+      std::string kernel_name = nvbit_get_func_name(ctx, p->f);
+      if (time_kernels || kernel_logging_enabled) {
+        kernel_start_times[ctx] = std::chrono::high_resolution_clock::now();
+        nnout() << "Kernel [" << kernel_name << "] started." << std::endl;
+      }
+      else if (analyzed_kernels[kernel_name] == 0 || func_details) {
+        nnout() << "Running kernel [" << kernel_name << "] ..." << std::endl;
       }
       
       auto kernel_count = analyzed_kernels[kernel_name]++;
