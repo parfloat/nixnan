@@ -4,6 +4,38 @@
 
 Nixnan is a binary instrumentation tool for detecting floating-point exceptional values (NaN, Infinity, Subnormals, Division-by-Zero) in NVIDIA CUDA programs. It provides runtime detection without requiring source code modification or recompilation.
 
+## NEW: `record_inst_during_histo` — Per-Instruction Histogram Attribution
+
+A histogram threshold report used to name only a *format, kernel, and exponent
+range* — unlike an exception report, which also names the exact instruction. This
+closes that gap: append ` (record_inst)` to any format key in `BIN_SPEC_FILE` and
+every threshold report for that key's ranges also names the SASS instruction (and,
+with `-lineinfo`, file:line) that produced the value.
+
+```json
+{
+  "count": 1,
+  "f16 (record_inst)": [[-14, -13], [14, 15]]
+}
+```
+
+```bash
+HISTOGRAM=1 BIN_SPEC_FILE=./spec.json LD_PRELOAD=./nixnan.so ./your_program
+```
+
+```
+#nixnan: f16 bin has reached threshold: function=rd_step_fp16(...) range=[14,15] count=1 instruction=HADD2 R0, R0.H0_H0, R7.H0_H0 ; in function=rd_step_fp16
+```
+
+Useful for root-causing a build-up: watch which instruction(s) feed a watched
+exponent range over time, right up to whichever one finally produces an exception.
+Combine with `SAMPLING` to cut a dense per-occurrence trace down to something
+readable — and see
+[Tutorial.md](Tutorial.md#record-inst-during-histo) for a full worked example,
+including why raising `MAX_ERRORS` is *not* the same lever as tightening `SAMPLING`
+when you need to catch a specific step. Plain `"<fmt>"` keys are unaffected:
+`(record_inst)` is purely additive.
+
 ## NEW: `bin/autonixnan` — One-Command Automated Triage
 
 `bin/autonixnan` is a Python 3 driver that runs nixnan for you in three phases and

@@ -179,21 +179,167 @@ and phase 3 is skipped — there is no suspect kernel to drill into.
 
 ---
 
+## NEW: Per-Instruction Histogram Attribution — `record_inst_during_histo` <a name="record-inst-during-histo"></a>
+
+A histogram threshold report has always named only a **format, kernel function, and
+exponent range** — unlike an exception report, which also names the exact
+**instruction** responsible (and, with `-lineinfo`, the source file:line). This
+feature closes that gap: it lets a `BIN_SPEC_FILE` range ask, explicitly, to be told
+*which instruction* put a value in range — even when that value never actually causes
+an exception.
+
+Use it to root-cause a build-up: watch the exponent bins a value passes through on its
+way to failure, and see which SASS instruction(s) fed each bin over time, not just
+that a value of that magnitude occurred somewhere in the kernel.
+
+### Invocation
+
+Append ` (record_inst)` to any format key in your `BIN_SPEC_FILE` JSON:
+
+```json
+{
+  "count": 1,
+  "bf16": [],
+  "f16 (record_inst)": [[-14, -13], [14, 15]],
+  "f32": [],
+  "f64": []
+}
+```
+
+Same `[lower, upper]` unbiased-exponent-range syntax as a plain `"<fmt>"` key (see
+[Environment Variables Reference](#environment-variables-reference) below).
+`"f16 (record_inst)"` and a plain `"f16"` key can even coexist in the same spec, with
+different ranges, if you want some bins attributed to an instruction and others
+reported the lighter-weight original way. Every other flag works exactly as documented
+elsewhere — `HISTOGRAM=1` (implied automatically once `BIN_SPEC_FILE` is set),
+`SAMPLING`, `MAX_ERRORS`, `LOGFILE`, `LINE_INFO`:
+
+```bash
+HISTOGRAM=1 BIN_SPEC_FILE=./spec.json LD_PRELOAD=./nixnan.so ./your_program
+```
+
+### What changes in the output
+
+Without `(record_inst)`:
+```
+#nixnan: f16 bin has reached threshold: function=rd_step_fp16(...) range=[14,15] count=1
+```
+
+With `(record_inst)`, the same line gains an `instruction=` (and, when line info
+resolves, an ` at file:line`) suffix naming the exact SASS instruction that produced
+this particular occurrence:
+```
+#nixnan: f16 bin has reached threshold: function=rd_step_fp16(...) range=[14,15] count=1 instruction=HADD2 R0, R0.H0_H0, R7.H0_H0 ; in function=rd_step_fp16
+```
+
+Plain `"<fmt>"` keys are completely unaffected by this feature — verified
+byte-identical output before/after for a spec that uses no `(record_inst)` keys.
+
+### Worked example: watching a value build up to an exception
+
+The `rd_nixnan.cu` example (Case Study 3, further below) fails in FP16 around step
+300. Combined with `MAX_ERRORS=1` (stop the whole program at the first exception),
+`count:1` (report on every single occurrence), and ranges for FP16's smallest two and
+largest two normal exponents:
+
+```json
+{ "count": 1, "f16 (record_inst)": [[-14, -13], [14, 15]] }
+```
+
+an **unsampled** run produces over 11,000 lines — a dense, per-occurrence trace of
+every value landing in either range, across every kernel launch before the failure.
+Reducing noise with `SAMPLING=128` (instrument 1 launch in 128) cuts that to 7 lines:
+
+```
+f16 bin ... range=[-14,-13] instruction=HFMA2 R0, R9.H0_H0, -2, -2, R0.H0_H0
+f16 bin ... range=[-14,-13] instruction=HFMA2 R0, R9.H0_H0, -2, -2, R0.H0_H0
+f16 bin ... range=[-14,-13] instruction=HFMA2 R0, R9.H0_H0, -2, -2, R0.H0_H0
+f16 bin ... range=[-14,-13] instruction=HFMA2 R0, R0.H0_H0, c[0x0][0x170].H0_H0, R9.H0_H0
+f16 bin ... range=[-14,-13] instruction=HFMA2 R0, R0.H0_H0, c[0x0][0x170].H0_H0, R9.H0_H0
+f16 bin ... range=[-14,-13] instruction=HFMA2 R0, R0.H0_H0, c[0x0][0x170].H0_H0, R9.H0_H0
+f16 bin ... range=[-14,-13] instruction=HFMA2 R0, R0.H0_H0, c[0x0][0x170].H0_H0, R9.H0_H0
+error [NaN] detected in operand 1 of instruction HADD2 R0, R0.H0_H0, R7.H0_H0 ; in function rd_step_fp16
+```
+
+Legible even at a glance: small near-boundary values feed the low-exponent bin early
+on, then silence (the high-exponent `[14,15]` bin never fires at all in this sampled
+run), then a NaN — not the original Infinity, though. See below.
+
+### `MAX_ERRORS` is not a substitute for `SAMPLING` granularity
+
+A natural question: can raising `MAX_ERRORS` recover the original Infinity alongside a
+downstream NaN? Tested directly, the answer is no, and the reason is structural, not a
+counting quirk:
+
+- `nixnan` prints an exception report only the *first* time a given
+  `(instruction, exception-type, operand)` triple is ever seen, for the life of the
+  process. `MAX_ERRORS` counts these distinct *sites*, not raw occurrences — raising it
+  reaches *more distinct sites*, not necessarily the one you were hoping for.
+- With `SAMPLING=128` on the `rd_nixnan` example, raising `MAX_ERRORS` from 1 to 2 does
+  not surface the original Infinity: both of the first two sites are NaN (different
+  operands of the same instruction). Infinity never appears at *any* `MAX_ERRORS`
+  value, because no *instrumented* launch ever executes at the exact step the real
+  overflow happens — `SAMPLING`'s stride, not the error budget, determines whether the
+  tool ever witnesses it at all.
+- The fix is to tighten `SAMPLING`'s stride, not raise `MAX_ERRORS`. `SAMPLING=8` with
+  `MAX_ERRORS=4` does catch both exception kinds in this example — though every site
+  is reported as a combined `NaN,infinity` tag, not as separate lines. That combination
+  is specific to nixnan's *exception* path: `nixnan_check_regs` OR's every active
+  lane's classification together (`__ballot_sync`/`__shfl_sync` across the warp) before
+  deciding whether to report, so if some GPU threads at that instruction are still
+  transitioning to Infinity while others (elsewhere in the grid, slightly further along
+  the same buildup) have already reached NaN, one combined report names both.
+
+### Implementation notes
+
+- Every instrumented static instruction is registered in the same instruction-info
+  table the exception path already builds (`recorder::mk_entry`), whether or not any
+  `(record_inst)` bin ends up needing it — this keeps the change small, at the cost of
+  a little redundant bookkeeping when only exceptions (not histograms) are enabled.
+- The instruction id is threaded through the device call
+  (`nixnan_fp_histogram_counter`) and the histogram channel message (`exp_info`) as an
+  extra field, resolved into SASS/file/line/function text on the host side only when
+  the triggering bin's `record_inst` flag was set; otherwise it stays `-1` and the
+  report is printed exactly as it was before this feature existed.
+- Unlike the exception path, the histogram counter is **not** warp-reduced: each
+  thread's occurrences are counted and reported independently (subject to the same
+  `count` bucket-size threshold), so a busy warp can produce several distinct report
+  lines for the same static instruction in quick succession.
+
+### Things to know
+
+- **Granularity is per format + kernel-function + range, with the instruction layered
+  on top** — not per dynamic occurrence across the whole grid at once. The `count`
+  field in `BIN_SPEC_FILE` still governs how often a hit is reported; `count:1` is the
+  finest granularity available, and also the loudest.
+- **`(record_inst)` and plain keys can coexist** for the same format with different
+  ranges, letting you attribute only the ranges you actually care about.
+- **This does not replace `SAMPLING` for noise control.** A dense per-occurrence trace
+  with instruction attribution is still a dense trace; combine with `SAMPLING` (mind
+  the tradeoff above) to get something readable.
+- **`MAX_ERRORS` and `SAMPLING` solve different problems.** If you need to catch an
+  exception at a *specific* step, tighten `SAMPLING`'s stride; raising `MAX_ERRORS`
+  only widens how many *different* sites you're willing to see, in whatever order
+  nixnan happens to discover them.
+
+---
+
 ## Table of Contents
 
 1. [Automated Triage with `bin/autonixnan`](#autonixnan)
-2. [Introduction](#introduction)
-3. [Background: Why Floating-Point Exception Detection Matters](#background)
-4. [System Requirements](#system-requirements)
-5. [Installation](#installation)
-6. [Basic Usage](#basic-usage)
-7. [Environment Variables Reference](#environment-variables-reference)
-8. [Advanced Features](#advanced-features)
-9. [Understanding the Output](#understanding-the-output)
-10. [Case Studies and Debugging Workflows](#case-studies)
-11. [Performance Considerations](#performance-considerations)
-12. [Troubleshooting](#troubleshooting)
-13. [References](#references)
+2. [Per-Instruction Histogram Attribution: `record_inst_during_histo`](#record-inst-during-histo)
+3. [Introduction](#introduction)
+4. [Background: Why Floating-Point Exception Detection Matters](#background)
+5. [System Requirements](#system-requirements)
+6. [Installation](#installation)
+7. [Basic Usage](#basic-usage)
+8. [Environment Variables Reference](#environment-variables-reference)
+9. [Advanced Features](#advanced-features)
+10. [Understanding the Output](#understanding-the-output)
+11. [Case Studies and Debugging Workflows](#case-studies)
+12. [Performance Considerations](#performance-considerations)
+13. [Troubleshooting](#troubleshooting)
+14. [References](#references)
 
 ---
 
