@@ -3,11 +3,16 @@
 #include "instruction_info.cuh"
 #include "nntools.hh"
 #include "utils/channel.hpp"
+#include "recording.h"
 #include <thread>
 #include <atomic>
 #include "nlohmann/json.hpp"
 #include <fstream>
 #include <csignal>
+
+// Shared with nixnan.cu: the same instruction-info table the exception path
+// uses to resolve an instruction id back to SASS text / file / line / func.
+extern std::shared_ptr<nixnan::recorder> recorder;
 
 namespace nixnan {
 namespace fp_histogram {
@@ -63,7 +68,7 @@ void recv_thread_fun(std::atomic<bool> *recv_thread_running,
 void init() {
     GET_VAR_INT(histogram_enabled, "HISTOGRAM", 0, "Enable FP exponent histogramming");
     GET_VAR_STR(bin_spec_file, "BIN_SPEC_FILE",
-                R"(Specification for which exponent ranges to report. If the file does not exist, a template specification will be created.
+                R"HELP(Specification for which exponent ranges to report. If the file does not exist, a template specification will be created.
 For example:
 {
     "count": 128,
@@ -72,7 +77,10 @@ For example:
     "f32": [],
     "f64": []
 }
-will report every 128 occurrences of exponents in the ranges 0 to 5 and -4 to -1 for f16 numbers.)");
+will report every 128 occurrences of exponents in the ranges 0 to 5 and -4 to -1 for f16 numbers.
+A key of the form "<fmt> (record_inst)", e.g. "f16 (record_inst)", takes the same range syntax
+and additionally reports the specific instruction/source line that triggered each threshold hit,
+the same way exception reports do -- useful for root-causing how values reached a given range.)HELP");
     if (bin_spec_file != "") {
         histogram_enabled = true;
         std::fstream bin_spec_ifs(bin_spec_file);
@@ -120,7 +128,7 @@ int get_exp_bias(uint32_t type) {
 
 using json = nlohmann::json;
 
-BinCounter bin_from_json(const json& j, unsigned char fmt) {
+BinCounter bin_from_json(const json& j, unsigned char fmt, bool record_inst) {
     int bias = get_exp_bias(fmt);
     if (j.type() != json::value_t::array ||
         j.size() != 2) {
@@ -136,7 +144,7 @@ BinCounter bin_from_json(const json& j, unsigned char fmt) {
                 << "] for format " << type_to_string.at(fmt) << "\nExiting now.\n";
         exit(1);
     }
-    return BinCounter(lower + bias, upper+bias);
+    return BinCounter(lower + bias, upper+bias, record_inst);
 }
 
 json empty_bin_spec() {
@@ -158,11 +166,20 @@ BinArray* make_bin_array(const std::string& function, const json& bin_spec_json)
     cudaMalloc(&device_bins[function], NUM_FORMATS * sizeof(BinArray));
     for (auto fmt : {BF16, FP16, FP32, FP64}) {
         std::string fmt_str = type_to_string.at(fmt);
+        // "<fmt> (record_inst)" is the same range syntax as "<fmt>", but each
+        // bin it defines also reports which instruction/source line
+        // triggered the threshold, not just the format/kernel/range.
+        std::string fmt_str_record_inst = fmt_str + " (record_inst)";
 
         std::vector<BinCounter> h_cnts;
         if (bin_spec_json.find(fmt_str) != bin_spec_json.end()) {
             for (const auto& bin_json : bin_spec_json[fmt_str]) {
-                h_cnts.push_back(bin_from_json(bin_json, fmt));
+                h_cnts.push_back(bin_from_json(bin_json, fmt, false));
+            }
+        }
+        if (bin_spec_json.find(fmt_str_record_inst) != bin_spec_json.end()) {
+            for (const auto& bin_json : bin_spec_json[fmt_str_record_inst]) {
+                h_cnts.push_back(bin_from_json(bin_json, fmt, true));
             }
         }
         BinCounter* d_cnts;
@@ -234,17 +251,27 @@ if (histogram_enabled) {
                                   }
                                   unsigned char fmt = data->format();
                                   std::string fmt_str = type_to_string.at(fmt);
-                                  nnout()
-                                    << fmt_str << " bin has reached threshold: function="
-                                    << id_to_kernel[data->kernel_id()]
-                                    << " range=[" << exp_with_bias(fmt, data->range().first)
-                                    << "," << exp_with_bias(fmt, data->range().second)
-                                    << "] count=" << data->get_count() << "\n";
+                                  auto& os = nnout();
+                                  os << fmt_str << " bin has reached threshold: function="
+                                     << id_to_kernel[data->kernel_id()]
+                                     << " range=[" << exp_with_bias(fmt, data->range().first)
+                                     << "," << exp_with_bias(fmt, data->range().second)
+                                     << "] count=" << data->get_count();
+                                  int inst_id = data->instruction_id();
+                                  if (inst_id >= 0) {
+                                      std::string instr = ::recorder->get_inst(inst_id);
+                                      std::string func = ::recorder->get_func(inst_id);
+                                      std::string path = ::recorder->get_path(inst_id);
+                                      std::string line = ::recorder->get_line(inst_id);
+                                      std::string source_location = path.empty() ? "" : " at " + path + ":" + line;
+                                      os << " instruction=" << instr << " in function=" << func << source_location;
+                                  }
+                                  os << "\n";
                               });
 }
 }
 
-void instrument(CUcontext ctx, Instr* instr, const std::string& kname) {
+void instrument(CUcontext ctx, Instr* instr, const std::string& kname, CUfunction f) {
 if (histogram_enabled) {
     auto device_bins_ptr = process_bin_spec(kname);
     assert(device_histogram != nullptr && "Histogram not initialized!");
@@ -257,9 +284,14 @@ if (histogram_enabled) {
         kernel_to_id[kname] = new_id;
         id_to_kernel[new_id] = kname;
     }
+    // Register this static instruction in the shared instruction-info table
+    // (the same one the exception path uses) so a threshold report can
+    // resolve it back to SASS text / file / line / function on request
+    // (BIN_SPEC_FILE's "<fmt> (record_inst)" ranges).
+    uint32_t inst_id = ::recorder->mk_entry(instr, reg_infos, ctx, f);
     /*nixnan_fp_histogram_counter(int pred, BinArray* bins, unsigned long count,
     unsigned long long int* histogram, ChannelDev* channel_dev, int kerid,
-    uint32_t arg_count, ...)*/
+    int inst_id, uint32_t arg_count, ...)*/
     nvbit_insert_call(instr, "nixnan_fp_histogram_counter", IPOINT_AFTER);
     nvbit_add_call_arg_guard_pred_val(instr);
     nvbit_add_call_arg_const_val64(instr, tobits64(device_bins_ptr), false);
@@ -267,6 +299,7 @@ if (histogram_enabled) {
     nvbit_add_call_arg_const_val64(instr, tobits64(device_histogram), false);
     nvbit_add_call_arg_const_val64(instr, tobits64(&channel_dev), false);
     nvbit_add_call_arg_const_val32(instr, tobits32(kernel_to_id[kname]), false); // kerid
+    nvbit_add_call_arg_const_val32(instr, tobits32(inst_id), false); // inst_id
     if (verbose) {
         nnout() << "Histogram instrumenting: " << instr->getSass() << std::endl;
     }
@@ -286,6 +319,7 @@ if (histogram_enabled) {
     nvbit_add_call_arg_const_val64(instr, tobits64(device_histogram), false);
     nvbit_add_call_arg_const_val64(instr, tobits64(&channel_dev), false);
     nvbit_add_call_arg_const_val32(instr, tobits32(kernel_to_id[kname]), false); // kerid
+    nvbit_add_call_arg_const_val32(instr, tobits32(inst_id), false); // inst_id
     size_t num_regs = 0;
     for (size_t i = 1; i < reg_infos.size(); ++i) {
         auto [ri, rfuns] = reg_infos[i];

@@ -16,7 +16,7 @@ static int histogram_enabled = false;
 
 void init();
 void tool_init(CUcontext ctx);
-void instrument(CUcontext ctx, Instr* instr, const std::string& kname);
+void instrument(CUcontext ctx, Instr* instr, const std::string& kname, CUfunction f);
 void term(CUcontext ctx);
 
 class BinCounter {
@@ -24,8 +24,10 @@ class BinCounter {
     int lower;
     int upper;
     unsigned long long int count;
-    BinCounter(int lower, int upper) : lower(lower), upper(upper), count(0) {}
-    BinCounter() : lower(0), upper(0), count(0) {}
+    bool record_inst;
+    BinCounter(int lower, int upper, bool record_inst = false)
+        : lower(lower), upper(upper), count(0), record_inst(record_inst) {}
+    BinCounter() : lower(0), upper(0), count(0), record_inst(false) {}
     __device__
     bool in_bin(int value) {
         return value >= lower && value <= upper;
@@ -52,12 +54,13 @@ class exp_info {
     int ub;
     int kerid;
     int fmt;
+    int inst_id; // -1 unless the triggering bin has record_inst set
     bool _to_skip;
 
     public:
     __host__ __device__
-    exp_info(unsigned long long count, int fmt, int lb, int ub, int kerid, bool to_skip)
-        : count(count), fmt(fmt), lb(lb), ub(ub), kerid(kerid), _to_skip(to_skip) {}
+    exp_info(unsigned long long count, int fmt, int lb, int ub, int kerid, int inst_id, bool to_skip)
+        : count(count), fmt(fmt), lb(lb), ub(ub), kerid(kerid), inst_id(inst_id), _to_skip(to_skip) {}
 
     std::pair<int,int> range() {
         return {lb, ub};
@@ -69,6 +72,10 @@ class exp_info {
 
     int kernel_id() {
         return kerid;
+    }
+
+    int instruction_id() {
+        return inst_id;
     }
 
     int warp() {

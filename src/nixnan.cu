@@ -193,7 +193,7 @@ bool instrument_function(CUcontext ctx, CUfunction kernel) {
       auto reg_infos = instruction_info::get_reginfo(instr);
       bool meminstr = is_memory_instruction(instr);
       if (reg_infos.empty() && !meminstr) { continue; }
-      nixnan::fp_histogram::instrument(ctx, instr, fname);
+      nixnan::fp_histogram::instrument(ctx, instr, fname, f);
       if (verbose) {
         nnout() << "Instrumenting instruction " << instr->getSass() << std::endl;
       }
