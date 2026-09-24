@@ -72,6 +72,7 @@ void init() {
 For example:
 {
     "count": 128,
+    "doublings": 0,
     "bf16": [],
     "f16": [[0,5],[-4,-1]],
     "f32": [],
@@ -80,7 +81,13 @@ For example:
 will report every 128 occurrences of exponents in the ranges 0 to 5 and -4 to -1 for f16 numbers.
 A key of the form "<fmt> (record_inst)", e.g. "f16 (record_inst)", takes the same range syntax
 and additionally reports the specific instruction/source line that triggered each threshold hit,
-the same way exception reports do -- useful for root-causing how values reached a given range.)HELP");
+the same way exception reports do -- useful for root-causing how values reached a given range.
+
+If "doublings" is N (N>0), every bin starts reporting every "count" occurrences; each time a
+bin reports, its own threshold doubles (count -> 2*count -> 4*count -> ...). After a bin has
+doubled N times, the NEXT report resets every bin in that kernel back to the starting "count"
+and 0 doublings, then the cycle repeats. "doublings": 0 (the default) disables this -- every
+bin just reports every "count" occurrences forever, as before.)HELP");
     if (bin_spec_file != "") {
         histogram_enabled = true;
         std::fstream bin_spec_ifs(bin_spec_file);
@@ -128,7 +135,8 @@ int get_exp_bias(uint32_t type) {
 
 using json = nlohmann::json;
 
-BinCounter bin_from_json(const json& j, unsigned char fmt, bool record_inst) {
+BinCounter bin_from_json(const json& j, unsigned char fmt,
+    unsigned long long int threshold, bool record_inst, unsigned int doubling_limit) {
     int bias = get_exp_bias(fmt);
     if (j.type() != json::value_t::array ||
         j.size() != 2) {
@@ -144,7 +152,17 @@ BinCounter bin_from_json(const json& j, unsigned char fmt, bool record_inst) {
                 << "] for format " << type_to_string.at(fmt) << "\nExiting now.\n";
         exit(1);
     }
-    return BinCounter(lower + bias, upper+bias, record_inst);
+    return BinCounter(lower + bias, upper+bias, threshold, record_inst, doubling_limit);
+}
+
+unsigned int get_leading_zeros(unsigned long long int n) {
+    unsigned long long mask = 1ULL << (sizeof(unsigned long long int) * 8 - 1);
+    unsigned int count = 0;
+    while (mask > 0 && (n & mask) == 0) {
+        count++;
+        mask >>= 1;
+    }
+    return count;
 }
 
 json empty_bin_spec() {
@@ -157,7 +175,8 @@ json empty_bin_spec() {
     };
 }
 
-BinArray* make_bin_array(const std::string& function, const json& bin_spec_json) {
+BinArray* make_bin_array(const std::string& function, const json& bin_spec_json,
+    unsigned int doublings) {
     if (device_bins.count(function) > 0) {
         return device_bins[function];
     }
@@ -165,6 +184,7 @@ BinArray* make_bin_array(const std::string& function, const json& bin_spec_json)
     BinArray host_bins[NUM_FORMATS];
     cudaMalloc(&device_bins[function], NUM_FORMATS * sizeof(BinArray));
     for (auto fmt : {BF16, FP16, FP32, FP64}) {
+        host_bins[fmt].default_threshold = count_threshold;
         std::string fmt_str = type_to_string.at(fmt);
         // "<fmt> (record_inst)" is the same range syntax as "<fmt>", but each
         // bin it defines also reports which instruction/source line
@@ -174,12 +194,12 @@ BinArray* make_bin_array(const std::string& function, const json& bin_spec_json)
         std::vector<BinCounter> h_cnts;
         if (bin_spec_json.find(fmt_str) != bin_spec_json.end()) {
             for (const auto& bin_json : bin_spec_json[fmt_str]) {
-                h_cnts.push_back(bin_from_json(bin_json, fmt, false));
+                h_cnts.push_back(bin_from_json(bin_json, fmt, count_threshold, false, doublings));
             }
         }
         if (bin_spec_json.find(fmt_str_record_inst) != bin_spec_json.end()) {
             for (const auto& bin_json : bin_spec_json[fmt_str_record_inst]) {
-                h_cnts.push_back(bin_from_json(bin_json, fmt, true));
+                h_cnts.push_back(bin_from_json(bin_json, fmt, count_threshold, true, doublings));
             }
         }
         BinCounter* d_cnts;
@@ -212,16 +232,23 @@ BinArray* process_bin_spec(const std::string& function) {
         }
     }
     count_threshold = bin_spec_json["count"].get<unsigned long long int>();
+    unsigned int doublings = bin_spec_json.value("doublings", 0U);
 
     if (count_threshold <= 0) {
         nnout() << "Invalid count threshold of " << count_threshold << " in bin specification file " << bin_spec_file << "\nExiting now.\n";
         exit(1);
     }
 
+    if (doublings > 0 && (64 - get_leading_zeros(count_threshold)) + doublings >= 64) {
+        nnout() << "Doubling count threshold of " << count_threshold << " by " << doublings
+                << " times would overflow. Please decrease count or doublings.\nExiting now.\n";
+        exit(1);
+    }
+
     if (bin_spec_json.contains("max_reports")) {
         max_reports = bin_spec_json["max_reports"].get<unsigned long long int>();
     }
-    return make_bin_array(function, bin_spec_json);
+    return make_bin_array(function, bin_spec_json, doublings);
 }
 
 std::string exp_with_bias(char format, int exp);
@@ -289,13 +316,12 @@ if (histogram_enabled) {
     // resolve it back to SASS text / file / line / function on request
     // (BIN_SPEC_FILE's "<fmt> (record_inst)" ranges).
     uint32_t inst_id = ::recorder->mk_entry(instr, reg_infos, ctx, f);
-    /*nixnan_fp_histogram_counter(int pred, BinArray* bins, unsigned long count,
+    /*nixnan_fp_histogram_counter(int pred, BinArray* bins,
     unsigned long long int* histogram, ChannelDev* channel_dev, int kerid,
     int inst_id, uint32_t arg_count, ...)*/
     nvbit_insert_call(instr, "nixnan_fp_histogram_counter", IPOINT_AFTER);
     nvbit_add_call_arg_guard_pred_val(instr);
     nvbit_add_call_arg_const_val64(instr, tobits64(device_bins_ptr), false);
-    nvbit_add_call_arg_const_val64(instr, tobits64(count_threshold), false);
     nvbit_add_call_arg_const_val64(instr, tobits64(device_histogram), false);
     nvbit_add_call_arg_const_val64(instr, tobits64(&channel_dev), false);
     nvbit_add_call_arg_const_val32(instr, tobits32(kernel_to_id[kname]), false); // kerid
@@ -315,7 +341,6 @@ if (histogram_enabled) {
     nvbit_insert_call(instr, "nixnan_fp_histogram_counter", IPOINT_BEFORE);
     nvbit_add_call_arg_guard_pred_val(instr);
     nvbit_add_call_arg_const_val64(instr, tobits64(device_bins_ptr), false);
-    nvbit_add_call_arg_const_val64(instr, tobits64(count_threshold), false);
     nvbit_add_call_arg_const_val64(instr, tobits64(device_histogram), false);
     nvbit_add_call_arg_const_val64(instr, tobits64(&channel_dev), false);
     nvbit_add_call_arg_const_val32(instr, tobits32(kernel_to_id[kname]), false); // kerid

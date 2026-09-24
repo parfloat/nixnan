@@ -829,6 +829,57 @@ count=32768  <- After 7th doubling
 count=256    <- RESET, cycle repeats
 ```
 
+#### Provenance, a Concurrency Bug, and Verification <a name="adaptive-doubling-verified"></a>
+
+The behavior above is what `doublings` has always been documented to do, but on this
+line of development (`auto-nixnan` → `print_histo_instrn`) the code implementing it did
+not actually exist until it was ported over from a separate branch, `fp-reset` — the
+JSON key and this section of the tutorial had drifted ahead of what the branch's
+`nixnan.so` actually built. It has now been ported in, alongside `record_inst`
+(the two compose freely: a `"<fmt> (record_inst)"` bin can also carry `doublings`).
+
+Porting it surfaced a real bug in the original: a bin's occurrence counter is shared
+across every GPU thread that hits it (it is a per-range, whole-kernel counter, not
+per-thread), so many threads can observe the same stale `threshold` value at once, all
+attempt to advance it, and — with the original's plain, non-atomic
+`bin.threshold *= 2; bin.times_doubled++;` — race. Verified directly: watching FP16's
+entire valid exponent range (`"f16": [[0,15]]`, deliberately worst-case for
+contention) produced a corrupted, non-monotonic sequence
+(`1, 1, 1, 2, 2, 2, 1, 1, 2, ...`) instead of a clean doubling progression. Both state
+transitions — doubling and reset — are now gated with `atomicCAS` on `threshold` (for
+doubling) and on `times_doubled` (for the reset), so exactly one thread performs each
+transition regardless of how many observe the crossing simultaneously.
+
+**Verification, at a realistic (narrow) range.** The worst-case wide-range test above
+is not representative of normal use, where a spec targets a couple of exponents, not
+an entire format's range. Re-tested with `rd_nixnan.cu`'s FP16 kernel, watching its
+smallest-two and largest-two normal exponents with `count:1, doublings:8`:
+
+```json
+{
+  "count": 1,
+  "doublings": 8,
+  "bf16": [],
+  "f16": [[-14, -13], [14, 15]],
+  "f32": [],
+  "f64": []
+}
+```
+
+```bash
+HISTOGRAM=1 BIN_SPEC_FILE=./spec.json LD_PRELOAD=./nixnan.so ./rd_nixnan
+```
+
+The reported threshold sequence is now cleanly monotonic within each cycle —
+`1, 1, 2, 2, 4, 4, 8, 16, 1, 1, ...` (occasional repeats at one level are real,
+correct reports: distinct grid points can genuinely cross the same threshold within a
+step or two of each other, before the next doubling wins the race) — climbing through
+all nine levels (`1, 2, 4, 8, 16, 32, 64, 128, 256`) before resetting back to 1, over
+and over across the run. See `shell-scripts/Exp-Output-Rate-start-1-double-8-times.sh`
+in the `rd_nixnan` tutorial example (and its companion `.json`) for the exact
+reproducible command and `Logs/Exp-Output-Rate-start-1-double-8-times.log` for full
+output.
+
 ### Kernel-Specific Analysis
 
 Each binade report includes the kernel name that generated the exception:

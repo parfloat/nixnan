@@ -166,7 +166,10 @@ Create `spec.json`:
 - Format arrays: Exponent ranges to monitor `[[min_exp, max_exp]]`
 
 ### 3. Adaptive Threshold Doubling
-Automatically scale reporting thresholds during execution to observe exception behavior at multiple scales. When a threshold is reached, it doubles (e.g., 256 → 512 → 1024) and resets after N doublings, providing multi-scale insight without data saturation.
+Automatically scale reporting thresholds during execution to observe exception behavior at multiple scales. A bin starts reporting every `count` occurrences; each time it reports, its threshold doubles (`count` → `2*count` → `4*count` → ...); once it has doubled `doublings` times, the *next* report resets every bin in that kernel back to `count` and the cycle repeats — providing multi-scale insight without data saturation and without needing multiple runs.
+
+Ported onto this branch (`auto-nixnan` → `print_histo_instrn`) from `fp-reset`, alongside `record_inst` — the two compose (`"f16 (record_inst)"` bins can also use `doublings`). The port also fixed a real concurrency bug in the original: many GPU threads can hit the same bin concurrently, and a non-atomic `threshold *= 2` let them race and corrupt the doubling sequence. Both the doubling step and the reset are now gated with `atomicCAS` so exactly one thread performs each transition. See
+[Tutorial.md](Tutorial.md#adaptive-doubling-verified) for the worked example and verification.
 
 ### 4. Kernel-Specific Analysis
 Track which kernels generate exceptions with per-kernel reporting:

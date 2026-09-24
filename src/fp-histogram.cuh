@@ -25,9 +25,22 @@ class BinCounter {
     int upper;
     unsigned long long int count;
     bool record_inst;
-    BinCounter(int lower, int upper, bool record_inst = false)
-        : lower(lower), upper(upper), count(0), record_inst(record_inst) {}
-    BinCounter() : lower(0), upper(0), count(0), record_inst(false) {}
+    // Adaptive threshold doubling (ported from the fp-reset branch): a bin
+    // starts reporting every `threshold` occurrences (initially the spec's
+    // "count"); each time it reports, threshold doubles, until it has
+    // doubled `doubling_limit` times, at which point the NEXT report resets
+    // every bin's threshold (in this kernel) back to its starting value.
+    // doubling_limit == 0 disables doubling entirely (plain fixed-count
+    // reporting, the original behavior).
+    unsigned long long int threshold;
+    unsigned int times_doubled;
+    unsigned int doubling_limit;
+    BinCounter(int lower, int upper, unsigned long long int threshold,
+               bool record_inst = false, unsigned int doubling_limit = 0)
+        : lower(lower), upper(upper), count(0), record_inst(record_inst),
+          threshold(threshold), times_doubled(0), doubling_limit(doubling_limit) {}
+    BinCounter() : lower(0), upper(0), count(0), record_inst(false),
+                   threshold(0), times_doubled(0), doubling_limit(0) {}
     __device__
     bool in_bin(int value) {
         return value >= lower && value <= upper;
@@ -41,6 +54,7 @@ class BinCounter {
 struct BinArray {
     BinCounter* bins;
     size_t num_bins;
+    unsigned long long int default_threshold;
 };
 
 __inline__ __host__ __device__
