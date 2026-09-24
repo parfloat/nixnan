@@ -48,6 +48,7 @@ using nixnan::exception_info;
 #include <signal.h>
 #include <map>
 #include <chrono>
+#include <sstream>
 
 uint32_t instr_begin_interval = 0;
 uint32_t instr_end_interval = UINT32_MAX;
@@ -323,8 +324,12 @@ void recv_thread_fun(std::shared_ptr<nixnan::recorder> recorder, ChannelHost cha
           if (i != exceptions.size() - 1) errors += ",";
         }
         std::string source_location = path == "" ? "" : " at " + path + ":" + line;
-        nnout() << "error [" << errors << "] detected in operand " << ei->operand() << " of instruction " << instr << " in function "
-                  << func << source_location << " of type " << type << std::endl;
+        {
+          std::ostringstream oss;
+          oss << "error [" << errors << "] detected in operand " << ei->operand() << " of instruction " << instr << " in function "
+              << func << source_location << " of type " << type;
+          nnout_line(oss.str());
+        }
         num_processed_bytes += sizeof(exception_info);
         error_count++;
         if (max_errors > 0 && error_count >= max_errors) {

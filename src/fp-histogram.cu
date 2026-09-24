@@ -8,6 +8,7 @@
 #include <atomic>
 #include "nlohmann/json.hpp"
 #include <fstream>
+#include <sstream>
 #include <csignal>
 
 // Shared with nixnan.cu: the same instruction-info table the exception path
@@ -278,12 +279,12 @@ if (histogram_enabled) {
                                   }
                                   unsigned char fmt = data->format();
                                   std::string fmt_str = type_to_string.at(fmt);
-                                  auto& os = nnout();
-                                  os << fmt_str << " bin has reached threshold: function="
-                                     << id_to_kernel[data->kernel_id()]
-                                     << " range=[" << exp_with_bias(fmt, data->range().first)
-                                     << "," << exp_with_bias(fmt, data->range().second)
-                                     << "] count=" << data->get_count();
+                                  std::ostringstream oss;
+                                  oss << fmt_str << " bin has reached threshold: function="
+                                      << id_to_kernel[data->kernel_id()]
+                                      << " range=[" << exp_with_bias(fmt, data->range().first)
+                                      << "," << exp_with_bias(fmt, data->range().second)
+                                      << "] count=" << data->get_count();
                                   int inst_id = data->instruction_id();
                                   if (inst_id >= 0) {
                                       std::string instr = ::recorder->get_inst(inst_id);
@@ -291,9 +292,9 @@ if (histogram_enabled) {
                                       std::string path = ::recorder->get_path(inst_id);
                                       std::string line = ::recorder->get_line(inst_id);
                                       std::string source_location = path.empty() ? "" : " at " + path + ":" + line;
-                                      os << " instruction=" << instr << " in function=" << func << source_location;
+                                      oss << " instruction=" << instr << " in function=" << func << source_location;
                                   }
-                                  os << "\n";
+                                  nnout_line(oss.str());
                               });
 }
 }
