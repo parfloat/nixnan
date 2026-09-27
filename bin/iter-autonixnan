@@ -1,0 +1,302 @@
+#!/usr/bin/env python3
+"""Iter-autonixnan: whitelist each kernel of a target program in turn, and
+run it under a user-chosen SAMPLING value, with exception checking always on.
+
+Unlike autonixnan's own Phase 3 (which whitelists only the single kernel
+Phase 2's extreme-value scan flagged as most interesting), this tool makes
+no attempt to guess which kernel matters -- it visits every kernel Phase 1
+finds, one at a time, and reports what happens for each. This sidesteps
+Phase 2's exponent-scan blind spot (its watched bins exclude the zero/
+infinity exponent codes, so a hard one-step jump from finite to Inf/NaN is
+invisible to it -- see autonixnan-doc.tex, Section 6, Section 4) by never
+depending on that scan to pick a kernel in the first place.
+
+Workflow:
+  Phase 1: collect_kernels() (LOG_KERNELS mode, same as autonixnan) to get
+           the set of unique kernel names, KN.
+  Phase 2: for each k in KN, in succession:
+             - write a FUNCTION_WHITELIST file containing just k
+             - run the target with SAMPLING=<-s value>,
+               INSTRUMENT_EXCEPTIONS=1 (always, regardless of ambient env),
+               and BIN_SPEC_FILE=<-b value> if one was given
+             - capture and print that run's full nixnan output
+
+Every other nixnan-relevant environment variable already set in the
+caller's own environment (e.g. HISTOGRAM, TOOL_VERBOSE, MAX_ERRORS, ...) is
+inherited unchanged for each Phase 2 run -- this script only overrides
+LD_PRELOAD, FUNCTION_WHITELIST, SAMPLING, INSTRUMENT_EXCEPTIONS, LOGFILE,
+and (only if -b/--bin-spec-file is given) BIN_SPEC_FILE.
+"""
+
+import argparse
+import os
+import subprocess
+import sys
+import tempfile
+import time
+from collections import OrderedDict
+
+
+def run_with_env(
+    program_args: list, timeout: int, env: dict, check: bool = True, quiet: bool = True
+) -> float:
+    """Run the target program with the given environment. Returns wall-clock seconds.
+
+    By default the target's stdout/stderr are suppressed; pass quiet=False to
+    let them pass through to the console instead.
+    """
+    start = time.monotonic()
+    try:
+        subprocess.run(
+            program_args,
+            env=env,
+            check=check,
+            timeout=timeout,
+            stdout=subprocess.DEVNULL if quiet else None,
+            stderr=subprocess.DEVNULL if quiet else None,
+        )
+    except subprocess.CalledProcessError as exc:
+        print(f"Error: target program exited with code {exc.returncode}", file=sys.stderr)
+        sys.exit(exc.returncode)
+    except subprocess.TimeoutExpired:
+        print(f"Error: target program exceeded {timeout}s timeout", file=sys.stderr)
+        sys.exit(1)
+    return time.monotonic() - start
+
+
+def _parse_kernel_log(log_file: str) -> tuple[list[str], "OrderedDict[str, dict]"]:
+    """
+    Parse a nixnan log file for kernel execution entries.
+
+    Expects lines in the format:
+      #nixnan: Kernel [<name>] execution time: <N> microseconds
+
+    Returns (kernels_seq, kernels_unique) where:
+      - kernels_seq: ordered list of kernel names in call order
+      - kernels_unique: OrderedDict of kernel name -> {"count": int, "total_time_us": float}
+    """
+    kernels_seq: list[str] = []
+    kernels_unique: "OrderedDict[str, dict]" = OrderedDict()
+
+    with open(log_file, "r") as fh:
+        for line in fh:
+            line = line.strip()
+            if not line.startswith("#nixnan: Kernel ["):
+                continue
+            bracket_open = line.index("[") + 1
+            bracket_close = line.index("]")
+            kernel_name = line[bracket_open:bracket_close]
+            time_us = 0.0
+            time_marker = "execution time:"
+            if time_marker in line:
+                time_str = line[line.index(time_marker) + len(time_marker):].strip()
+                try:
+                    time_us = float(time_str.split()[0])
+                except (ValueError, IndexError):
+                    time_us = 0.0
+            kernels_seq.append(kernel_name)
+            if kernel_name not in kernels_unique:
+                kernels_unique[kernel_name] = {"count": 0, "total_time_us": 0.0}
+            kernels_unique[kernel_name]["count"] += 1
+            kernels_unique[kernel_name]["total_time_us"] += time_us
+
+    return kernels_seq, kernels_unique
+
+
+def collect_kernels(program_args: list, timeout: int, lib_path: str) -> dict:
+    """
+    Run the target program with nixnan preloaded to collect kernel information.
+
+    Uses LOG_KERNELS to direct output to a temporary log file, then parses it.
+
+    Returns a dict with:
+      - kernels_seq: ordered list of kernel names in call order
+      - kernels_unique: OrderedDict of kernel name -> {"count": int, "total_time_us": float}
+      - elapsed: wall-clock seconds the subprocess ran
+    """
+    fd, log_file = tempfile.mkstemp(suffix=".log", prefix="iter_nixnan_kernels_")
+    os.close(fd)
+
+    env = os.environ.copy()
+    env["LD_PRELOAD"] = lib_path
+    env["LOG_KERNELS"] = log_file
+
+    try:
+        elapsed = run_with_env(program_args, timeout, env)
+        kernels_seq, kernels_unique = _parse_kernel_log(log_file)
+    finally:
+        os.unlink(log_file)
+
+    return {
+        "kernels_seq": kernels_seq,
+        "kernels_unique": dict(kernels_unique),
+        "elapsed": elapsed,
+    }
+
+
+def run_whitelisted_kernel(
+    program_args: list,
+    timeout: int,
+    lib_path: str,
+    kernel_name: str,
+    sampling: int,
+    bin_spec_file: str = None,
+) -> dict:
+    """
+    Run the target program with exactly one kernel whitelisted
+    (FUNCTION_WHITELIST), under the given SAMPLING value, with
+    INSTRUMENT_EXCEPTIONS forced on regardless of the ambient environment.
+    If bin_spec_file is given, BIN_SPEC_FILE is set to it (so its
+    HISTOGRAM/binade-threshold reporting applies too, on top of exception
+    checking). Every other environment variable already set by the caller
+    (e.g. HISTOGRAM without -b, TOOL_VERBOSE, MAX_ERRORS, LINE_INFO, ...)
+    passes through unchanged.
+
+    Returns a dict with:
+      - elapsed: wall-clock seconds the run took
+      - log: the full captured nixnan output (stdout+stderr) for this run
+    """
+    fd, log_file = tempfile.mkstemp(suffix=".log", prefix="iter_nixnan_run_")
+    os.close(fd)
+
+    fd, whitelist_file = tempfile.mkstemp(suffix=".txt", prefix="iter_nixnan_whitelist_")
+    with os.fdopen(fd, "w") as f:
+        f.write(kernel_name + "\n")
+
+    try:
+        env = os.environ.copy()
+        env["LD_PRELOAD"] = lib_path
+        env["FUNCTION_WHITELIST"] = whitelist_file
+        env["SAMPLING"] = str(sampling)
+        env["INSTRUMENT_EXCEPTIONS"] = "1"
+        if bin_spec_file:
+            env["BIN_SPEC_FILE"] = bin_spec_file
+
+        with open(log_file, "wb") as out:
+            start = time.monotonic()
+            try:
+                subprocess.run(
+                    program_args,
+                    env=env,
+                    check=False,
+                    timeout=timeout,
+                    stdout=out,
+                    stderr=subprocess.STDOUT,
+                )
+            except subprocess.TimeoutExpired:
+                print(
+                    f"    (target exceeded {timeout}s timeout for kernel "
+                    f"'{kernel_name}'; log captured up to that point)",
+                    file=sys.stderr,
+                )
+            elapsed = time.monotonic() - start
+
+        with open(log_file, "r", errors="replace") as f:
+            log_text = f.read()
+
+        return {"elapsed": elapsed, "log": log_text}
+    finally:
+        os.unlink(log_file)
+        os.unlink(whitelist_file)
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description=(
+            "Whitelist each kernel of a target program in turn, run it under "
+            "a chosen SAMPLING value with exception checking always on, and "
+            "report each run's nixnan output."
+        ),
+        add_help=True,
+    )
+    parser.add_argument(
+        "-t", "--timeout",
+        type=int,
+        default=300,
+        help="Time limit in seconds for each individual run (default: 300)",
+    )
+    parser.add_argument(
+        "-s", "--sampling",
+        type=int,
+        required=True,
+        help="SAMPLING value to apply to every per-kernel whitelisted run "
+             "(required)",
+    )
+    parser.add_argument(
+        "-b", "--bin-spec-file",
+        type=str,
+        default=None,
+        help="Optional BIN_SPEC_FILE JSON path, applied to every per-kernel "
+             "whitelisted run (in addition to exception checking, which is "
+             "always on). If not given, BIN_SPEC_FILE/HISTOGRAM are left "
+             "exactly as already set in the calling environment, if at all.",
+    )
+    parser.add_argument(
+        "command",
+        nargs=argparse.REMAINDER,
+        metavar="[-- PROGRAM [ARGS...]]",
+        help="Program and arguments to run (precede with --)",
+    )
+
+    args = parser.parse_args()
+
+    cmd = args.command
+    if cmd and cmd[0] == "--":
+        cmd = cmd[1:]
+
+    if not cmd:
+        parser.error("Please provide a program to run after --")
+
+    if args.bin_spec_file and not os.path.exists(args.bin_spec_file):
+        parser.error(
+            f"--bin-spec-file {args.bin_spec_file!r} does not exist "
+            "(nixnan.so would just write a template there and exit "
+            "without running the target -- create/generate it first)"
+        )
+
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    lib_path = os.path.join(script_dir, "..", "nixnan.so")
+
+    # --- Phase 1: collect kernel names (KN) ---
+    print("=" * 70)
+    print("Phase 1: Collecting kernel names (LOG_KERNELS)")
+    print("=" * 70)
+    baseline = collect_kernels(cmd, args.timeout, lib_path)
+    kernel_names = list(baseline["kernels_unique"].keys())
+
+    print(f"  {len(kernel_names)} unique kernel(s) found "
+          f"({len(baseline['kernels_seq'])} total launches), "
+          f"baseline {baseline['elapsed']:.3f}s:")
+    for name in kernel_names:
+        info = baseline["kernels_unique"][name]
+        print(f"    {info['count']:4d} call(s)  {name}")
+    print()
+
+    # --- Phase 2: whitelist each kernel in turn, run under SAMPLING ---
+    print("=" * 70)
+    print(f"Phase 2: Per-kernel whitelisted runs (SAMPLING={args.sampling}, "
+          f"INSTRUMENT_EXCEPTIONS=1"
+          + (f", BIN_SPEC_FILE={args.bin_spec_file}" if args.bin_spec_file else "")
+          + ")")
+    print("=" * 70)
+
+    for i, kernel_name in enumerate(kernel_names, start=1):
+        print()
+        print("-" * 70)
+        print(f"[{i}/{len(kernel_names)}] Whitelisting: {kernel_name}")
+        print("-" * 70)
+        result = run_whitelisted_kernel(
+            cmd, args.timeout, lib_path, kernel_name, args.sampling,
+            bin_spec_file=args.bin_spec_file,
+        )
+        print(f"  elapsed: {result['elapsed']:.3f}s")
+        print(result["log"], end="" if result["log"].endswith("\n") else "\n")
+
+    print()
+    print("=" * 70)
+    print(f"Done: {len(kernel_names)} kernel(s) visited in succession.")
+    print("=" * 70)
+
+
+if __name__ == "__main__":
+    main()
