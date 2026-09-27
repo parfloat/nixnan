@@ -1,0 +1,394 @@
+#!/usr/bin/env python3
+"""Ksel-autonixnan: hand-pick which kernels of a target program get
+instrumented together, via a small human-editable selection file.
+
+Two-step workflow, unlike iter-autonixnan's fully-automatic one-kernel-at-
+a-time sweep:
+
+  Step 1 (-phase1): collect_kernels() (LOG_KERNELS mode, same as
+          autonixnan/iter-autonixnan) to find every kernel name, then write
+          a "ksel" file listing each one with a "y"/"n" toggle -- all "n"
+          by default, so nothing is selected until you edit it.
+
+  [ You hand-edit "ksel", flipping "n" to "y" for whichever kernels you
+    actually want instrumented -- one, several, or all of them. ]
+
+  Step 2 (-ksel): read "ksel" back, collect every kernel marked "y" into a
+          single FUNCTION_WHITELIST, and run the target ONCE with all of
+          them whitelisted together (not one at a time), under a required
+          -s/--sampling SAMPLING value, INSTRUMENT_EXCEPTIONS forced on
+          regardless of the ambient environment, and -b/--bin-spec-file
+          applied if given.
+
+Why this exists alongside iter-autonixnan: iter-autonixnan visits every
+kernel automatically, one whitelisted run per kernel -- useful when you
+don't know where to look. ksel-autonixnan is for when you already have a
+hypothesis about which \emph{combination} of kernels matters (e.g. two
+kernels that interact, or a hand-picked subset to keep a single run's
+instrumentation-insertion cost down on a large binary) and want exactly
+those, together, in one run.
+
+The "ksel" file format (see write_ksel_file/parse_ksel_file below):
+  [
+  kernel_name_1 : n ;
+  kernel_name_2 : n ;
+  ...
+  kernel_name_M : n ;
+  ]
+One record per line for easy hand-editing; the parser itself does not
+care about newlines or exact spacing -- it splits on ";" for records and
+on the last " : " within each record (chosen specifically so it is not
+confused by a C++ "::" scope-resolution operator inside a kernel name,
+which has no surrounding spaces).
+"""
+
+import argparse
+import os
+import re
+import subprocess
+import sys
+import tempfile
+import time
+from collections import OrderedDict
+
+DEFAULT_KSEL_FILE = "ksel"
+
+
+def run_with_env(
+    program_args: list, timeout: int, env: dict, check: bool = True, quiet: bool = True
+) -> float:
+    """Run the target program with the given environment. Returns wall-clock seconds.
+
+    By default the target's stdout/stderr are suppressed; pass quiet=False to
+    let them pass through to the console instead.
+    """
+    start = time.monotonic()
+    try:
+        subprocess.run(
+            program_args,
+            env=env,
+            check=check,
+            timeout=timeout,
+            stdout=subprocess.DEVNULL if quiet else None,
+            stderr=subprocess.DEVNULL if quiet else None,
+        )
+    except subprocess.CalledProcessError as exc:
+        print(f"Error: target program exited with code {exc.returncode}", file=sys.stderr)
+        sys.exit(exc.returncode)
+    except subprocess.TimeoutExpired:
+        print(f"Error: target program exceeded {timeout}s timeout", file=sys.stderr)
+        sys.exit(1)
+    return time.monotonic() - start
+
+
+def _parse_kernel_log(log_file: str) -> tuple[list[str], "OrderedDict[str, dict]"]:
+    """
+    Parse a nixnan log file for kernel execution entries.
+
+    Expects lines in the format:
+      #nixnan: Kernel [<name>] execution time: <N> microseconds
+
+    Returns (kernels_seq, kernels_unique) where:
+      - kernels_seq: ordered list of kernel names in call order
+      - kernels_unique: OrderedDict of kernel name -> {"count": int, "total_time_us": float}
+    """
+    kernels_seq: list[str] = []
+    kernels_unique: "OrderedDict[str, dict]" = OrderedDict()
+
+    with open(log_file, "r") as fh:
+        for line in fh:
+            line = line.strip()
+            if not line.startswith("#nixnan: Kernel ["):
+                continue
+            bracket_open = line.index("[") + 1
+            bracket_close = line.index("]")
+            kernel_name = line[bracket_open:bracket_close]
+            time_us = 0.0
+            time_marker = "execution time:"
+            if time_marker in line:
+                time_str = line[line.index(time_marker) + len(time_marker):].strip()
+                try:
+                    time_us = float(time_str.split()[0])
+                except (ValueError, IndexError):
+                    time_us = 0.0
+            kernels_seq.append(kernel_name)
+            if kernel_name not in kernels_unique:
+                kernels_unique[kernel_name] = {"count": 0, "total_time_us": 0.0}
+            kernels_unique[kernel_name]["count"] += 1
+            kernels_unique[kernel_name]["total_time_us"] += time_us
+
+    return kernels_seq, kernels_unique
+
+
+def collect_kernels(program_args: list, timeout: int, lib_path: str) -> dict:
+    """
+    Run the target program with nixnan preloaded to collect kernel information.
+
+    Uses LOG_KERNELS to direct output to a temporary log file, then parses it.
+
+    Returns a dict with:
+      - kernels_seq: ordered list of kernel names in call order
+      - kernels_unique: OrderedDict of kernel name -> {"count": int, "total_time_us": float}
+      - elapsed: wall-clock seconds the subprocess ran
+    """
+    fd, log_file = tempfile.mkstemp(suffix=".log", prefix="ksel_nixnan_kernels_")
+    os.close(fd)
+
+    env = os.environ.copy()
+    env["LD_PRELOAD"] = lib_path
+    env["LOG_KERNELS"] = log_file
+
+    try:
+        elapsed = run_with_env(program_args, timeout, env)
+        kernels_seq, kernels_unique = _parse_kernel_log(log_file)
+    finally:
+        os.unlink(log_file)
+
+    return {
+        "kernels_seq": kernels_seq,
+        "kernels_unique": dict(kernels_unique),
+        "elapsed": elapsed,
+    }
+
+
+def write_ksel_file(kernel_names: list, path: str) -> None:
+    """Write the ksel selection file, every kernel defaulted to "n"."""
+    with open(path, "w") as f:
+        f.write("[\n")
+        for name in kernel_names:
+            f.write(f"{name} : n ;\n")
+        f.write("]\n")
+
+
+# Splits a ksel record on the LAST " : " (colon with a space on each side)
+# so a kernel name containing C++'s "::" scope-resolution operator (no
+# surrounding spaces) is never mistaken for the name/flag separator.
+_RECORD_SEP_RE = re.compile(r"\s:\s(?=[^:]*$)")
+
+
+def parse_ksel_file(path: str) -> list[tuple[str, str]]:
+    """Parse a ksel file back into a list of (kernel_name, flag) pairs.
+
+    flag is whatever follows the last " : " in each record, lowercased and
+    stripped -- expected to be "y" or "n", but returned as-is so the caller
+    can warn about anything else rather than silently misreading it.
+    Tolerant of the file's exact whitespace/newline layout; only the
+    "name : flag ;" record shape matters.
+    """
+    with open(path, "r") as f:
+        content = f.read().strip()
+
+    if content.startswith("["):
+        content = content[1:]
+    if content.endswith("]"):
+        content = content[:-1]
+
+    records = [r.strip() for r in content.split(";")]
+    records = [r for r in records if r]
+
+    pairs: list[tuple[str, str]] = []
+    for r in records:
+        m = _RECORD_SEP_RE.split(r)
+        if len(m) != 2:
+            print(f"warning: could not parse ksel record, skipping: {r!r}", file=sys.stderr)
+            continue
+        name, flag = m[0].strip(), m[1].strip().lower()
+        pairs.append((name, flag))
+    return pairs
+
+
+def run_whitelisted_combined(
+    program_args: list,
+    timeout: int,
+    lib_path: str,
+    kernel_names: list,
+    sampling: int,
+    bin_spec_file: str = None,
+) -> dict:
+    """
+    Run the target program once with every name in kernel_names whitelisted
+    together (a single FUNCTION_WHITELIST containing all of them), under the
+    given SAMPLING value, with INSTRUMENT_EXCEPTIONS forced on regardless of
+    the ambient environment. If bin_spec_file is given, BIN_SPEC_FILE is set
+    to it too. Every other environment variable already set by the caller
+    passes through unchanged.
+
+    Returns a dict with:
+      - elapsed: wall-clock seconds the run took
+      - log: the full captured nixnan output (stdout+stderr) for this run
+    """
+    fd, log_file = tempfile.mkstemp(suffix=".log", prefix="ksel_nixnan_run_")
+    os.close(fd)
+
+    fd, whitelist_file = tempfile.mkstemp(suffix=".txt", prefix="ksel_nixnan_whitelist_")
+    with os.fdopen(fd, "w") as f:
+        for name in kernel_names:
+            f.write(name + "\n")
+
+    try:
+        env = os.environ.copy()
+        env["LD_PRELOAD"] = lib_path
+        env["FUNCTION_WHITELIST"] = whitelist_file
+        env["SAMPLING"] = str(sampling)
+        env["INSTRUMENT_EXCEPTIONS"] = "1"
+        if bin_spec_file:
+            env["BIN_SPEC_FILE"] = bin_spec_file
+
+        with open(log_file, "wb") as out:
+            start = time.monotonic()
+            try:
+                subprocess.run(
+                    program_args,
+                    env=env,
+                    check=False,
+                    timeout=timeout,
+                    stdout=out,
+                    stderr=subprocess.STDOUT,
+                )
+            except subprocess.TimeoutExpired:
+                print(
+                    f"    (target exceeded {timeout}s timeout; log captured "
+                    "up to that point)",
+                    file=sys.stderr,
+                )
+            elapsed = time.monotonic() - start
+
+        with open(log_file, "r", errors="replace") as f:
+            log_text = f.read()
+
+        return {"elapsed": elapsed, "log": log_text}
+    finally:
+        os.unlink(log_file)
+        os.unlink(whitelist_file)
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description=(
+            "Hand-pick a combination of kernels to whitelist together via a "
+            "small editable selection file, then run the target once with "
+            "exactly that combination instrumented under a chosen SAMPLING."
+        ),
+        add_help=True,
+    )
+    mode = parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument(
+        "-phase1", action="store_true",
+        help="Collect kernel names (LOG_KERNELS) and write the ksel "
+             "selection file (all kernels default to 'n').",
+    )
+    mode.add_argument(
+        "-ksel", action="store_true",
+        help="Read the (hand-edited) ksel selection file, whitelist every "
+             "kernel marked 'y' together, and run once.",
+    )
+    parser.add_argument(
+        "--ksel-file",
+        type=str,
+        default=DEFAULT_KSEL_FILE,
+        help=f"Path to the ksel selection file (default: ./{DEFAULT_KSEL_FILE})",
+    )
+    parser.add_argument(
+        "-t", "--timeout",
+        type=int,
+        default=300,
+        help="Time limit in seconds for the run (default: 300)",
+    )
+    parser.add_argument(
+        "-s", "--sampling",
+        type=int,
+        default=None,
+        help="SAMPLING value to apply for the -ksel run (required with -ksel)",
+    )
+    parser.add_argument(
+        "-b", "--bin-spec-file",
+        type=str,
+        default=None,
+        help="Optional BIN_SPEC_FILE JSON path, applied to the -ksel run "
+             "(in addition to exception checking, which is always on).",
+    )
+    parser.add_argument(
+        "command",
+        nargs=argparse.REMAINDER,
+        metavar="[-- PROGRAM [ARGS...]]",
+        help="Program and arguments to run (precede with --)",
+    )
+
+    args = parser.parse_args()
+
+    cmd = args.command
+    if cmd and cmd[0] == "--":
+        cmd = cmd[1:]
+    if not cmd:
+        parser.error("Please provide a program to run after --")
+
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    lib_path = os.path.join(script_dir, "..", "nixnan.so")
+
+    if args.phase1:
+        print("=" * 70)
+        print("Phase 1: Collecting kernel names (LOG_KERNELS)")
+        print("=" * 70)
+        baseline = collect_kernels(cmd, args.timeout, lib_path)
+        kernel_names = list(baseline["kernels_unique"].keys())
+        write_ksel_file(kernel_names, args.ksel_file)
+        print(f"  {len(kernel_names)} unique kernel(s) found "
+              f"({len(baseline['kernels_seq'])} total launches), "
+              f"baseline {baseline['elapsed']:.3f}s.")
+        print(f"  Wrote {args.ksel_file!r}, every kernel defaulted to 'n'.")
+        print(f"  Edit it (flip 'n' to 'y' for whichever kernels you want), "
+              f"then rerun with -ksel.")
+        return
+
+    # args.ksel
+    if args.sampling is None:
+        parser.error("-s/--sampling is required with -ksel")
+
+    if args.bin_spec_file and not os.path.exists(args.bin_spec_file):
+        parser.error(
+            f"--bin-spec-file {args.bin_spec_file!r} does not exist "
+            "(nixnan.so would just write a template there and exit "
+            "without running the target -- create/generate it first)"
+        )
+
+    if not os.path.exists(args.ksel_file):
+        parser.error(
+            f"ksel file {args.ksel_file!r} does not exist -- run with "
+            "-phase1 first to generate it"
+        )
+
+    pairs = parse_ksel_file(args.ksel_file)
+    selected = [name for name, flag in pairs if flag == "y"]
+    unrecognized = [(name, flag) for name, flag in pairs if flag not in ("y", "n")]
+    for name, flag in unrecognized:
+        print(f"warning: unrecognized flag {flag!r} for kernel {name!r}, "
+              "treating as 'n'", file=sys.stderr)
+
+    print("=" * 70)
+    print(f"Read {args.ksel_file!r}: {len(pairs)} kernel(s) listed, "
+          f"{len(selected)} marked 'y'")
+    print("=" * 70)
+    for name in selected:
+        print(f"  y  {name}")
+    print()
+
+    if not selected:
+        print("Nothing selected ('y') in the ksel file -- nothing to "
+              "instrument. Edit the file and rerun.", file=sys.stderr)
+        sys.exit(1)
+
+    print("=" * 70)
+    print(f"Running with SAMPLING={args.sampling}, INSTRUMENT_EXCEPTIONS=1"
+          + (f", BIN_SPEC_FILE={args.bin_spec_file}" if args.bin_spec_file else "")
+          + f", {len(selected)} kernel(s) whitelisted together")
+    print("=" * 70)
+    result = run_whitelisted_combined(
+        cmd, args.timeout, lib_path, selected, args.sampling,
+        bin_spec_file=args.bin_spec_file,
+    )
+    print(f"  elapsed: {result['elapsed']:.3f}s")
+    print(result["log"], end="" if result["log"].endswith("\n") else "\n")
+
+
+if __name__ == "__main__":
+    main()
