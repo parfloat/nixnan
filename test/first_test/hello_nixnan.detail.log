@@ -1,0 +1,88 @@
+#nixnan: ----------------------------------------------------------------------------------
+WARNING: Do not call CUDA memory allocation in nvbit_at_ctx_init(). It will cause deadlocks. Do them in nvbit_tool_init(). If you encounter deadlocks, remove CUDA API calls to debug.
+#nixnan: Initializing GPU context...
+#nixnan: Instrumenting all functions
+#nixnan: running kernel [hello] ...
+#nixnan: error [div0] detected in operand 1 of instruction MUFU.RCP64H R11, R7 ; in function hello of type f64
+#nixnan: error [infinity] detected in operand 0 of instruction MUFU.RCP64H R11, R7 ; in function hello of type f64
+#nixnan: error [NaN] detected in operand 2 of instruction DFMA R12, -R6, R10, 1 ; in function hello of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DFMA R12, -R6, R10, 1 ; in function hello of type f64
+#nixnan: error [NaN] detected in operand 1 of instruction DFMA R12, R12, R12, R12 ; in function hello of type f64
+#nixnan: error [NaN] detected in operand 2 of instruction DFMA R12, R12, R12, R12 ; in function hello of type f64
+#nixnan: error [NaN] detected in operand 3 of instruction DFMA R12, R12, R12, R12 ; in function hello of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DFMA R12, R12, R12, R12 ; in function hello of type f64
+#nixnan: error [NaN] detected in operand 1 of instruction DFMA R12, R10, R12, R10 ; in function hello of type f64
+#nixnan: error [NaN] detected in operand 2 of instruction DFMA R12, R10, R12, R10 ; in function hello of type f64
+#nixnan: error [NaN] detected in operand 3 of instruction DFMA R12, R10, R12, R10 ; in function hello of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DFMA R12, R10, R12, R10 ; in function hello of type f64
+#nixnan: error [NaN] detected in operand 2 of instruction DFMA R14, -R6, R12, 1 ; in function hello of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DFMA R14, -R6, R12, 1 ; in function hello of type f64
+#nixnan: error [NaN] detected in operand 1 of instruction DFMA R12, R12, R14, R12 ; in function hello of type f64
+#nixnan: error [NaN] detected in operand 2 of instruction DFMA R12, R12, R14, R12 ; in function hello of type f64
+#nixnan: error [NaN] detected in operand 3 of instruction DFMA R12, R12, R14, R12 ; in function hello of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DFMA R12, R12, R14, R12 ; in function hello of type f64
+#nixnan: error [infinity] detected in operand 2 of instruction DMUL R14, R6, R4 ; in function hello of type f64
+#nixnan: error [NaN] detected in operand 0 of instruction DMUL R14, R6, R4 ; in function hello of type f64
+#nixnan: error [NaN] detected in operand 1 of instruction STG.E.64 [R10.64+0x8], R14 ; in function hello of type f64
+#nixnan: error [div0] detected in operand 1 of instruction @!P0 MUFU.RCP R6, R0 ; in function hello of type f32
+#nixnan: error [infinity] detected in operand 0 of instruction @!P0 MUFU.RCP R6, R0 ; in function hello of type f32
+#nixnan: error [infinity] detected in operand 0 of instruction HMUL2 R0, R0.H0_H0, 65504, 65504 ; in function hello of type f16
+#nixnan: error [infinity] detected in operand 2 of instruction FMUL R11, R8, R5 ; in function hello of type f32
+#nixnan: error [NaN] detected in operand 0 of instruction FMUL R11, R8, R5 ; in function hello of type f32
+#nixnan: error [NaN] detected in operand 1 of instruction STG.E [R6.64+0x4], R11 ; in function hello of type f32
+#nixnan: error [infinity] detected in operand 1 of instruction HMUL2 R9, R0, R4.H0_H0 ; in function hello of type f16
+#nixnan: error [NaN] detected in operand 0 of instruction HMUL2 R9, R0, R4.H0_H0 ; in function hello of type f16
+#nixnan: error [subnormal] detected in operand 0 of instruction FMUL R13, R2, 1.175494350822287508e-38 ; in function hello of type f32
+#nixnan: error [NaN] detected in operand 1 of instruction STG.E [R2.64+0x4], R9 ; in function hello of type f16
+#nixnan: error [infinity] detected in operand 1 of instruction HFMA2.BF16_V2 R7, R5.H0_H0, 3.00405527047390987276e+38, 3.00405527047390987276e+38, -RZ.H0_H0 ; in function hello of type bf16
+#nixnan: error [infinity] detected in operand 0 of instruction HFMA2.BF16_V2 R7, R5.H0_H0, 3.00405527047390987276e+38, 3.00405527047390987276e+38, -RZ.H0_H0 ; in function hello of type bf16
+#nixnan: error [infinity] detected in operand 1 of instruction HFMA2.BF16_V2 R15, R7, R8.H0_H0, -RZ.H0_H0 ; in function hello of type bf16
+#nixnan: error [NaN] detected in operand 0 of instruction HFMA2.BF16_V2 R15, R7, R8.H0_H0, -RZ.H0_H0 ; in function hello of type bf16
+#nixnan: error [NaN] detected in operand 1 of instruction STG.E [R4.64+0x4], R15 ; in function hello of type bf16
+#nixnan: running kernel [tc] ...
+#nixnan: error [infinity] detected in operand 1 of instruction HMMA.16816.F32 R16, R8.reuse, R12, RZ ; in function tc of type f16
+#nixnan: error [NaN,infinity] detected in operand 0 of instruction HMMA.16816.F32 R16, R8.reuse, R12, RZ ; in function tc of type f32
+#nixnan: error [infinity] detected in operand 1 of instruction HMMA.16816.F32 R12, R8, R14, RZ ; in function tc of type f16
+#nixnan: error [NaN] detected in operand 0 of instruction HMMA.16816.F32 R12, R8, R14, RZ ; in function tc of type f32
+#nixnan: error [NaN] detected in operand 1 of instruction STG.E.64 [R8.64], R16 ; in function tc of type f32
+#nixnan: error [NaN] detected in operand 1 of instruction STG.E.64 [R8.64+0x20], R12 ; in function tc of type f32
+#nixnan: Finalizing GPU context...
+
+#nixnan: ------------ nixnan Report -----------
+
+#nixnan: --- FP16 Operations ---
+#nixnan: NaN:                    1 (0 repeats)
+#nixnan: Infinity:               4 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- BF16 Operations ---
+#nixnan: NaN:                    1 (0 repeats)
+#nixnan: Infinity:               3 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          0 (0 repeats)
+
+#nixnan: --- FP32 Operations ---
+#nixnan: NaN:                    3 (0 repeats)
+#nixnan: Infinity:               3 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              1 (0 repeats)
+#nixnan: Division by 0:          1 (1 repeats)
+
+#nixnan: --- FP64 Operations ---
+#nixnan: NaN:                   17 (0 repeats)
+#nixnan: Infinity:               2 (0 repeats)
+#nixnan: -Infinity:              0 (0 repeats)
+#nixnan: Subnormal:              0 (0 repeats)
+#nixnan: Division by 0:          1 (1 repeats)
+
+#nixnan: --- FP16 Memory  Operations ---
+#nixnan: NaN:                    1 (0 repeats)
+#nixnan: --- BF16 Memory  Operations ---
+#nixnan: NaN:                    1 (0 repeats)
+#nixnan: --- FP32 Memory  Operations ---
+#nixnan: NaN:                    3 (4 repeats)
+#nixnan: --- FP64 Memory  Operations ---
+#nixnan: NaN:                    1 (0 repeats)

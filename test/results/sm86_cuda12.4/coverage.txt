@@ -1,0 +1,39 @@
+COVERED    HMMA.16816.F16                                         1 tests  e.g. mma/basic
+COVERED    HMMA.16816.F32                                         3 tests  e.g. first_test/hello_nixnan
+COVERED    HMMA.16816.F32.BF16                                    1 tests  e.g. mma/wmma_bf16_f32acc
+COVERED    HMMA.1684.F32.TF32                                     1 tests  e.g. mma/wmma_tf32
+COVERED    DMMA.884                                               1 tests  e.g. mma/wmma_f64
+UNTESTED   DMMA.8x8x4                                           
+COVERED    (H(ADD|MUL)2(?:\.FTZ)?(?:\.SAT)?)                      9 tests  e.g. first_test/hello_nixnan
+COVERED    (HFMA2(?:\.FTZ)?(?:\.SAT)?)                            2 tests  e.g. fp16/fma_single
+COVERED    HFMA2.BF16_V2                                          5 tests  e.g. bf16/arith
+COVERED    (F(ADD|MUL)(?:\.FTZ)?(?:\.(RP|RM|RZ))?(?:\.SAT)?)     15 tests  e.g. first_test/hello_nixnan
+COVERED    (MUFU.(COS|SIN|EX2|LG2|SQRT|TANH))                     7 tests  e.g. fp32/cos_single
+COVERED    (MUFU.(RSQ|RCP))                                       7 tests  e.g. first_test/hello_nixnan
+COVERED    (MUFU.(RSQ64H|RCP64H))                                 7 tests  e.g. first_test/hello_nixnan
+COVERED    (D(ADD|MUL)(?:\.(RP|RM|RZ))?)                         11 tests  e.g. first_test/hello_nixnan
+COVERED    (DFMA(?:\.(RP|RM|RZ))?)                                7 tests  e.g. first_test/hello_nixnan
+COVERED    (FFMA(?:\.FTZ)?(?:\.(RP|RM|RZ))?(?:\.SAT)?)            7 tests  e.g. first_test/hello_nixnan
+
+FP-related opcodes present in the tests but NOT in instructions.json (not checked by nixnan):
+           DSETP.GEU.AND                  in 1 test(s)
+           DSETP.GT.AND                   in 2 test(s)
+           DSETP.GTU.AND                  in 4 test(s)
+           DSETP.NAN.AND                  in 1 test(s)
+           DSETP.NE.AND                   in 2 test(s)
+           DSETP.NE.OR                    in 1 test(s)
+           DSETP.NEU.AND                  in 2 test(s)
+           F2F.F32.F64                    in 2 test(s)
+           F2F.F64.F32                    in 2 test(s)
+           F2FP.BF16.PACK_AB              in 2 test(s)
+           F2FP.PACK_AB                   in 2 test(s)
+           FCHK                           in 1 test(s)
+           FSEL                           in 5 test(s)
+           FSETP.GEU.AND                  in 11 test(s)
+           FSETP.GEU.FTZ.AND              in 2 test(s)
+           FSETP.GT.AND                   in 3 test(s)
+           FSETP.GT.FTZ.AND               in 1 test(s)
+           FSETP.GTU.AND                  in 1 test(s)
+           FSETP.GTU.FTZ.AND              in 3 test(s)
+           FSETP.NEU.AND                  in 1 test(s)
+           FSETP.NEU.FTZ.AND              in 5 test(s)

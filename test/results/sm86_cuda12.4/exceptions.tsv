@@ -1,0 +1,173 @@
+test	section	kind	unique	repeats
+bf16/arith	BF16 Operations	NaN	2	0
+bf16/arith	BF16 Operations	Infinity	12	12
+bf16/arith	BF16 Operations	-Infinity	10	0
+bf16/arith	BF16 Operations	Subnormal	2	0
+bf16/arith	BF16 Memory Operations	NaN	1	0
+first_test/hello_nixnan	FP16 Operations	NaN	1	0
+first_test/hello_nixnan	FP16 Operations	Infinity	4	0
+first_test/hello_nixnan	BF16 Operations	NaN	1	0
+first_test/hello_nixnan	BF16 Operations	Infinity	3	0
+first_test/hello_nixnan	FP32 Operations	NaN	3	0
+first_test/hello_nixnan	FP32 Operations	Infinity	3	0
+first_test/hello_nixnan	FP32 Operations	Subnormal	1	0
+first_test/hello_nixnan	FP64 Operations	NaN	17	0
+first_test/hello_nixnan	FP64 Operations	Infinity	2	0
+first_test/hello_nixnan	FP16 Memory Operations	NaN	1	0
+first_test/hello_nixnan	BF16 Memory Operations	NaN	1	0
+first_test/hello_nixnan	FP32 Memory Operations	NaN	3	4
+first_test/hello_nixnan	FP64 Memory Operations	NaN	1	0
+fp16/add_single	FP16 Operations	NaN	4	0
+fp16/add_single	FP16 Operations	Infinity	12	0
+fp16/add_single	FP16 Operations	-Infinity	8	0
+fp16/add_single	FP16 Operations	Subnormal	12	0
+fp16/add_vector	FP16 Operations	NaN	4	0
+fp16/add_vector	FP16 Operations	Infinity	12	0
+fp16/add_vector	FP16 Operations	-Infinity	8	0
+fp16/add_vector	FP16 Operations	Subnormal	12	0
+fp16/add_vector	FP16 Memory Operations	NaN	4	0
+fp16/fma_single	FP16 Operations	NaN	2	0
+fp16/fma_single	FP16 Operations	Infinity	6	0
+fp16/fma_single	FP16 Operations	-Infinity	4	0
+fp16/fma_single	FP16 Operations	Subnormal	6	2
+fp16/mul_single	FP16 Operations	NaN	4	0
+fp16/mul_single	FP16 Operations	Infinity	12	0
+fp16/mul_single	FP16 Operations	Subnormal	4	0
+fp16/mul_vector	FP16 Operations	NaN	4	0
+fp16/mul_vector	FP16 Operations	Infinity	12	0
+fp16/mul_vector	FP16 Operations	Subnormal	4	0
+fp16/mul_vector	FP16 Memory Operations	NaN	4	0
+fp16/sub_single	FP16 Operations	NaN	4	0
+fp16/sub_single	FP16 Operations	Infinity	20	0
+fp16/sub_single	FP16 Operations	Subnormal	12	0
+fp16/sub_vector	FP16 Operations	Infinity	12	0
+fp16/sub_vector	FP16 Operations	-Infinity	8	0
+fp16/sub_vector	FP16 Operations	Subnormal	8	0
+fp32/add_single	FP32 Operations	NaN	22	0
+fp32/add_single	FP32 Operations	Infinity	30	0
+fp32/add_single	FP32 Operations	-Infinity	20	0
+fp32/add_single	FP32 Operations	Subnormal	36	0
+fp32/add_single	FP32 Memory Operations	NaN	10	0
+fp32/cos_single	FP32 Operations	NaN	2	0
+fp32/cos_single	FP32 Operations	Infinity	6	0
+fp32/cos_single	FP32 Operations	Subnormal	4	0
+fp32/cos_single	FP32 Memory Operations	NaN	2	0
+fp32/div_single	FP32 Operations	NaN	22	24
+fp32/div_single	FP32 Operations	Infinity	26	4
+fp32/div_single	FP32 Operations	-Infinity	24	0
+fp32/div_single	FP32 Operations	Subnormal	10	0
+fp32/ex2_single	FP32 Operations	Infinity	4	0
+fp32/fma_single	FP32 Operations	NaN	8	0
+fp32/fma_single	FP32 Operations	Infinity	20	0
+fp32/fma_single	FP32 Operations	-Infinity	16	0
+fp32/fma_single	FP32 Operations	Subnormal	24	8
+fp32/fma_single	FP32 Memory Operations	NaN	8	0
+fp32/lg2_single	FP32 Operations	NaN	2	0
+fp32/lg2_single	FP32 Operations	Infinity	4	0
+fp32/lg2_single	FP32 Operations	-Infinity	4	4
+fp32/lg2_single	FP32 Memory Operations	NaN	2	0
+fp32/mul_single	FP32 Operations	Infinity	26	0
+fp32/mul_single	FP32 Operations	-Infinity	30	0
+fp32/mul_single	FP32 Operations	Subnormal	10	0
+fp32/rcp_single	FP32 Operations	NaN	24	0
+fp32/rcp_single	FP32 Operations	Infinity	22	0
+fp32/rcp_single	FP32 Operations	-Infinity	10	0
+fp32/rcp_single	FP32 Operations	Subnormal	1	0
+fp32/rcp_single	FP32 Memory Operations	NaN	2	0
+fp32/rsqrt_single	FP32 Operations	NaN	2	0
+fp32/rsqrt_single	FP32 Operations	Infinity	6	0
+fp32/rsqrt_single	FP32 Operations	-Infinity	4	0
+fp32/rsqrt_single	FP32 Memory Operations	NaN	2	0
+fp32/sin_single	FP32 Operations	NaN	2	0
+fp32/sin_single	FP32 Operations	Infinity	6	0
+fp32/sin_single	FP32 Operations	Subnormal	4	0
+fp32/sin_single	FP32 Memory Operations	NaN	2	0
+fp32/sqrt_single	FP32 Operations	NaN	4	0
+fp32/sqrt_single	FP32 Operations	Infinity	8	0
+fp32/sqrt_single	FP32 Operations	-Infinity	2	0
+fp32/sqrt_single	FP32 Memory Operations	NaN	2	0
+fp32/sub_single	FP32 Operations	NaN	22	0
+fp32/sub_single	FP32 Operations	Infinity	50	0
+fp32/sub_single	FP32 Operations	Subnormal	36	0
+fp32/sub_single	FP32 Memory Operations	NaN	10	0
+fp32/tanh_single	FP32 Operations	NaN	2	0
+fp32/tanh_single	FP32 Operations	Infinity	1	0
+fp32/tanh_single	FP32 Memory Operations	NaN	1	0
+fp64/add_single	FP64 Operations	NaN	5	0
+fp64/add_single	FP64 Operations	Infinity	8	0
+fp64/add_single	FP64 Operations	-Infinity	5	0
+fp64/add_single	FP64 Operations	Subnormal	10	0
+fp64/add_single	FP64 Memory Operations	NaN	5	0
+fp64/div_single	FP32 Operations	NaN	2	2
+fp64/div_single	FP32 Operations	Subnormal	2	0
+fp64/div_single	FP64 Operations	NaN	48	48
+fp64/div_single	FP64 Operations	Infinity	4	2
+fp64/div_single	FP64 Operations	Subnormal	8	0
+fp64/fma_single	FP64 Operations	NaN	4	0
+fp64/fma_single	FP64 Operations	Infinity	6	0
+fp64/fma_single	FP64 Operations	-Infinity	4	0
+fp64/fma_single	FP64 Operations	Subnormal	8	4
+fp64/fma_single	FP64 Memory Operations	NaN	4	0
+fp64/mul_single	FP64 Operations	Infinity	15	5
+fp64/mul_single	FP64 Operations	-Infinity	10	0
+fp64/rcp_approx_single	FP64 Operations	Infinity	2	0
+fp64/rcp_approx_single	FP64 Operations	-Infinity	1	0
+fp64/rcp_single	FP64 Operations	NaN	16	18
+fp64/rcp_single	FP64 Operations	Infinity	4	0
+fp64/rcp_single	FP64 Operations	-Infinity	7	4
+fp64/rcp_single	FP64 Operations	Subnormal	13	6
+fp64/rsqrt_single	FP64 Operations	NaN	46	210
+fp64/rsqrt_single	FP64 Operations	Infinity	16	0
+fp64/rsqrt_single	FP64 Operations	-Infinity	10	2
+fp64/rsqrt_single	FP64 Operations	Subnormal	16	0
+fp64/sqrt_single	FP64 Operations	NaN	23	105
+fp64/sqrt_single	FP64 Operations	Infinity	8	0
+fp64/sqrt_single	FP64 Operations	-Infinity	5	1
+fp64/sqrt_single	FP64 Operations	Subnormal	8	0
+fp64/sub_single	FP64 Operations	NaN	5	0
+fp64/sub_single	FP64 Operations	Infinity	13	0
+fp64/sub_single	FP64 Operations	Subnormal	10	0
+fp64/sub_single	FP64 Memory Operations	NaN	5	0
+infinities/inf	FP16 Operations	Infinity	5	35
+infinities/inf	FP16 Operations	-Infinity	1	7
+infinities/inf	BF16 Operations	Infinity	5	35
+infinities/inf	BF16 Operations	-Infinity	1	7
+infinities/inf	FP32 Operations	Infinity	5	35
+infinities/inf	FP32 Operations	-Infinity	1	7
+infinities/inf	FP64 Operations	Infinity	5	35
+infinities/inf	FP64 Operations	-Infinity	1	7
+memory/stg_nan	FP16 Operations	NaN	2	0
+memory/stg_nan	FP16 Operations	Infinity	2	0
+memory/stg_nan	BF16 Operations	NaN	1	0
+memory/stg_nan	BF16 Operations	Infinity	1	0
+memory/stg_nan	FP32 Operations	NaN	1	0
+memory/stg_nan	FP32 Operations	Infinity	1	0
+memory/stg_nan	FP64 Operations	NaN	1	0
+memory/stg_nan	FP64 Operations	Infinity	1	0
+memory/stg_nan	FP16 Memory Operations	NaN	1	0
+memory/stg_nan	BF16 Memory Operations	NaN	1	0
+memory/stg_nan	FP32 Memory Operations	NaN	1	0
+memory/stg_nan	FP64 Memory Operations	NaN	1	0
+mma/basic	FP16 Operations	NaN	4	60
+mma/basic	FP16 Operations	Infinity	7	105
+mma/basic	FP16 Operations	-Infinity	1	15
+mma/basic	FP16 Operations	Subnormal	6	186
+mma/basic	FP16 Memory Operations	NaN	4	60
+mma/wmma_bf16_f32acc	BF16 Operations	Infinity	2	0
+mma/wmma_bf16_f32acc	FP32 Operations	NaN	2	0
+mma/wmma_bf16_f32acc	FP32 Operations	Infinity	2	1
+mma/wmma_bf16_f32acc	FP32 Operations	-Infinity	1	0
+mma/wmma_bf16_f32acc	FP32 Memory Operations	NaN	2	4
+mma/wmma_f16_f32acc	FP16 Operations	Infinity	2	0
+mma/wmma_f16_f32acc	FP32 Operations	NaN	2	0
+mma/wmma_f16_f32acc	FP32 Operations	Infinity	2	0
+mma/wmma_f16_f32acc	FP32 Operations	-Infinity	1	0
+mma/wmma_f16_f32acc	FP32 Memory Operations	NaN	2	4
+mma/wmma_f64	FP64 Operations	NaN	1	0
+mma/wmma_f64	FP64 Operations	Infinity	2	0
+mma/wmma_f64	FP64 Operations	-Infinity	1	0
+mma/wmma_f64	FP64 Operations	Subnormal	1	0
+mma/wmma_tf32	FP32 Operations	NaN	6	0
+mma/wmma_tf32	FP32 Operations	Infinity	5	0
+mma/wmma_tf32	FP32 Operations	-Infinity	1	0
+mma/wmma_tf32	FP32 Operations	Subnormal	13	14

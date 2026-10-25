@@ -5,7 +5,7 @@
 #include <cuda_fp16.h>
 #include <tuple>
 
-// @min_sm 20
+// @min_sm 53
 
 // fma.rnd{.ftz}{.sat}.f16     d, a, b, c;
 // fma.rnd{.ftz}{.sat}.f16x2   d, a, b, c;

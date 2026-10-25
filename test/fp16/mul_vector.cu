@@ -4,7 +4,7 @@
 #include <cfloat>
 #include <cuda_fp16.h>
 
-// @min_sm 20
+// @min_sm 53
 
 // sub{.rnd}{.ftz}{.sat}.f16x2   d, a, b;
 // sub{.rnd}{.ftz}{.sat}.f16x2x2 d, a, b;

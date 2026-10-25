@@ -1,0 +1,11 @@
+# Built test executables have no extension, so ignore every file two levels down and re-include
+# sources, expectations and scripts. results/<platform>/ (collected reports) is tracked.
+*/*
+!*/
+!*/*.cu
+!*/*.expect
+!*/*.py
+!*/*.md
+!*/*.txt
+!*/*.log
+!results/*

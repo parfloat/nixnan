@@ -1,3 +1,4 @@
+// @min_sm 80
 // nvcc -o main main.cu -arch sm_86
 
 #include <stdio.h>

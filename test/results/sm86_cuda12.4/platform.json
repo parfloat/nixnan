@@ -1,0 +1,7 @@
+{
+  "gpu": "NVIDIA GeForce RTX 3090",
+  "sm": 86,
+  "driver": "595.99.02",
+  "nvcc": "12.4",
+  "tag": "sm86_cuda12.4"
+}

@@ -3,7 +3,7 @@
 #include "../helpers.cuh"
 #include <cfloat>
 
-// @min_sm 20
+// @min_sm 75
 
 __global__ void test_tanh_approx_(const float* a, float* b) {
     int idx = threadIdx.x;

@@ -31,9 +31,10 @@ Build and run:
 
 (The comment at the top of the file says `main.cu`/`main`; that is a leftover name.)
 
-This file is byte-identical to `../test/mma/basic.cu`. The two are separate copies, so edit both
-or neither. `../test/mma/basic.expect` is the expected nixnan report and
-`../test/mma/readme_basic_cu` explains the program in more detail.
+This file was a byte-identical copy of `../test/mma/basic.cu`; the test copy has since gained a
+`// @min_sm 80` line (the runner uses it to skip the test on GPUs without the `HMMA.16816` form), so
+the two now differ by that one line. They are separate files, so edit both or neither.
+`../test/mma/basic.expect` is the expected nixnan report.
 
 ## mma-examples/extractmmas.py
 
