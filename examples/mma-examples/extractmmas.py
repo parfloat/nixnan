@@ -1,4 +1,28 @@
+import os
 import re
+import shutil
+import sys
+
+
+def find_mma_header():
+    """Locate crt/mma.h: argv[1], $MMA_H, then the toolkit of the nvcc on PATH, then common paths."""
+    cands = []
+    if len(sys.argv) > 1:
+        cands.append(sys.argv[1])
+    if os.environ.get('MMA_H'):
+        cands.append(os.environ['MMA_H'])
+    nvcc = shutil.which('nvcc')
+    if nvcc:
+        root = os.path.dirname(os.path.dirname(os.path.realpath(nvcc)))
+        cands.append(os.path.join(root, 'targets/x86_64-linux/include/crt/mma.h'))
+        cands.append(os.path.join(root, 'include/crt/mma.h'))
+    cands += ['/usr/local/cuda/targets/x86_64-linux/include/crt/mma.h',
+              '/usr/local/cuda/include/crt/mma.h',
+              '/usr/include/crt/mma.h']
+    for c in cands:
+        if os.path.isfile(c):
+            return c
+    sys.exit('extractmmas.py: crt/mma.h not found; pass its path as argv[1] or set MMA_H')
 
 pattern = (
     r"fragment<[^,]+,\s*(\d+),\s*(\d+),\s*(\d+),\s*([^,>]+)>"  # First fragment
@@ -9,7 +33,7 @@ pattern = (
 
 mmas = set()
 
-with open('/usr/include/crt/mma.h', 'r') as f:
+with open(find_mma_header(), 'r') as f:
     for line in f.readlines():
         matches = re.search(pattern, line)
         if matches:
