@@ -1,0 +1,82 @@
+# readme_basic_cu — what `basic.cu` is trying to accomplish
+
+`test/mma/basic.cu` is a small CUDA program that is a **regression test for nixnan's tensor-core
+(HMMA) instrumentation**. It deliberately drives one FP16 warp-level matrix multiply-accumulate
+(WMMA) into each IEEE-754 exceptional condition, so nixnan has something known to detect. The
+expected nixnan report is in `basic.expect` in the same directory.
+
+`examples/basic.cu` is a byte-identical copy (checked with `diff`).
+
+Build line (from the first comment in the file):
+
+    nvcc -o main basic.cu -arch sm_86
+
+## What the program computes
+
+A single 16x16x16 tile, computed by one `wmma` sequence, in FP16 throughout:
+
+    AB = A * B          (accumulator starts from fill_fragment 0)
+    D  = A * B + C
+
+`InitMatrix` sets A = B = identity and C = 0, so the clean answer is AB = I and D = I.
+`run_test(A00, B00, C00, name)` then overwrites only element `[0,0]` of each matrix and
+launches the kernel. Everything else stays 0 or 1, so a single special value is the only
+disturbance. It prints the inputs (value and raw hex), runs the kernel, and prints `D[0,0]`.
+
+`main()` runs six cases:
+
+| # | A[0,0] | B[0,0] | C[0,0] | Intended exception | Native result for D[0,0] (RTX 3090, sm_86) |
+|---|--------|--------|--------|--------------------|---------------------------------------------|
+| 1 | 65504 (FP16 max normal) | 65504 | 0 | overflow: 65504 x 65504 -> +inf | `inf` (0x7c00) |
+| 2 | +inf | 1 | -inf | NaN: inf + (-inf) | `nan` (0x7fff) |
+| 3 | +min normal (0x0400) | 0.5 | 0 | underflow into the subnormal range | 0x0200, a subnormal (exact) |
+| 4 | -min normal (0x8400) | 0.5 | 0 | same, negative | 0x8200, a subnormal |
+| 5 | +min subnormal (0x0001) | 0.5 | 0 | underflow below the subnormals (half an ulp) | 0x0000, flushed to zero by rounding |
+| 6 | -min subnormal (0x8001) | 0.5 | 0 | same, negative | 0x0000 (the sign is lost: -0 + C(+0) = +0) |
+
+I compiled and ran the program natively (no nixnan) and the table's last column is that output.
+
+## Code structure, briefly
+
+- `hu` union plus `max_normal()`, `min_normal()`, `min_subnormal()` and the `neg_` forms build
+  FP16 values from raw bit patterns (0x7BFF, 0x0400, 0x0001, sign bit 0x8000).
+- `WMMAF16TensorCore` is the kernel. It uses `m16n16k16` FP16 fragments and two `mma_sync` calls,
+  with `store_matrix_sync` for AB and for D. The compiler lowers each `mma_sync` to two
+  `HMMA.16816.F16` SASS instructions, which is why this test exercises exactly the path nixnan
+  instruments for tensor cores.
+- `CalcWMMA` sets up the launch and has leftover timing code (its prints are commented out).
+- Matrices live in CUDA managed (unified) memory, so the host fills them and reads D directly.
+
+## Things worth knowing when reading it
+
+- **Launch shape.** `blockDim = (128, 4)`, and the grid works out to (1, 1): one block of 512 threads
+  = 16 warps. All 16 warps load the same tile and execute the same WMMA on the same data, so the
+  work is redundant. For this test that is harmless, and it affects the nixnan counts (next point).
+- **Why the counts in `basic.expect` look like multiples of 15.** FP16 NaN is 4 unique with 60
+  repeats, Inf is 7 with 105, -Inf is 1 with 15, Subnormal is 6 with 186. 60 = 4 x 15 and
+  105 = 7 x 15, 15 = 1 x 15. This fits 16 warps each reporting every exception, with the first
+  report counted as "unique" and the other 15 as repeats. That is my reading of the numbers; I did
+  not confirm it in the nixnan source. (186 is not a multiple of 15, so the subnormal count does not follow the
+  same pattern; I have not worked out why.)
+- **NaN spreads beyond [0,0].** In case 2, `A[0,0] = inf` multiplies `B[0,j] = 0` for the other
+  columns in row 0, and inf x 0 = NaN. So whole row 0 of AB and D is NaN, not only element [0,0].
+  This is probably why NaN has more than one unique location. Only `D[0,0]` is printed, and I did
+  not dump the full matrix.
+- **Memory-operation section.** The `FP16 Memory Operations: NaN 4 (60 repeats)` line in
+  `basic.expect` is NaNs seen at the store instructions that write AB/D back to memory.
+- **Type quirks.** `run_test` takes `half A00, half B00, float C00`; the float is narrowed to half when
+  stored into `C[0]`. Calls pass `1.0`, `0.5`, `INFINITY` and `0.0`, which convert implicitly. The
+  comment "AB = A*B + old(AB)" in the code is accurate only because `ab_frag` was zero-filled first.
+- **No check of its own.** The program never asserts anything. It only prints. The pass/fail
+  comes from running it under nixnan and comparing the report with `basic.expect`
+  (the final `Exit Code: 0` line of that file belongs to the harness).
+- The `.expect` file only covers FP16. The BF16, FP32 and FP64 sections are all zero, which makes
+  the test also a check that nixnan does not misclassify HMMA operands as another type.
+
+## Summary
+
+`basic.cu` is a minimal, self-contained tensor-core exception generator: identity matrices with
+one poisoned element, six FP16 cases covering overflow, invalid (NaN), and underflow to
+subnormal and to zero, run as a single-tile WMMA on one 16-warp block. Its purpose is to show that nixnan
+can see exceptions produced inside `HMMA` instructions, and to supply stable counts in
+`basic.expect` for regression checking.
